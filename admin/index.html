@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Ben Fainlight</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+/* ── Tokens ───────────────────────────────────────────────────────────────── */
+:root {
+  --bg:      #0d0c0a;
+  --surface: #161512;
+  --surface2:#1e1c19;
+  --ink:     #ddd8d0;
+  --muted:   #5a5652;
+  --dim:     #252320;
+  --warm:    #c4b8a6;
+  --accent:  #c4b8a6;
+  --danger:  #8b3a3a;
+  --success: #3a6b4a;
+  --pad:     20px;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, 'Inter', sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* ── Login ────────────────────────────────────────────────────────────────── */
+.login-wrap {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+}
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--dim);
+  padding: 40px;
+  width: 340px;
+}
+.login-card h1 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--warm);
+  margin-bottom: 24px;
+  letter-spacing: .02em;
+}
+.login-error {
+  font-size: .78rem;
+  color: #c07070;
+  margin-bottom: 12px;
+}
+
+/* ── Form controls ────────────────────────────────────────────────────────── */
+label {
+  display: block;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input[type=text], input[type=password], input[type=url], textarea, select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 300;
+  padding: 9px 11px;
+  outline: none;
+  transition: border-color .15s;
+  resize: vertical;
+}
+input[type=text]:focus, input[type=password]:focus,
+input[type=url]:focus, textarea:focus, select:focus {
+  border-color: var(--muted);
+}
+textarea { min-height: 90px; }
+select { cursor: pointer; appearance: none; }
+
+.form-group { margin-bottom: 16px; }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--dim);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 400;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  letter-spacing: .02em;
+}
+.btn:hover { background: var(--surface2); border-color: var(--muted); }
+.btn-primary {
+  background: var(--warm);
+  color: var(--bg);
+  border-color: var(--warm);
+  font-weight: 500;
+}
+.btn-primary:hover { background: var(--ink); border-color: var(--ink); }
+.btn-danger { color: #c07070; border-color: var(--dim); }
+.btn-danger:hover { border-color: #8b3a3a; }
+.btn-sm { padding: 5px 10px; font-size: .72rem; }
+.btn-icon {
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: color .15s;
+}
+.btn-icon:hover { color: var(--ink); }
+
+/* ── Shell ────────────────────────────────────────────────────────────────── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--dim);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-top {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--dim);
+}
+.sidebar-brand {
+  font-size: .8rem;
+  color: var(--warm);
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+.sidebar-sub { font-size: .68rem; color: var(--muted); }
+
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.sidebar-section-label {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--muted);
+  padding: 10px 16px 4px;
+}
+.nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 300;
+  color: var(--warm);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-item:hover { background: var(--dim); color: var(--ink); }
+.nav-item.active { background: var(--dim); color: var(--ink); }
+
+.sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--dim);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Main ─────────────────────────────────────────────────────────────────── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.main-header {
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+.main-title { font-size: .9rem; color: var(--ink); font-weight: 400; }
+.save-bar { display: flex; align-items: center; gap: 10px; }
+.save-msg {
+  font-size: .72rem;
+  transition: opacity .3s;
+}
+.save-msg.ok  { color: #78b88a; }
+.save-msg.err { color: #c07070; }
+
+.main-body { padding: 28px; flex: 1; }
+
+/* ── Section editors ──────────────────────────────────────────────────────── */
+.editor-section { max-width: 680px; }
+.editor-section + .editor-section { margin-top: 36px; }
+.section-title {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--dim);
+}
+
+/* ── Stats editor ─────────────────────────────────────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ── Rail editor ──────────────────────────────────────────────────────────── */
+.rail-list { margin-bottom: 12px; }
+.rail-tile-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--dim);
+  background: var(--surface);
+  margin-bottom: 6px;
+  transition: border-color .15s;
+}
+.rail-tile-row:hover { border-color: var(--muted); }
+
+.tile-thumb {
+  width: 44px;
+  height: 36px;
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.tile-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.tile-thumb-placeholder {
+  font-size: .6rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 2px;
+}
+
+.tile-type-badge {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border: 1px solid var(--dim);
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+.tile-label { font-size: .8rem; color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-link  { font-size: .68rem; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+/* ── Modal ────────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--dim);
+  width: 480px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 22px;
+}
+.modal-header h2 { font-size: .9rem; font-weight: 400; color: var(--ink); }
+.modal-footer { margin-top: 22px; display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── Upload area ──────────────────────────────────────────────────────────── */
+.upload-area {
+  border: 1px dashed var(--dim);
+  padding: 16px;
+  text-align: center;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.upload-area:hover { border-color: var(--muted); }
+.upload-area input { display: none; }
+.upload-area p { font-size: .75rem; color: var(--muted); }
+.upload-preview { margin-top: 8px; }
+.upload-preview img { max-height: 80px; max-width: 100%; object-fit: contain; }
+
+/* ── Reorder ──────────────────────────────────────────────────────────────── */
+.reorder-btns { display: flex; flex-direction: column; gap: 2px; }
+.reorder-btns button {
+  background: none; border: 1px solid var(--dim);
+  color: var(--muted); font-size: .65rem; cursor: pointer;
+  padding: 1px 5px; line-height: 1.4;
+  transition: color .12s;
+}
+.reorder-btns button:hover { color: var(--ink); }
+.reorder-btns button:disabled { opacity: .3; cursor: default; }
+
+/* ── Role / area rows ─────────────────────────────────────────────────────── */
+.role-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.area-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ── Notes list ───────────────────────────────────────────────────────────── */
+.note-edit-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ── Radio group ──────────────────────────────────────────────────────────── */
+.radio-group { display: flex; gap: 16px; }
+.radio-group label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .82rem; color: var(--warm);
+  text-transform: none; letter-spacing: 0;
+  cursor: pointer;
+}
+.radio-group input[type=radio] { accent-color: var(--warm); }
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid var(--dim); margin: 20px 0; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Login ──────────────────────────────────────────────────────────── -->
+  <div v-if="!token" class="login-wrap">
+    <div class="login-card">
+      <h1>Admin — Ben Fainlight</h1>
+      <p v-if="loginError" class="login-error">{{ loginError }}</p>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" v-model="password" @keyup.enter="login" placeholder="Enter password" autofocus />
+      </div>
+      <button class="btn btn-primary" style="width:100%" @click="login" :disabled="logging">
+        {{ logging ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Shell ──────────────────────────────────────────────────────────── -->
+  <div v-else-if="content" class="shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">Site Admin</div>
+        <div class="sidebar-sub">benfainlight.com</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Content</div>
+        <button class="nav-item" :class="{active:section==='meta'}"   @click="section='meta'">Site & Contact</button>
+        <button class="nav-item" :class="{active:section==='intro'}"  @click="section='intro'">Intro</button>
+
+        <div class="sidebar-section-label">Projects</div>
+        <button
+          v-for="(p, i) in content.projects" :key="p.id"
+          class="nav-item"
+          :class="{active: section==='project' && projectIdx===i}"
+          @click="section='project'; projectIdx=i"
+        >{{ p.num }} · {{ p.title.split('—')[0].trim() }}</button>
+        <button class="nav-item" style="color:var(--muted)" @click="addProject">+ Add project</button>
+
+        <div class="sidebar-section-label">Pages</div>
+        <button class="nav-item" :class="{active:section==='about'}" @click="section='about'">About</button>
+        <button class="nav-item" :class="{active:section==='notes'}" @click="section='notes'">Notes</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a class="btn btn-sm" href="/" target="_blank">View site</a>
+        <button class="btn btn-sm btn-danger" @click="logout">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="main-header">
+        <span class="main-title">{{ sectionTitle }}</span>
+        <div class="save-bar">
+          <span v-if="saveMsg" class="save-msg" :class="saveMsgType">{{ saveMsg }}</span>
+          <button class="btn btn-primary" @click="saveAll" :disabled="saving">
+            {{ saving ? 'Saving…' : 'Save all' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="main-body">
+
+        <!-- ── Meta / contact ─────────────────────────────────────────── -->
+        <div v-if="section==='meta'" class="editor-section">
+          <div class="section-title">Site info</div>
+          <div class="form-group">
+            <label>Name (shown as site title)</label>
+            <input type="text" v-model="content.meta.name" />
+          </div>
+          <div class="form-group">
+            <label>Copyright line</label>
+            <input type="text" v-model="content.meta.copyright" placeholder="2025 Ben Fainlight" />
+          </div>
+
+          <hr class="divider" />
+          <div class="section-title">Contact links (shown in footer)</div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="text" v-model="content.contact.email" placeholder="you@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Instagram URL</label>
+            <input type="url" v-model="content.contact.instagram" placeholder="https://instagram.com/..." />
+          </div>
+          <div class="form-group">
+            <label>LinkedIn URL</label>
+            <input type="url" v-model="content.contact.linkedin" placeholder="https://linkedin.com/in/..." />
+          </div>
+        </div>
+
+        <!-- ── Intro ──────────────────────────────────────────────────── -->
+        <div v-if="section==='intro'" class="editor-section">
+          <div class="section-title">Intro paragraph</div>
+          <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px">HTML is supported — wrap text in &lt;strong&gt; to bold it.</p>
+          <div class="form-group">
+            <textarea v-model="content.intro" rows="5"></textarea>
+          </div>
+          <div style="margin-top:12px;padding:14px;background:var(--surface);border:1px solid var(--dim);font-size:.82rem;color:var(--warm);line-height:1.7" v-html="content.intro"></div>
+        </div>
+
+        <!-- ── Project editor ─────────────────────────────────────────── -->
+        <div v-if="section==='project' && currentProject" class="editor-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div class="section-title" style="margin-bottom:0">Project basics</div>
+            <button class="btn btn-sm btn-danger" @click="removeProject(projectIdx)">Delete project</button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:48px 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group">
+              <label>No.</label>
+              <input type="text" v-model="currentProject.num" placeholder="01" />
+            </div>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" v-model="currentProject.title" />
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Tag</label>
+              <input type="text" v-model="currentProject.tag" placeholder="Partnerships" />
+            </div>
+            <div class="form-group">
+              <label>Year</label>
+              <input type="text" v-model="currentProject.year" placeholder="2023–" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea v-model="currentProject.body" rows="5"></textarea>
+          </div>
+
+          <!-- Stats -->
+          <hr class="divider" />
+          <div class="section-title">Stats</div>
+          <div v-for="(s, si) in currentProject.stats" :key="si" class="stat-row">
+            <input type="text" v-model="s.label" placeholder="Label" />
+            <input type="text" v-model="s.value" placeholder="Value" />
+            <button class="btn-icon" @click="currentProject.stats.splice(si,1)" title="Remove">✕</button>
+          </div>
+          <button class="btn btn-sm" @click="currentProject.stats.push({label:'',value:''})">+ Add stat</button>
+
+          <!-- Rail -->
+          <hr class="divider" />
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="section-title" style="margin-bottom:0">Asset rail</div>
+            <button class="btn btn-sm" @click="openTileModal(projectIdx, null)">+ Add tile</button>
+          </div>
+
+          <div class="rail-list">
+            <div v-for="(tile, ti) in currentProject.rail" :key="ti" class="rail-tile-row">
+              <!-- Reorder -->
+              <div class="reorder-btns">
+                <button @click="moveTile(projectIdx, ti, -1)" :disabled="ti===0">▲</button>
+                <button @click="moveTile(projectIdx, ti,  1)" :disabled="ti===currentProject.rail.length-1">▼</button>
+              </div>
+              <!-- Thumb -->
+              <div class="tile-thumb">
+                <img v-if="tile.img" :src="tile.img" :alt="tile.label" @error="e => e.target.style.display='none'" />
+                <div v-else class="tile-thumb-placeholder">{{ tile.label || '—' }}</div>
+              </div>
+              <!-- Meta -->
+              <span class="tile-type-badge">{{ tile.type }}</span>
+              <div style="flex:1;min-width:0">
+                <div class="tile-label">{{ tile.label || '(no label)' }}</div>
+                <div class="tile-link">
+                  <span v-if="tile.action==='link'">→ {{ tile.link || 'no link' }}</span>
+                  <span v-else-if="tile.action==='lightbox'">lightbox</span>
+                  <span v-else style="color:var(--muted)">no action</span>
+                </div>
+              </div>
+              <!-- Actions -->
+              <div class="tile-actions">
+                <button class="btn-icon" @click="openTileModal(projectIdx, ti)" title="Edit">✎</button>
+                <button class="btn-icon" @click="currentProject.rail.splice(ti,1)" title="Delete">✕</button>
+              </div>
+            </div>
+          </div>
+          <p v-if="!currentProject.rail.length" style="font-size:.78rem;color:var(--muted)">No tiles yet. Add one above.</p>
+        </div>
+
+        <!-- ── About ──────────────────────────────────────────────────── -->
+        <div v-if="section==='about'" class="editor-section">
+          <div class="section-title">Lead</div>
+          <div class="form-group">
+            <textarea v-model="content.about.lead" rows="3"></textarea>
+          </div>
+
+          <hr class="divider" />
+          <div class="section-title">Body paragraphs</div>
+          <div v-for="(p, pi) in content.about.body" :key="pi" style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px">
+            <textarea v-model="content.about.body[pi]" rows="3"></textarea>
+            <button class="btn-icon" @click="content.about.body.splice(pi,1)">✕</button>
+          </div>
+          <button class="btn btn-sm" @click="content.about.body.push('')">+ Add paragraph</button>
+
+          <hr class="divider" />
+          <div class="section-title">Experience (roles)</div>
+          <div v-for="(r, ri) in content.about.roles" :key="ri" class="role-row">
+            <input type="text" v-model="r.company" placeholder="Company" />
+            <input type="text" v-model="r.title"   placeholder="Title" />
+            <input type="text" v-model="r.period"  placeholder="2020–22" />
+            <button class="btn-icon" @click="content.about.roles.splice(ri,1)">✕</button>
+          </div>
+          <button class="btn btn-sm" @click="content.about.roles.push({company:'',title:'',period:''})">+ Add role</button>
+
+          <hr class="divider" />
+          <div class="section-title">Areas</div>
+          <div v-for="(a, ai) in content.about.areas" :key="ai" class="area-row">
+            <input type="text" v-model="content.about.areas[ai]" placeholder="Area" />
+            <button class="btn-icon" @click="content.about.areas.splice(ai,1)">✕</button>
+          </div>
+          <button class="btn btn-sm" @click="content.about.areas.push('')">+ Add area</button>
+        </div>
+
+        <!-- ── Notes ──────────────────────────────────────────────────── -->
+        <div v-if="section==='notes'" class="editor-section">
+          <div class="section-title">Notes</div>
+          <div v-for="(n, ni) in content.notes" :key="ni">
+            <div class="note-edit-row">
+              <input type="text" v-model="n.title" placeholder="Title" />
+              <input type="text" v-model="n.sub"   placeholder="Subtitle" />
+              <input type="text" v-model="n.type"  placeholder="Type (Writing, Archive…)" />
+              <button class="btn-icon" @click="content.notes.splice(ni,1)">✕</button>
+            </div>
+          </div>
+          <button class="btn btn-sm" @click="content.notes.push({title:'',sub:'',type:''})">+ Add note</button>
+        </div>
+
+      </div><!-- /main-body -->
+    </main>
+  </div><!-- /shell -->
+
+  <!-- Loading state -->
+  <div v-else-if="token" style="display:flex;align-items:center;justify-content:center;height:100vh;color:var(--muted);font-size:.82rem">
+    Loading content…
+  </div>
+
+  <!-- ── Tile modal ──────────────────────────────────────────────────────── -->
+  <div v-if="showModal" class="modal-backdrop" @click.self="showModal=false">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>{{ editingTileIdx === null ? 'Add tile' : 'Edit tile' }}</h2>
+        <button class="btn-icon" @click="showModal=false">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <div class="radio-group">
+          <label><input type="radio" v-model="modalTile.type" value="logo" /> Logo (80px wide)</label>
+          <label><input type="radio" v-model="modalTile.type" value="photo" /> Photo (120px wide)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Label (fallback text if image fails)</label>
+        <input type="text" v-model="modalTile.label" placeholder="NBA" />
+      </div>
+
+      <div class="form-group">
+        <label>Image URL <span style="color:var(--muted);font-size:.65rem;text-transform:none;letter-spacing:0">(clearbit, wsrv.nl, YouTube thumb, or uploaded file)</span></label>
+        <input type="url" v-model="modalTile.img" placeholder="https://logo.clearbit.com/nba.com" />
+      </div>
+
+      <div class="form-group">
+        <label>— or upload a file —</label>
+        <div class="upload-area" @click="$refs.uploadInput.click()">
+          <input type="file" ref="uploadInput" accept="image/*" @change="uploadFile" style="display:none" />
+          <p>{{ uploading ? 'Uploading…' : 'Click to choose image (max 20 MB)' }}</p>
+          <div v-if="modalTile.img" class="upload-preview">
+            <img :src="modalTile.img" alt="preview" />
+          </div>
+        </div>
+        <p v-if="uploadError" style="color:#c07070;font-size:.72rem;margin-top:6px">{{ uploadError }}</p>
+        <p style="font-size:.68rem;color:var(--muted);margin-top:6px">
+          Note: on Railway, uploaded files need a persistent volume or they reset on redeploy.
+          Using external URLs (Clearbit, wsrv.nl, Cloudinary, etc.) is more reliable.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label>On click</label>
+        <div class="radio-group">
+          <label><input type="radio" v-model="modalTile.action" value="link" /> Open link</label>
+          <label><input type="radio" v-model="modalTile.action" value="lightbox" /> Lightbox</label>
+          <label><input type="radio" v-model="modalTile.action" value="none" /> Nothing</label>
+        </div>
+      </div>
+
+      <div v-if="modalTile.action==='link'" class="form-group">
+        <label>Link URL</label>
+        <input type="url" v-model="modalTile.link" placeholder="https://nba.com" />
+      </div>
+
+      <div v-if="modalTile.action==='lightbox'" class="form-group">
+        <label>Caption (optional)</label>
+        <input type="text" v-model="modalTile.caption" placeholder="Caption shown below image" />
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" @click="showModal=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveTile">{{ editingTileIdx === null ? 'Add tile' : 'Save tile' }}</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      // Auth
+      token:      localStorage.getItem('bf_admin_token') || '',
+      password:   '',
+      loginError: '',
+      logging:    false,
+
+      // Content
+      content: null,
+
+      // Navigation
+      section:    'intro',
+      projectIdx: 0,
+
+      // Save
+      saving:      false,
+      saveMsg:     '',
+      saveMsgType: 'ok',
+      saveMsgTimer: null,
+
+      // Tile modal
+      showModal:      false,
+      modalTile:      {},
+      editingTileIdx: null,
+      editingProjectIdx: null,
+
+      // Upload
+      uploading:   false,
+      uploadError: '',
+    };
+  },
+
+  computed: {
+    currentProject() {
+      return this.content?.projects?.[this.projectIdx] || null;
+    },
+    sectionTitle() {
+      if (this.section === 'meta')    return 'Site & Contact';
+      if (this.section === 'intro')   return 'Intro';
+      if (this.section === 'about')   return 'About';
+      if (this.section === 'notes')   return 'Notes';
+      if (this.section === 'project' && this.currentProject) {
+        return `${this.currentProject.num} · ${this.currentProject.title}`;
+      }
+      return '';
+    },
+  },
+
+  methods: {
+    // ── Auth ────────────────────────────────────────────────────────────────
+    async login() {
+      this.loginError = '';
+      this.logging = true;
+      try {
+        const r = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: this.password }),
+        });
+        const d = await r.json();
+        if (!r.ok) { this.loginError = d.error || 'Login failed'; return; }
+        this.token = d.token;
+        localStorage.setItem('bf_admin_token', d.token);
+        await this.fetchContent();
+      } catch(e) {
+        this.loginError = 'Network error';
+      } finally {
+        this.logging = false;
+        this.password = '';
+      }
+    },
+
+    async logout() {
+      try {
+        await fetch('/api/logout', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + this.token },
+        });
+      } catch(_) {}
+      this.token = '';
+      this.content = null;
+      localStorage.removeItem('bf_admin_token');
+    },
+
+    // ── Content ──────────────────────────────────────────────────────────────
+    async fetchContent() {
+      try {
+        const r = await fetch('/api/content');
+        this.content = await r.json();
+      } catch(e) {
+        alert('Could not load content.json from server.');
+      }
+    },
+
+    async saveAll() {
+      this.saving = true;
+      clearTimeout(this.saveMsgTimer);
+      try {
+        const r = await fetch('/api/content', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + this.token,
+          },
+          body: JSON.stringify(this.content),
+        });
+        if (r.status === 401) {
+          this.token = '';
+          localStorage.removeItem('bf_admin_token');
+          return;
+        }
+        const d = await r.json();
+        if (d.ok) {
+          this.saveMsg = 'Saved ✓';
+          this.saveMsgType = 'ok';
+        } else {
+          this.saveMsg = d.error || 'Error saving';
+          this.saveMsgType = 'err';
+        }
+      } catch(e) {
+        this.saveMsg = 'Network error';
+        this.saveMsgType = 'err';
+      } finally {
+        this.saving = false;
+        this.saveMsgTimer = setTimeout(() => { this.saveMsg = ''; }, 3000);
+      }
+    },
+
+    // ── Projects ─────────────────────────────────────────────────────────────
+    addProject() {
+      const n = this.content.projects.length + 1;
+      const num = n < 10 ? '0' + n : '' + n;
+      this.content.projects.push({
+        id: 'project-' + Date.now(),
+        num,
+        title: 'New project',
+        tag: '',
+        year: '',
+        body: '',
+        stats: [],
+        rail: [],
+      });
+      this.projectIdx = this.content.projects.length - 1;
+      this.section = 'project';
+    },
+
+    removeProject(idx) {
+      if (!confirm('Delete this project? This cannot be undone until you save.')) return;
+      this.content.projects.splice(idx, 1);
+      this.projectIdx = Math.max(0, idx - 1);
+      if (!this.content.projects.length) this.section = 'intro';
+    },
+
+    // ── Rail tiles ────────────────────────────────────────────────────────────
+    openTileModal(projectIdx, tileIdx) {
+      this.editingProjectIdx = projectIdx;
+      this.editingTileIdx    = tileIdx;
+      if (tileIdx === null) {
+        this.modalTile = { type: 'logo', label: '', img: '', action: 'link', link: '', caption: '' };
+      } else {
+        this.modalTile = JSON.parse(JSON.stringify(
+          this.content.projects[projectIdx].rail[tileIdx]
+        ));
+        if (!this.modalTile.img)     this.modalTile.img     = '';
+        if (!this.modalTile.link)    this.modalTile.link    = '';
+        if (!this.modalTile.caption) this.modalTile.caption = '';
+      }
+      this.uploadError = '';
+      this.showModal   = true;
+    },
+
+    saveTile() {
+      const tile = {
+        type:    this.modalTile.type    || 'logo',
+        label:   this.modalTile.label   || '',
+        img:     this.modalTile.img     || null,
+        action:  this.modalTile.action  || 'none',
+        link:    this.modalTile.action === 'link'     ? (this.modalTile.link    || null) : null,
+        caption: this.modalTile.action === 'lightbox' ? (this.modalTile.caption || '')   : '',
+      };
+      const rail = this.content.projects[this.editingProjectIdx].rail;
+      if (this.editingTileIdx === null) {
+        rail.push(tile);
+      } else {
+        rail[this.editingTileIdx] = tile;
+      }
+      this.showModal = false;
+    },
+
+    moveTile(projectIdx, tileIdx, dir) {
+      const rail = this.content.projects[projectIdx].rail;
+      const newIdx = tileIdx + dir;
+      if (newIdx < 0 || newIdx >= rail.length) return;
+      const tmp = rail[tileIdx];
+      rail[tileIdx] = rail[newIdx];
+      rail[newIdx]  = tmp;
+    },
+
+    // ── Image upload ──────────────────────────────────────────────────────────
+    async uploadFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      this.uploading   = true;
+      this.uploadError = '';
+      const fd = new FormData();
+      fd.append('file', file);
+      try {
+        const r = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + this.token },
+          body: fd,
+        });
+        const d = await r.json();
+        if (!r.ok) { this.uploadError = d.error || 'Upload failed'; return; }
+        this.modalTile.img = d.url;
+      } catch(e) {
+        this.uploadError = 'Upload failed';
+      } finally {
+        this.uploading = false;
+        event.target.value = '';
+      }
+    },
+  },
+
+  mounted() {
+    if (this.token) this.fetchContent();
+  },
+}).mount('#app');
+</script>
+</body>
+</html>
