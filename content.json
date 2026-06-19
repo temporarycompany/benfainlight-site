@@ -13,36 +13,195 @@
       "year": "2023–",
       "body": "Built Ghostwrite's entire IP licensing operation from zero — deal structures, negotiation playbooks, partner pipeline. Secured rights across the NBA, MLB, WNBA, and WWE, plus all relevant Players Associations, and cultural partners including Reebok, Hidden NY, and Louis De Guzman. Managing 30+ active multi-year deals at any given time, with individual deal values reaching $1M+. On the product side: drove secondary market performance where rare figure variants have sold for up to $44,000.",
       "stats": [
-        { "label": "Role",              "value": "VP, Brand & Partnerships" },
-        { "label": "Active deals",      "value": "30+ concurrent" },
-        { "label": "Top secondary sale","value": "$44,000" }
+        {
+          "label": "Role",
+          "value": "VP, Brand & Partnerships"
+        },
+        {
+          "label": "Active deals",
+          "value": "30+ concurrent"
+        },
+        {
+          "label": "Top secondary sale",
+          "value": "$44,000"
+        }
       ],
       "rail": [
-        { "type": "logo",  "label": "NBA",              "img": "https://logo.clearbit.com/nba.com",          "action": "link", "link": "https://nba.com" },
-        { "type": "logo",  "label": "MLB",              "img": "https://logo.clearbit.com/mlb.com",          "action": "link", "link": "https://mlb.com" },
-        { "type": "logo",  "label": "WNBA",             "img": "https://logo.clearbit.com/wnba.com",         "action": "link", "link": "https://wnba.com" },
-        { "type": "logo",  "label": "WWE",              "img": "https://logo.clearbit.com/wwe.com",          "action": "link", "link": "https://wwe.com" },
-        { "type": "logo",  "label": "UFC",              "img": "https://logo.clearbit.com/ufc.com",          "action": "link", "link": "https://ufc.com" },
-        { "type": "logo",  "label": "NBPA",             "img": null,                                         "action": "link", "link": "https://nbpa.com" },
-        { "type": "logo",  "label": "MLBPA",            "img": null,                                         "action": "link", "link": "https://mlbplayers.com" },
-        { "type": "logo",  "label": "WNBPA",            "img": null,                                         "action": "link", "link": "https://wnbpa.com" },
-        { "type": "logo",  "label": "Fanatics",         "img": "https://logo.clearbit.com/fanatics.com",    "action": "link", "link": "https://fanatics.com" },
-        { "type": "logo",  "label": "Hidden NY",        "img": null,                                         "action": "link", "link": "https://hiddenny.com" },
-        { "type": "logo",  "label": "Reebok",           "img": "https://logo.clearbit.com/reebok.com",      "action": "link", "link": "https://reebok.com" },
-        { "type": "logo",  "label": "Louis De Guzman",  "img": null,                                         "action": "link", "link": "https://louisdeguzman.com" },
-        { "type": "logo",  "label": "SSENSE",           "img": "https://logo.clearbit.com/ssense.com",      "action": "link", "link": "https://ssense.com" },
-        { "type": "logo",  "label": "Trill Burgers",    "img": null,                                         "action": "link", "link": "https://trillburgers.com" },
-        { "type": "logo",  "label": "Call of Duty",     "img": "https://logo.clearbit.com/callofduty.com",  "action": "link", "link": "https://callofduty.com" },
-        { "type": "logo",  "label": "Lids",             "img": "https://logo.clearbit.com/lids.com",        "action": "link", "link": "https://lids.com" },
-        { "type": "logo",  "label": "USMNT",            "img": "https://logo.clearbit.com/ussoccer.com",    "action": "link", "link": "https://ussoccer.com/mens-national-team" },
-        { "type": "logo",  "label": "US Soccer Players","img": null,                                         "action": "link", "link": "https://ussoccerplayers.com" },
-        { "type": "logo",  "label": "Outkast",          "img": null,                                         "action": "link", "link": "https://open.spotify.com/artist/1G9G7WwrXka3Z1r7aIDjI7" },
-        { "type": "logo",  "label": "Blink-182",        "img": null,                                         "action": "link", "link": "https://blink182.com" },
-        { "type": "logo",  "label": "Eminem",           "img": null,                                         "action": "link", "link": "https://eminem.com" },
-        { "type": "logo",  "label": "StockX",           "img": "https://logo.clearbit.com/stockx.com",      "action": "link", "link": "https://stockx.com" },
-        { "type": "logo",  "label": "DesignerCon",      "img": null,                                         "action": "link", "link": "https://designercon.com" },
-        { "type": "logo",  "label": "Rocky's Matcha",   "img": null,                                         "action": "link", "link": "https://rockysmatcha.com" },
-        { "type": "logo",  "label": "Eastside Golf",    "img": "https://logo.clearbit.com/eastsidegolf.com","action": "link", "link": "https://eastsidegolf.com" }
+        {
+          "type": "logo",
+          "label": "NBA",
+          "img": "https://logo.clearbit.com/nba.com",
+          "action": "link",
+          "link": "https://nba.com"
+        },
+        {
+          "type": "logo",
+          "label": "MLB",
+          "img": "https://logo.clearbit.com/mlb.com",
+          "action": "link",
+          "link": "https://mlb.com"
+        },
+        {
+          "type": "logo",
+          "label": "WNBA",
+          "img": "https://logo.clearbit.com/wnba.com",
+          "action": "link",
+          "link": "https://wnba.com"
+        },
+        {
+          "type": "logo",
+          "label": "WWE",
+          "img": "https://logo.clearbit.com/wwe.com",
+          "action": "link",
+          "link": "https://wwe.com"
+        },
+        {
+          "type": "logo",
+          "label": "UFC",
+          "img": "https://logo.clearbit.com/ufc.com",
+          "action": "link",
+          "link": "https://ufc.com"
+        },
+        {
+          "type": "logo",
+          "label": "NBPA",
+          "img": null,
+          "action": "link",
+          "link": "https://nbpa.com"
+        },
+        {
+          "type": "logo",
+          "label": "MLBPA",
+          "img": null,
+          "action": "link",
+          "link": "https://mlbplayers.com"
+        },
+        {
+          "type": "logo",
+          "label": "WNBPA",
+          "img": null,
+          "action": "link",
+          "link": "https://wnbpa.com"
+        },
+        {
+          "type": "logo",
+          "label": "Fanatics",
+          "img": "https://logo.clearbit.com/fanatics.com",
+          "action": "link",
+          "link": "https://fanatics.com"
+        },
+        {
+          "type": "logo",
+          "label": "Hidden NY",
+          "img": null,
+          "action": "link",
+          "link": "https://hiddenny.com"
+        },
+        {
+          "type": "logo",
+          "label": "Reebok",
+          "img": "https://logo.clearbit.com/reebok.com",
+          "action": "link",
+          "link": "https://reebok.com"
+        },
+        {
+          "type": "logo",
+          "label": "Louis De Guzman",
+          "img": null,
+          "action": "link",
+          "link": "https://louisdeguzman.com"
+        },
+        {
+          "type": "logo",
+          "label": "SSENSE",
+          "img": "https://logo.clearbit.com/ssense.com",
+          "action": "link",
+          "link": "https://ssense.com"
+        },
+        {
+          "type": "logo",
+          "label": "Trill Burgers",
+          "img": null,
+          "action": "link",
+          "link": "https://trillburgers.com"
+        },
+        {
+          "type": "logo",
+          "label": "Call of Duty",
+          "img": "https://logo.clearbit.com/callofduty.com",
+          "action": "link",
+          "link": "https://callofduty.com"
+        },
+        {
+          "type": "logo",
+          "label": "Lids",
+          "img": "https://logo.clearbit.com/lids.com",
+          "action": "link",
+          "link": "https://lids.com"
+        },
+        {
+          "type": "logo",
+          "label": "USMNT",
+          "img": "https://logo.clearbit.com/ussoccer.com",
+          "action": "link",
+          "link": "https://ussoccer.com/mens-national-team"
+        },
+        {
+          "type": "logo",
+          "label": "US Soccer Players",
+          "img": null,
+          "action": "link",
+          "link": "https://ussoccerplayers.com"
+        },
+        {
+          "type": "logo",
+          "label": "Outkast",
+          "img": null,
+          "action": "link",
+          "link": "https://open.spotify.com/artist/1G9G7WwrXka3Z1r7aIDjI7"
+        },
+        {
+          "type": "logo",
+          "label": "Blink-182",
+          "img": null,
+          "action": "link",
+          "link": "https://blink182.com"
+        },
+        {
+          "type": "logo",
+          "label": "Eminem",
+          "img": null,
+          "action": "link",
+          "link": "https://eminem.com"
+        },
+        {
+          "type": "logo",
+          "label": "StockX",
+          "img": "https://logo.clearbit.com/stockx.com",
+          "action": "link",
+          "link": "https://stockx.com"
+        },
+        {
+          "type": "logo",
+          "label": "DesignerCon",
+          "img": null,
+          "action": "link",
+          "link": "https://designercon.com"
+        },
+        {
+          "type": "logo",
+          "label": "Rocky's Matcha",
+          "img": null,
+          "action": "link",
+          "link": "https://rockysmatcha.com"
+        },
+        {
+          "type": "logo",
+          "label": "Eastside Golf",
+          "img": "https://logo.clearbit.com/eastsidegolf.com",
+          "action": "link",
+          "link": "https://eastsidegolf.com"
+        }
       ]
     },
     {
@@ -53,25 +212,121 @@
       "year": "2020–22",
       "body": "Conceived, architected, and ran DropX — a first-of-its-kind product release pipeline that merged the primary and secondary retail markets on a single platform. Managing multi-regional teams across all partner and internal communications, it became a marquee StockX business function. Oversaw consumer goods releases generating $500k+ GMV per quarter. Partners included J Balvin, Lewis Hamilton, Megan Thee Stallion, Revlon, and others.",
       "stats": [
-        { "label": "Role", "value": "Director, Global Cultural Marketing" },
-        { "label": "GMV",  "value": "$500k+ / quarter" }
+        {
+          "label": "Role",
+          "value": "Director, Global Cultural Marketing"
+        },
+        {
+          "label": "GMV",
+          "value": "$500k+ / quarter"
+        }
       ],
       "rail": [
-        { "type": "photo", "label": "Revlon × Megan Thee Stallion",    "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Revlon-x-Megan-Thee-Stallion-Hot-Girl-Sunset-Set-Orange/Images/DropX-Exclusive-Revlon-x-Megan-Thee-Stallion-Hot-Girl-Sunset-Set-Orange/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-revlon-x-megan-thee-stallion-hot-girl-sunset-set-orange" },
-        { "type": "photo", "label": "New Balance 997G × Malbon Golf",   "img": "https://wsrv.nl/?url=https://images.stockx.com/360/New-Balance-997G-Malbon-Golf-Grey/Images/New-Balance-997G-Malbon-Golf-Grey/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/new-balance-997g-malbon-golf-grey" },
-        { "type": "photo", "label": "Michael Lau × DropX",              "img": null, "action": "link", "link": "https://stockx.com/lp/about-dropx-michael-lau/" },
-        { "type": "photo", "label": "Nothing × The100 Ear 1",           "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Nothing-The100-Ear-1-Serialized/Images/DropX-Exclusive-Nothing-The100-Ear-1-Serialized/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-nothing-the100-ear-1-serialized" },
-        { "type": "photo", "label": "Air Jordan 8 Oregon PE",           "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Air-Jordan-8-University-Of-Oregon-PE/Images/DropX-Exclusive-Air-Jordan-8-University-Of-Oregon-PE/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-air-jordan-8-university-of-oregon-pe" },
-        { "type": "photo", "label": "HiGround × DropX",                 "img": null, "action": "link", "link": "https://stockx.com/lp/dropx-higround/" },
-        { "type": "photo", "label": "IM DFRNT by Lewis Hamilton",       "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Im-Dfrnt-By-Lewis-Hamilton-Im-Different-L-S-Tee-Black/Images/DropX-Exclusive-Im-Dfrnt-By-Lewis-Hamilton-Im-Different-L-S-Tee-Black/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-im-dfrnt-by-lewis-hamilton-im-different-l-s-tee-black" },
-        { "type": "photo", "label": "88rising × Mattel",                "img": null, "action": "link", "link": "https://stockx.com/news/88rising-mattel-creations-dropx/" },
-        { "type": "photo", "label": "Daniel Arsham × Milan Tee",        "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Art-Residence-Daniel-Arsham-Milan-Exhibition-Tour-Tee-White/Images/DropX-Exclusive-Art-Residence-Daniel-Arsham-Milan-Exhibition-Tour-Tee-White/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-art-residence-daniel-arsham-milan-exhibition-tour-tee-white" },
-        { "type": "photo", "label": "Slam Jam × StockX",                "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Slam-Jam-x-Stockx-Uncorporate-Uniforms-T-Shirt-Dark-Grey/Images/DropX-Exclusive-Slam-Jam-x-Stockx-Uncorporate-Uniforms-T-Shirt-Dark-Grey/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-slam-jam-x-stockx-uncorporate-uniforms-t-shirt-dark-grey" },
-        { "type": "photo", "label": "HBO The Hype × Kai",               "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Hbo-Maxs-The-Hype-x-Kai-Tactical-Shirt-And-Pants-Neutral/Images/DropX-Exclusive-Hbo-Maxs-The-Hype-x-Kai-Tactical-Shirt-And-Pants-Neutral/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-hbo-maxs-the-hype-x-kai-tactical-shirt-and-pants-neutral" },
-        { "type": "photo", "label": "Hidden NY × Cavaliers Hoodie",     "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Hidden-NY-x-Cleveland-Cavaliers-Hoodie-Wine/Images/DropX-Exclusive-Hidden-NY-x-Cleveland-Cavaliers-Hoodie-Wine/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-hidden-ny-x-cleveland-cavaliers-hoodie-wine" },
-        { "type": "photo", "label": "J Balvin × Funko",                 "img": null, "action": "link", "link": "https://stockx.com/news/dropx-funko-pop-rocks-j-balvin-green-hair-limited-edition-chase-figure-136/" },
-        { "type": "photo", "label": "100 Thieves × Halo Hoodie",        "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-100-Thieves-x-Halo-Energy-Sword-Hoodie-Deep-Orange/Images/DropX-Exclusive-100-Thieves-x-Halo-Energy-Sword-Hoodie-Deep-Orange/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75", "action": "link", "link": "https://stockx.com/dropx-exclusive-100-thieves-x-halo-energy-sword-hoodie-deep-orange" },
-        { "type": "photo", "label": "DropX recap",                      "img": "https://img.youtube.com/vi/Dlw7sh9x_Nk/hqdefault.jpg", "action": "link", "link": "https://www.youtube.com/watch?v=Dlw7sh9x_Nk" }
+        {
+          "type": "photo",
+          "label": "Revlon × Megan Thee Stallion",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Revlon-x-Megan-Thee-Stallion-Hot-Girl-Sunset-Set-Orange/Images/DropX-Exclusive-Revlon-x-Megan-Thee-Stallion-Hot-Girl-Sunset-Set-Orange/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-revlon-x-megan-thee-stallion-hot-girl-sunset-set-orange"
+        },
+        {
+          "type": "photo",
+          "label": "New Balance 997G × Malbon Golf",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/New-Balance-997G-Malbon-Golf-Grey/Images/New-Balance-997G-Malbon-Golf-Grey/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/new-balance-997g-malbon-golf-grey"
+        },
+        {
+          "type": "photo",
+          "label": "Michael Lau × DropX",
+          "img": null,
+          "action": "link",
+          "link": "https://stockx.com/lp/about-dropx-michael-lau/"
+        },
+        {
+          "type": "photo",
+          "label": "Nothing × The100 Ear 1",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Nothing-The100-Ear-1-Serialized/Images/DropX-Exclusive-Nothing-The100-Ear-1-Serialized/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-nothing-the100-ear-1-serialized"
+        },
+        {
+          "type": "photo",
+          "label": "Air Jordan 8 Oregon PE",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Air-Jordan-8-University-Of-Oregon-PE/Images/DropX-Exclusive-Air-Jordan-8-University-Of-Oregon-PE/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-air-jordan-8-university-of-oregon-pe"
+        },
+        {
+          "type": "photo",
+          "label": "HiGround × DropX",
+          "img": null,
+          "action": "link",
+          "link": "https://stockx.com/lp/dropx-higround/"
+        },
+        {
+          "type": "photo",
+          "label": "IM DFRNT by Lewis Hamilton",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Im-Dfrnt-By-Lewis-Hamilton-Im-Different-L-S-Tee-Black/Images/DropX-Exclusive-Im-Dfrnt-By-Lewis-Hamilton-Im-Different-L-S-Tee-Black/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-im-dfrnt-by-lewis-hamilton-im-different-l-s-tee-black"
+        },
+        {
+          "type": "photo",
+          "label": "88rising × Mattel",
+          "img": null,
+          "action": "link",
+          "link": "https://stockx.com/news/88rising-mattel-creations-dropx/"
+        },
+        {
+          "type": "photo",
+          "label": "Daniel Arsham × Milan Tee",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Art-Residence-Daniel-Arsham-Milan-Exhibition-Tour-Tee-White/Images/DropX-Exclusive-Art-Residence-Daniel-Arsham-Milan-Exhibition-Tour-Tee-White/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-art-residence-daniel-arsham-milan-exhibition-tour-tee-white"
+        },
+        {
+          "type": "photo",
+          "label": "Slam Jam × StockX",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Slam-Jam-x-Stockx-Uncorporate-Uniforms-T-Shirt-Dark-Grey/Images/DropX-Exclusive-Slam-Jam-x-Stockx-Uncorporate-Uniforms-T-Shirt-Dark-Grey/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-slam-jam-x-stockx-uncorporate-uniforms-t-shirt-dark-grey"
+        },
+        {
+          "type": "photo",
+          "label": "HBO The Hype × Kai",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Hbo-Maxs-The-Hype-x-Kai-Tactical-Shirt-And-Pants-Neutral/Images/DropX-Exclusive-Hbo-Maxs-The-Hype-x-Kai-Tactical-Shirt-And-Pants-Neutral/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-hbo-maxs-the-hype-x-kai-tactical-shirt-and-pants-neutral"
+        },
+        {
+          "type": "photo",
+          "label": "Hidden NY × Cavaliers Hoodie",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-Hidden-NY-x-Cleveland-Cavaliers-Hoodie-Wine/Images/DropX-Exclusive-Hidden-NY-x-Cleveland-Cavaliers-Hoodie-Wine/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-hidden-ny-x-cleveland-cavaliers-hoodie-wine"
+        },
+        {
+          "type": "photo",
+          "label": "J Balvin × Funko",
+          "img": null,
+          "action": "link",
+          "link": "https://stockx.com/news/dropx-funko-pop-rocks-j-balvin-green-hair-limited-edition-chase-figure-136/"
+        },
+        {
+          "type": "photo",
+          "label": "100 Thieves × Halo Hoodie",
+          "img": "https://wsrv.nl/?url=https://images.stockx.com/360/DropX-Exclusive-100-Thieves-x-Halo-Energy-Sword-Hoodie-Deep-Orange/Images/DropX-Exclusive-100-Thieves-x-Halo-Energy-Sword-Hoodie-Deep-Orange/Lv2/img01.jpg&w=400&h=267&fit=cover&q=75",
+          "action": "link",
+          "link": "https://stockx.com/dropx-exclusive-100-thieves-x-halo-energy-sword-hoodie-deep-orange"
+        },
+        {
+          "type": "photo",
+          "label": "DropX recap",
+          "img": "https://img.youtube.com/vi/Dlw7sh9x_Nk/hqdefault.jpg",
+          "action": "link",
+          "link": "https://www.youtube.com/watch?v=Dlw7sh9x_Nk"
+        }
       ]
     },
     {
@@ -82,17 +337,62 @@
       "year": "2017–22",
       "body": "Five years building StockX's experiential and cultural marketing function — from Senior Manager through Director. Created modular international activation concepts executed at Paris Fashion Week, NBA All-Star Weekend, and the NBA Finals. Recruited and worked with global leaders across fashion, music, sport, art, and philanthropy. Ran charitable programs raising $1M+ with 75+ stakeholders. Built 360-degree experiences for 400+ attendees across US and EU/UK.",
       "stats": [
-        { "label": "Tenure",               "value": "Nov 2017 – Jun 2022" },
-        { "label": "Moments",              "value": "Paris Fashion Week · NBA All-Star · NBA Finals" },
-        { "label": "Charitable programs",  "value": "$1M+ raised" }
+        {
+          "label": "Tenure",
+          "value": "Nov 2017 – Jun 2022"
+        },
+        {
+          "label": "Moments",
+          "value": "Paris Fashion Week · NBA All-Star · NBA Finals"
+        },
+        {
+          "label": "Charitable programs",
+          "value": "$1M+ raised"
+        }
       ],
       "rail": [
-        { "type": "photo", "label": "StockX experiential recap", "img": "https://img.youtube.com/vi/PNxQ-vgTWAk/hqdefault.jpg", "action": "link", "link": "https://www.youtube.com/watch?v=PNxQ-vgTWAk" },
-        { "type": "photo", "label": "StockX experiential recap", "img": "https://img.youtube.com/vi/bSdBkShgRSw/hqdefault.jpg", "action": "link", "link": "https://www.youtube.com/watch?v=bSdBkShgRSw" },
-        { "type": "photo", "label": "StockX experiential recap", "img": "https://img.youtube.com/vi/JHpM35FIwaQ/hqdefault.jpg", "action": "link", "link": "https://www.youtube.com/watch?v=JHpM35FIwaQ" },
-        { "type": "photo", "label": "StockX experiential recap", "img": "https://img.youtube.com/vi/zbooM9SCdp4/hqdefault.jpg", "action": "link", "link": "https://www.youtube.com/watch?v=zbooM9SCdp4" },
-        { "type": "logo",  "label": "Don C / RSVP",              "img": null, "action": "link", "link": "https://rsv-gallery.com" },
-        { "type": "logo",  "label": "Dash Radio",                "img": null, "action": "link", "link": "https://dashradio.com" }
+        {
+          "type": "photo",
+          "label": "StockX experiential recap",
+          "img": "https://img.youtube.com/vi/PNxQ-vgTWAk/hqdefault.jpg",
+          "action": "link",
+          "link": "https://www.youtube.com/watch?v=PNxQ-vgTWAk"
+        },
+        {
+          "type": "photo",
+          "label": "StockX experiential recap",
+          "img": "https://img.youtube.com/vi/bSdBkShgRSw/hqdefault.jpg",
+          "action": "link",
+          "link": "https://www.youtube.com/watch?v=bSdBkShgRSw"
+        },
+        {
+          "type": "photo",
+          "label": "StockX experiential recap",
+          "img": "https://img.youtube.com/vi/JHpM35FIwaQ/hqdefault.jpg",
+          "action": "link",
+          "link": "https://www.youtube.com/watch?v=JHpM35FIwaQ"
+        },
+        {
+          "type": "photo",
+          "label": "StockX experiential recap",
+          "img": "https://img.youtube.com/vi/zbooM9SCdp4/hqdefault.jpg",
+          "action": "link",
+          "link": "https://www.youtube.com/watch?v=zbooM9SCdp4"
+        },
+        {
+          "type": "logo",
+          "label": "Don C / RSVP",
+          "img": null,
+          "action": "link",
+          "link": "https://rsv-gallery.com"
+        },
+        {
+          "type": "logo",
+          "label": "Dash Radio",
+          "img": null,
+          "action": "link",
+          "link": "https://dashradio.com"
+        }
       ]
     },
     {
@@ -103,14 +403,41 @@
       "year": "2022",
       "body": "Head of Strategic Partnerships at TYB (Try Your Best), a Web3 community and loyalty platform. Owned full-spectrum sales and marketing, built the company's positioning from scratch, and served as the bridge between Web3 concepts and Web2 brands — writing the playbook as that translation became a real commercial opportunity. Doubled annual revenue per client with a 95%+ retention rate. Led $200k+ global marquee partnerships with multi-touchpoint integration.",
       "stats": [
-        { "label": "Role",             "value": "Head of Strategic Partnerships" },
-        { "label": "Client retention", "value": "95%+ at equal or higher ACV" },
-        { "label": "Engagement lift",  "value": "Up to 14x on- vs. off-platform" }
+        {
+          "label": "Role",
+          "value": "Head of Strategic Partnerships"
+        },
+        {
+          "label": "Client retention",
+          "value": "95%+ at equal or higher ACV"
+        },
+        {
+          "label": "Engagement lift",
+          "value": "Up to 14x on- vs. off-platform"
+        }
       ],
       "rail": [
-        { "type": "logo",  "label": "TYB",      "img": null, "action": "link", "link": "https://tyb.xyz" },
-        { "type": "photo", "label": "Campaign",  "img": null, "action": "none", "link": null },
-        { "type": "photo", "label": "Platform",  "img": null, "action": "none", "link": null }
+        {
+          "type": "logo",
+          "label": "TYB",
+          "img": null,
+          "action": "link",
+          "link": "https://tyb.xyz"
+        },
+        {
+          "type": "photo",
+          "label": "Campaign",
+          "img": null,
+          "action": "none",
+          "link": null
+        },
+        {
+          "type": "photo",
+          "label": "Platform",
+          "img": null,
+          "action": "none",
+          "link": null
+        }
       ]
     },
     {
@@ -121,15 +448,48 @@
       "year": "2023",
       "body": "Came in as Head of Marketing and restructured the org from the ground up — new strategic roadmap, new team structure, new pipeline. Oversaw 30+ activations and 50+ partnerships in a six-month window. Drove 2–3x week-over-week impressions and growth. Rebuilt the team to run 4x output with the same headcount.",
       "stats": [
-        { "label": "Role",         "value": "Head of Marketing" },
-        { "label": "Activations",  "value": "30+ activations · 50+ partnerships" },
-        { "label": "Growth",       "value": "2–3x WoW impressions" }
+        {
+          "label": "Role",
+          "value": "Head of Marketing"
+        },
+        {
+          "label": "Activations",
+          "value": "30+ activations · 50+ partnerships"
+        },
+        {
+          "label": "Growth",
+          "value": "2–3x WoW impressions"
+        }
       ],
       "rail": [
-        { "type": "logo",  "label": "Basic.Space", "img": "https://logo.clearbit.com/basic.space", "action": "link", "link": "https://basic.space" },
-        { "type": "photo", "label": "Activation",  "img": null, "action": "none", "link": null },
-        { "type": "photo", "label": "Campaign",     "img": null, "action": "none", "link": null },
-        { "type": "photo", "label": "Partner",      "img": null, "action": "none", "link": null }
+        {
+          "type": "logo",
+          "label": "Basic.Space",
+          "img": "https://logo.clearbit.com/basic.space",
+          "action": "link",
+          "link": "https://basic.space"
+        },
+        {
+          "type": "photo",
+          "label": "Activation",
+          "img": null,
+          "action": "none",
+          "link": null
+        },
+        {
+          "type": "photo",
+          "label": "Campaign",
+          "img": null,
+          "action": "none",
+          "link": null
+        },
+        {
+          "type": "photo",
+          "label": "Partner",
+          "img": null,
+          "action": "none",
+          "link": null
+        }
       ]
     },
     {
@@ -140,14 +500,44 @@
       "year": "2022–",
       "body": "Ongoing project designing and sourcing furniture. Part research, part obsession. Interested in how objects accumulate meaning through material, weight, and the way they hold up against daily use. Heavily focused on the chair.",
       "stats": [
-        { "label": "Type",   "value": "Personal / Objects" },
-        { "label": "Status", "value": "Ongoing" }
+        {
+          "label": "Type",
+          "value": "Personal / Objects"
+        },
+        {
+          "label": "Status",
+          "value": "Ongoing"
+        }
       ],
       "rail": [
-        { "type": "photo", "label": "Photo",  "img": null, "action": "lightbox", "caption": "" },
-        { "type": "photo", "label": "Photo",  "img": null, "action": "lightbox", "caption": "" },
-        { "type": "photo", "label": "Detail", "img": null, "action": "lightbox", "caption": "" },
-        { "type": "photo", "label": "Photo",  "img": null, "action": "lightbox", "caption": "" }
+        {
+          "type": "photo",
+          "label": "Photo",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        },
+        {
+          "type": "photo",
+          "label": "Photo",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        },
+        {
+          "type": "photo",
+          "label": "Detail",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        },
+        {
+          "type": "photo",
+          "label": "Photo",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        }
       ]
     },
     {
@@ -158,12 +548,33 @@
       "year": "2022",
       "body": "Designed and produced a limited run of blankets. Thinking about home objects, what warmth actually feels like at a material level, and what it means to make something that lives alongside you rather than being looked at.",
       "stats": [
-        { "label": "Type", "value": "Personal / Objects" }
+        {
+          "label": "Type",
+          "value": "Personal / Objects"
+        }
       ],
       "rail": [
-        { "type": "photo", "label": "Photo",   "img": null, "action": "lightbox", "caption": "" },
-        { "type": "photo", "label": "Detail",  "img": null, "action": "lightbox", "caption": "" },
-        { "type": "photo", "label": "Process", "img": null, "action": "lightbox", "caption": "" }
+        {
+          "type": "photo",
+          "label": "Photo",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        },
+        {
+          "type": "photo",
+          "label": "Detail",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        },
+        {
+          "type": "photo",
+          "label": "Process",
+          "img": null,
+          "action": "lightbox",
+          "caption": ""
+        }
       ]
     }
   ],
@@ -175,12 +586,36 @@
       "I studied Cultural Marketing and Movements at NYU's Gallatin School, where you design your own major because no existing department quite covers it. That felt right then and still does."
     ],
     "roles": [
-      { "company": "Ghostwrite",   "title": "VP, Brand & Partnerships",        "period": "2023–Present" },
-      { "company": "Basic.Space",  "title": "Head of Marketing",               "period": "2023" },
-      { "company": "TYB",          "title": "Head of Strategic Partnerships",  "period": "2022–23" },
-      { "company": "StockX",       "title": "Dir., Global Cultural Marketing", "period": "2020–22" },
-      { "company": "StockX",       "title": "Dir., Experiential Marketing",    "period": "2019–20" },
-      { "company": "StockX",       "title": "Sr. Manager, Experiential",       "period": "2017–19" }
+      {
+        "company": "Ghostwrite",
+        "title": "VP, Brand & Partnerships",
+        "period": "2023–Present"
+      },
+      {
+        "company": "Basic.Space",
+        "title": "Head of Marketing",
+        "period": "2023"
+      },
+      {
+        "company": "TYB",
+        "title": "Head of Strategic Partnerships",
+        "period": "2022–23"
+      },
+      {
+        "company": "StockX",
+        "title": "Dir., Global Cultural Marketing",
+        "period": "2020–22"
+      },
+      {
+        "company": "StockX",
+        "title": "Dir., Experiential Marketing",
+        "period": "2019–20"
+      },
+      {
+        "company": "StockX",
+        "title": "Sr. Manager, Experiential",
+        "period": "2017–19"
+      }
     ],
     "areas": [
       "IP Licensing & Deal Architecture",
@@ -193,12 +628,48 @@
     ]
   },
   "notes": [
-    { "title": "The chair problem",                                    "sub": "On why I think about chairs more than is probably healthy · Essay", "type": "Writing" },
-    { "title": "Jeanneret reference archive",                          "sub": "Ongoing · Chandigarh and beyond",                                    "type": "Archive" },
-    { "title": "What “community” lost when it became a job title",    "sub": "Essay · 2025",                                                       "type": "Writing" },
-    { "title": "On the secondary market as taste barometer",          "sub": "Thoughts from five years of watching what actually sells",           "type": "Writing" },
-    { "title": "Textiles I keep referencing",                          "sub": "Ongoing list",                                                       "type": "Archive" },
-    { "title": "Things I've read lately that changed how I think",    "sub": "Running list · Updated irregularly",                                 "type": "Reading" }
+    {
+      "title": "The chair problem",
+      "sub": "On why I think about chairs more than is probably healthy · Essay",
+      "type": "Writing",
+      "body": "",
+      "assets": []
+    },
+    {
+      "title": "Jeanneret reference archive",
+      "sub": "Ongoing · Chandigarh and beyond",
+      "type": "Archive",
+      "body": "",
+      "assets": []
+    },
+    {
+      "title": "What “community” lost when it became a job title",
+      "sub": "Essay · 2025",
+      "type": "Writing",
+      "body": "",
+      "assets": []
+    },
+    {
+      "title": "On the secondary market as taste barometer",
+      "sub": "Thoughts from five years of watching what actually sells",
+      "type": "Writing",
+      "body": "",
+      "assets": []
+    },
+    {
+      "title": "Textiles I keep referencing",
+      "sub": "Ongoing list",
+      "type": "Archive",
+      "body": "",
+      "assets": []
+    },
+    {
+      "title": "Things I've read lately that changed how I think",
+      "sub": "Running list · Updated irregularly",
+      "type": "Reading",
+      "body": "",
+      "assets": []
+    }
   ],
   "contact": {
     "email": "benjamin.fainlight@gmail.com",

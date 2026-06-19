@@ -259,6 +259,8 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .note-title { font-size: .9rem; color: var(--ink); font-weight: 400; flex: 1; }
 .note-sub   { font-size: .75rem; color: var(--muted); margin-top: 3px; }
 .note-type  { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); flex-shrink: 0; }
+.note-sub-detail { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 0 0 8px 40px; }
+.note-empty { font-size: .78rem; color: var(--muted); padding: 12px 0 20px 28px; }
 
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 footer {
@@ -541,10 +543,29 @@ function renderAbout(about) {
 /* ── Render notes ─────────────────────────────────────────────────────────── */
 function renderNotes(notes) {
   return (notes || []).map(function(n) {
-    return '<li class="note-item">'
-      + '<div><div class="note-title">' + esc(n.title) + '</div>'
-      + '<div class="note-sub">' + esc(n.sub) + '</div></div>'
-      + '<span class="note-type">' + esc(n.type) + '</span>'
+    var tiles = (n.assets || []).map(renderTile).join('');
+    var hasBody = n.body && n.body.trim();
+    var detail = '<p class="note-sub-detail">' + esc(n.sub) + '</p>';
+    if (hasBody) {
+      detail += '<p class="detail-body">' + esc(n.body) + '</p>';
+    }
+    if (tiles) {
+      detail += '<div class="asset-rail"><div class="asset-track">' + tiles + '</div></div>';
+    }
+    if (!hasBody && !tiles) {
+      detail += '<p class="note-empty">More on this soon.</p>';
+    }
+
+    return '<li class="project-item">'
+      + '<div class="project-row" onclick="toggleDetail(this)">'
+      + '<span class="project-num"></span>'
+      + '<span class="project-title">' + esc(n.title) + '</span>'
+      + '<span class="project-tag">' + esc(n.type) + '</span>'
+      + '<span class="project-year"></span>'
+      + '</div>'
+      + '<div class="project-detail">'
+      + detail
+      + '</div>'
       + '</li>';
   }).join('');
 }

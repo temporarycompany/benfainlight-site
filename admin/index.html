@@ -520,15 +520,15 @@ select { cursor: pointer; appearance: none; }
           <hr class="divider" />
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <div class="section-title" style="margin-bottom:0">Asset rail</div>
-            <button class="btn btn-sm" @click="openTileModal(projectIdx, null)">+ Add tile</button>
+            <button class="btn btn-sm" @click="openTileModal('project', projectIdx, null)">+ Add tile</button>
           </div>
 
           <div class="rail-list">
             <div v-for="(tile, ti) in currentProject.rail" :key="ti" class="rail-tile-row">
               <!-- Reorder -->
               <div class="reorder-btns">
-                <button @click="moveTile(projectIdx, ti, -1)" :disabled="ti===0">▲</button>
-                <button @click="moveTile(projectIdx, ti,  1)" :disabled="ti===currentProject.rail.length-1">▼</button>
+                <button @click="moveTile('project', projectIdx, ti, -1)" :disabled="ti===0">▲</button>
+                <button @click="moveTile('project', projectIdx, ti,  1)" :disabled="ti===currentProject.rail.length-1">▼</button>
               </div>
               <!-- Thumb -->
               <div class="tile-thumb">
@@ -547,7 +547,7 @@ select { cursor: pointer; appearance: none; }
               </div>
               <!-- Actions -->
               <div class="tile-actions">
-                <button class="btn-icon" @click="openTileModal(projectIdx, ti)" title="Edit">✎</button>
+                <button class="btn-icon" @click="openTileModal('project', projectIdx, ti)" title="Edit">✎</button>
                 <button class="btn-icon" @click="currentProject.rail.splice(ti,1)" title="Delete">✕</button>
               </div>
             </div>
@@ -592,15 +592,56 @@ select { cursor: pointer; appearance: none; }
         <!-- ── Notes ──────────────────────────────────────────────────── -->
         <div v-if="section==='notes'" class="editor-section">
           <div class="section-title">Notes</div>
-          <div v-for="(n, ni) in content.notes" :key="ni">
+          <div v-for="(n, ni) in content.notes" :key="ni" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--dim)">
             <div class="note-edit-row">
               <input type="text" v-model="n.title" placeholder="Title" />
               <input type="text" v-model="n.sub"   placeholder="Subtitle" />
               <input type="text" v-model="n.type"  placeholder="Type (Writing, Archive…)" />
               <button class="btn-icon" @click="content.notes.splice(ni,1)">✕</button>
             </div>
+
+            <div class="form-group" style="margin-top:10px">
+              <label>Body</label>
+              <textarea v-model="n.body" rows="6" placeholder="The written content of this note…"></textarea>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 12px">
+              <div class="section-title" style="margin-bottom:0">Asset rail</div>
+              <button class="btn btn-sm" @click="openTileModal('note', ni, null)">+ Add tile</button>
+            </div>
+
+            <div class="rail-list">
+              <div v-for="(tile, ti) in n.assets" :key="ti" class="rail-tile-row">
+                <!-- Reorder -->
+                <div class="reorder-btns">
+                  <button @click="moveTile('note', ni, ti, -1)" :disabled="ti===0">▲</button>
+                  <button @click="moveTile('note', ni, ti,  1)" :disabled="ti===n.assets.length-1">▼</button>
+                </div>
+                <!-- Thumb -->
+                <div class="tile-thumb">
+                  <img v-if="tile.img" :src="tile.img" :alt="tile.label" @error="e => e.target.style.display='none'" />
+                  <div v-else class="tile-thumb-placeholder">{{ tile.label || '—' }}</div>
+                </div>
+                <!-- Meta -->
+                <span class="tile-type-badge">{{ tile.type }}</span>
+                <div style="flex:1;min-width:0">
+                  <div class="tile-label">{{ tile.label || '(no label)' }}</div>
+                  <div class="tile-link">
+                    <span v-if="tile.action==='link'">→ {{ tile.link || 'no link' }}</span>
+                    <span v-else-if="tile.action==='lightbox'">lightbox</span>
+                    <span v-else style="color:var(--muted)">no action</span>
+                  </div>
+                </div>
+                <!-- Actions -->
+                <div class="tile-actions">
+                  <button class="btn-icon" @click="openTileModal('note', ni, ti)" title="Edit">✎</button>
+                  <button class="btn-icon" @click="n.assets.splice(ti,1)" title="Delete">✕</button>
+                </div>
+              </div>
+            </div>
+            <p v-if="!n.assets.length" style="font-size:.78rem;color:var(--muted)">No tiles yet. Add one above.</p>
           </div>
-          <button class="btn btn-sm" @click="content.notes.push({title:'',sub:'',type:''})">+ Add note</button>
+          <button class="btn btn-sm" @click="content.notes.push({title:'',sub:'',type:'',body:'',assets:[]})">+ Add note</button>
         </div>
 
       </div><!-- /main-body -->
@@ -710,8 +751,9 @@ createApp({
       // Tile modal
       showModal:      false,
       modalTile:      {},
-      editingTileIdx: null,
-      editingProjectIdx: null,
+      editingTileIdx:    null,
+      editingSourceType: null, // 'project' | 'note'
+      editingSourceIdx:  null,
 
       // Upload
       uploading:   false,
@@ -841,14 +883,21 @@ createApp({
     },
 
     // ── Rail tiles ────────────────────────────────────────────────────────────
-    openTileModal(projectIdx, tileIdx) {
-      this.editingProjectIdx = projectIdx;
+    railFor(sourceType, sourceIdx) {
+      return sourceType === 'note'
+        ? this.content.notes[sourceIdx].assets
+        : this.content.projects[sourceIdx].rail;
+    },
+
+    openTileModal(sourceType, sourceIdx, tileIdx) {
+      this.editingSourceType = sourceType;
+      this.editingSourceIdx  = sourceIdx;
       this.editingTileIdx    = tileIdx;
       if (tileIdx === null) {
         this.modalTile = { type: 'logo', label: '', img: '', action: 'link', link: '', caption: '' };
       } else {
         this.modalTile = JSON.parse(JSON.stringify(
-          this.content.projects[projectIdx].rail[tileIdx]
+          this.railFor(sourceType, sourceIdx)[tileIdx]
         ));
         if (!this.modalTile.img)     this.modalTile.img     = '';
         if (!this.modalTile.link)    this.modalTile.link    = '';
@@ -867,7 +916,7 @@ createApp({
         link:    this.modalTile.action === 'link'     ? (this.modalTile.link    || null) : null,
         caption: this.modalTile.action === 'lightbox' ? (this.modalTile.caption || '')   : '',
       };
-      const rail = this.content.projects[this.editingProjectIdx].rail;
+      const rail = this.railFor(this.editingSourceType, this.editingSourceIdx);
       if (this.editingTileIdx === null) {
         rail.push(tile);
       } else {
@@ -876,8 +925,8 @@ createApp({
       this.showModal = false;
     },
 
-    moveTile(projectIdx, tileIdx, dir) {
-      const rail = this.content.projects[projectIdx].rail;
+    moveTile(sourceType, sourceIdx, tileIdx, dir) {
+      const rail = this.railFor(sourceType, sourceIdx);
       const newIdx = tileIdx + dir;
       if (newIdx < 0 || newIdx >= rail.length) return;
       const tmp = rail[tileIdx];
