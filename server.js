@@ -1,8 +1,9 @@
-const express = require('express');
-const multer  = require('multer');
-const fs      = require('fs');
-const path    = require('path');
-const crypto  = require('crypto');
+const express   = require('express');
+const multer    = require('multer');
+const fs        = require('fs');
+const path      = require('path');
+const crypto    = require('crypto');
+const RSSParser = require('rss-parser');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -100,6 +101,72 @@ app.post('/api/upload', requireAuth, upload.single('file'), (req, res) => {
 // ── Admin panel ───────────────────────────────────────────────────────────────
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
+// ── Substack RSS ──────────────────────────────────────────────────────────────
+// Set SUBSTACK_URL env var to your feed, e.g. https://yourname.substack.com/feed
+// If not set, endpoint returns [] silently so the site still works.
+const rssParser = new RSSParser({
+  customFields: {
+    item: [['content:encoded', 'contentEncoded']]
+  }
+});
+
+let substackCache = { posts: null, fetchedAt: 0 };
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+const HTML_ENTITIES = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+  rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', mdash: '—', ndash: '–', hellip: '…',
+};
+function decodeEntities(str) {
+  return str.replace(/&(#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/g, (m, code) => {
+    if (code[0] === '#') {
+      const cp = code[1] === 'x' || code[1] === 'X'
+        ? parseInt(code.slice(2), 16)
+        : parseInt(code.slice(1), 10);
+      return Number.isNaN(cp) ? m : String.fromCodePoint(cp);
+    }
+    return HTML_ENTITIES[code] || m;
+  });
+}
+
+app.get('/api/substack', async (req, res) => {
+  const feedUrl = process.env.SUBSTACK_URL;
+  if (!feedUrl) return res.json([]);
+
+  // Return cache if fresh
+  if (substackCache.posts && Date.now() - substackCache.fetchedAt < CACHE_TTL) {
+    return res.json(substackCache.posts);
+  }
+
+  try {
+    const feed = await rssParser.parseURL(feedUrl);
+    const posts = (feed.items || []).map(item => {
+      // Strip HTML tags from content to make a plain-text excerpt (~280 chars)
+      const raw = item.contentEncoded || item.content || item.summary || '';
+      const stripped = decodeEntities(raw.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+      const excerpt = stripped.length > 280
+        ? stripped.slice(0, 280).replace(/\s+\S*$/, '') + '…'
+        : stripped;
+
+      return {
+        source:   'substack',
+        title:    decodeEntities(item.title || 'Untitled'),
+        excerpt:  excerpt,
+        link:     item.link     || feedUrl,
+        date:     item.pubDate  || item.isoDate || '',
+        type:     'Substack',
+      };
+    });
+
+    substackCache = { posts, fetchedAt: Date.now() };
+    res.json(posts);
+  } catch (e) {
+    console.error('Substack fetch failed:', e.message);
+    // Return stale cache if available, otherwise empty
+    res.json(substackCache.posts || []);
+  }
 });
 
 // ── Fallback: serve main site for any non-API path ───────────────────────────

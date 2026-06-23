@@ -262,6 +262,30 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .note-sub-detail { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 0 0 8px 40px; }
 .note-empty { font-size: .78rem; color: var(--muted); padding: 12px 0 20px 28px; }
 
+/* Substack post entries in notes */
+.substack-excerpt {
+  font-size: .875rem;
+  color: var(--warm);
+  line-height: 1.75;
+  padding: 0 0 16px 40px;
+  max-width: 54ch;
+}
+.substack-link {
+  display: inline-block;
+  margin: 0 0 20px 40px;
+  font-size: .75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: .03em;
+  transition: color .15s;
+}
+.substack-link:hover { color: var(--ink); }
+.note-date {
+  font-size: .68rem;
+  color: var(--muted);
+  letter-spacing: .02em;
+}
+
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 footer {
   display: flex;
@@ -540,6 +564,33 @@ function renderAbout(about) {
     + '</div>';
 }
 
+/* ── Render Substack post ─────────────────────────────────────────────────── */
+function renderSubstackPost(post) {
+  // Format date: "Jun 2025" style
+  var dateStr = '';
+  if (post.date) {
+    try {
+      var d = new Date(post.date);
+      dateStr = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    } catch(_) {}
+  }
+
+  return '<li class="project-item">'
+    + '<div class="project-row" onclick="toggleDetail(this)">'
+    + '<span class="project-num"></span>'
+    + '<span class="project-title">' + esc(post.title) + '</span>'
+    + '<span class="project-tag">' + esc(post.type) + '</span>'
+    + '<span class="project-year note-date">' + esc(dateStr) + '</span>'
+    + '</div>'
+    + '<div class="project-detail">'
+    + (post.excerpt
+        ? '<p class="substack-excerpt">' + esc(post.excerpt) + '</p>'
+        : '')
+    + '<a class="substack-link" href="' + esc(post.link) + '" target="_blank" rel="noopener">Read on Substack →</a>'
+    + '</div>'
+    + '</li>';
+}
+
 /* ── Render notes ─────────────────────────────────────────────────────────── */
 function renderNotes(notes) {
   return (notes || []).map(function(n) {
@@ -571,44 +622,51 @@ function renderNotes(notes) {
 }
 
 /* ── Boot ─────────────────────────────────────────────────────────────────── */
-fetch('/api/content')
-  .then(function(r) { return r.json(); })
-  .then(function(c) {
-    // Intro
-    var introEl = document.getElementById('intro-text');
-    if (introEl && c.intro) introEl.innerHTML = c.intro;
+Promise.all([
+  fetch('/api/content').then(function(r) { return r.json(); }),
+  fetch('/api/substack').then(function(r) { return r.json(); }).catch(function() { return []; })
+]).then(function(results) {
+  var c = results[0];
+  var substackPosts = results[1];
 
-    // Projects
-    var listEl = document.getElementById('project-list');
-    if (listEl) listEl.innerHTML = (c.projects || []).map(renderProject).join('');
+  // Intro
+  var introEl = document.getElementById('intro-text');
+  if (introEl && c.intro) introEl.innerHTML = c.intro;
 
-    // About
-    var aboutEl = document.getElementById('about-content');
-    if (aboutEl && c.about) aboutEl.innerHTML = renderAbout(c.about);
+  // Projects
+  var listEl = document.getElementById('project-list');
+  if (listEl) listEl.innerHTML = (c.projects || []).map(renderProject).join('');
 
-    // Notes
-    var notesEl = document.getElementById('notes-list');
-    if (notesEl) notesEl.innerHTML = renderNotes(c.notes);
+  // About
+  var aboutEl = document.getElementById('about-content');
+  if (aboutEl && c.about) aboutEl.innerHTML = renderAbout(c.about);
 
-    // Footer
-    var copyEl = document.getElementById('footer-copy');
-    if (copyEl && c.meta) copyEl.textContent = '© ' + c.meta.copyright;
+  // Notes — Substack posts first (newest → oldest), manual notes below
+  var notesEl = document.getElementById('notes-list');
+  if (notesEl) {
+    var substackHtml = substackPosts.map(renderSubstackPost).join('');
+    var manualHtml   = renderNotes(c.notes);
+    notesEl.innerHTML = substackHtml + manualHtml;
+  }
 
-    var linksEl = document.getElementById('footer-links');
-    if (linksEl && c.contact) {
-      var links = [];
-      if (c.contact.email)     links.push('<a href="mailto:' + esc(c.contact.email) + '">Email</a>');
-      if (c.contact.instagram) links.push('<a href="' + esc(c.contact.instagram) + '" target="_blank" rel="noopener">Instagram</a>');
-      if (c.contact.linkedin)  links.push('<a href="' + esc(c.contact.linkedin)  + '" target="_blank" rel="noopener">LinkedIn</a>');
-      linksEl.innerHTML = links.join('');
-    }
+  // Footer
+  var copyEl = document.getElementById('footer-copy');
+  if (copyEl && c.meta) copyEl.textContent = '© ' + c.meta.copyright;
 
-    // Update page title
-    if (c.meta && c.meta.name) document.title = c.meta.name;
-  })
-  .catch(function(err) {
-    console.error('Failed to load content:', err);
-  });
+  var linksEl = document.getElementById('footer-links');
+  if (linksEl && c.contact) {
+    var links = [];
+    if (c.contact.email)     links.push('<a href="mailto:' + esc(c.contact.email) + '">Email</a>');
+    if (c.contact.instagram) links.push('<a href="' + esc(c.contact.instagram) + '" target="_blank" rel="noopener">Instagram</a>');
+    if (c.contact.linkedin)  links.push('<a href="' + esc(c.contact.linkedin)  + '" target="_blank" rel="noopener">LinkedIn</a>');
+    linksEl.innerHTML = links.join('');
+  }
+
+  // Update page title
+  if (c.meta && c.meta.name) document.title = c.meta.name;
+}).catch(function(err) {
+  console.error('Failed to load content:', err);
+});
 </script>
 </body>
 </html>
