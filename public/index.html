@@ -153,7 +153,9 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .stat-value { font-size: .82rem; color: var(--ink); font-weight: 400; }
 
 /* ── Asset rail ───────────────────────────────────────────────────────────── */
-.asset-rail { position: relative; overflow: hidden; margin: 0 0 24px 0; }
+.asset-rail { position: relative; overflow: hidden; margin: 0 0 24px 40px; }
+.asset-rail.asset-rail--static::before,
+.asset-rail.asset-rail--static::after { display: none; }
 .asset-rail::before, .asset-rail::after {
   content: '';
   position: absolute;
@@ -470,6 +472,8 @@ function initAssetRail(rail) {
       var dur = Math.round(tw / 28);
       track.style.setProperty('--rail-dur', dur + 's');
       track.classList.add('scrolling');
+    } else {
+      rail.classList.add('asset-rail--static');
     }
   }, 60);
 }
