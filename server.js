@@ -13,8 +13,23 @@ const PORT = process.env.PORT || 3000;
 // On Railway: Settings → Variables → ADMIN_PASSWORD = yourpassword
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'changeme';
 
-const CONTENT_FILE = path.join(__dirname, 'content.json');
-const UPLOADS_DIR  = path.join(__dirname, 'public', 'uploads');
+// In production (Railway), content lives on a persistent volume at /data.
+// DATA_DIR env var is set in Railway → Variables after adding the Volume.
+// In local dev, DATA_DIR is unset and we fall back to the repo file.
+const DATA_DIR     = process.env.DATA_DIR || __dirname;
+const CONTENT_FILE = path.join(DATA_DIR, 'content.json');
+const SEED_FILE    = path.join(__dirname, 'content.json');
+
+// On first deploy (volume is empty), seed from the bundled content.json
+if (process.env.DATA_DIR && !require('fs').existsSync(CONTENT_FILE)) {
+  require('fs').mkdirSync(DATA_DIR, { recursive: true });
+  require('fs').copyFileSync(SEED_FILE, CONTENT_FILE);
+  console.log('Seeded content.json from repo to volume.');
+}
+
+const UPLOADS_DIR = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'uploads')
+  : path.join(__dirname, 'public', 'uploads');
 
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
