@@ -179,6 +179,11 @@ select { cursor: pointer; appearance: none; }
 .nav-item:hover { background: var(--dim); color: var(--ink); }
 .nav-item.active { background: var(--dim); color: var(--ink); }
 
+.nav-item-row { display: flex; align-items: stretch; gap: 0; }
+.nav-item-row .nav-item { flex: 1; min-width: 0; }
+.nav-item-row .reorder-btns { flex-direction: row; align-self: center; margin-right: 8px; gap: 2px; }
+.nav-item-row .reorder-btns button { padding: 1px 4px; }
+
 .sidebar-footer {
   padding: 14px 16px;
   border-top: 1px solid var(--dim);
@@ -403,12 +408,17 @@ select { cursor: pointer; appearance: none; }
         <button class="nav-item" :class="{active:section==='intro'}"  @click="section='intro'">Intro</button>
 
         <div class="sidebar-section-label">Projects</div>
-        <button
-          v-for="(p, i) in content.projects" :key="p.id"
-          class="nav-item"
-          :class="{active: section==='project' && projectIdx===i}"
-          @click="section='project'; projectIdx=i"
-        >{{ p.num }} · {{ p.title.split('—')[0].trim() }}</button>
+        <div v-for="(p, i) in content.projects" :key="p.id" class="nav-item-row">
+          <button
+            class="nav-item"
+            :class="{active: section==='project' && projectIdx===i}"
+            @click="section='project'; projectIdx=i"
+          >{{ p.num }} · {{ p.title.split('—')[0].trim() }}</button>
+          <div class="reorder-btns">
+            <button @click.stop="moveProject(i, -1)" :disabled="i===0">▲</button>
+            <button @click.stop="moveProject(i,  1)" :disabled="i===content.projects.length-1">▼</button>
+          </div>
+        </div>
         <button class="nav-item" style="color:var(--muted)" @click="addProject">+ Add project</button>
 
         <div class="sidebar-section-label">Pages</div>
@@ -880,6 +890,26 @@ createApp({
       this.content.projects.splice(idx, 1);
       this.projectIdx = Math.max(0, idx - 1);
       if (!this.content.projects.length) this.section = 'intro';
+      this.renumberProjects();
+    },
+
+    moveProject(idx, dir) {
+      const projects = this.content.projects;
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= projects.length) return;
+      const tmp = projects[idx];
+      projects[idx] = projects[newIdx];
+      projects[newIdx] = tmp;
+      this.renumberProjects();
+      if (this.projectIdx === idx) this.projectIdx = newIdx;
+      else if (this.projectIdx === newIdx) this.projectIdx = idx;
+    },
+
+    renumberProjects() {
+      this.content.projects.forEach((p, i) => {
+        const n = i + 1;
+        p.num = n < 10 ? '0' + n : '' + n;
+      });
     },
 
     // ── Rail tiles ────────────────────────────────────────────────────────────

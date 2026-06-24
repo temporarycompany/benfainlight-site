@@ -312,11 +312,11 @@ footer {
   z-index: 100;
   align-items: center;
   justify-content: center;
-  cursor: zoom-out;
+  cursor: pointer;
 }
 .lightbox.open { display: flex; }
-.lightbox-inner { position: relative; max-width: 90vw; max-height: 88vh; }
-.lightbox-inner img { display: block; max-width: 90vw; max-height: 84vh; object-fit: contain; }
+.lightbox-inner { position: relative; max-width: 90vw; max-height: 88vh; cursor: default; }
+.lightbox-inner img { display: block; max-width: 90vw; max-height: 84vh; object-fit: contain; cursor: default; }
 .lightbox-caption {
   font-size: .72rem;
   color: rgba(255,255,255,.5);
@@ -335,17 +335,39 @@ footer {
   text-transform: uppercase;
 }
 .lightbox-close:hover { color: #fff; }
+
+.lightbox-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.8rem;
+  line-height: 1;
+  color: rgba(255,255,255,.5);
+  cursor: pointer;
+  padding: 14px 18px;
+  user-select: none;
+  transition: color .15s;
+  z-index: 101;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+.lightbox-nav:hover { color: #fff; }
+.lightbox-prev { left: 4px; }
+.lightbox-next { right: 4px; }
 </style>
 </head>
 <body>
 
 <!-- Lightbox -->
 <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+  <button id="lb-prev" class="lightbox-nav lightbox-prev" onclick="lbPrev(event)" aria-label="Previous image">‹</button>
   <div class="lightbox-inner">
     <span class="lightbox-close" onclick="closeLightbox(event)">Close</span>
     <img id="lb-img" src="" alt="" />
     <div id="lb-caption" class="lightbox-caption"></div>
   </div>
+  <button id="lb-next" class="lightbox-nav lightbox-next" onclick="lbNext(event)" aria-label="Next image">›</button>
 </div>
 
 <div class="wrap">
@@ -467,9 +489,38 @@ function imgFallback(img) {
 }
 
 /* ── Lightbox ─────────────────────────────────────────────────────────────── */
-function openLightbox(src, caption) {
-  document.getElementById('lb-img').src = src;
-  document.getElementById('lb-caption').textContent = caption || '';
+var lbItems = [];
+var lbIndex = 0;
+
+// Scrolling rails clone their full child set once for the seamless loop;
+// collapse that exact repeat so prev/next don't double back on themselves.
+function dedupeCycle(items) {
+  var n = items.length;
+  if (n % 2 === 0) {
+    var half = n / 2;
+    var isDup = true;
+    for (var i = 0; i < half; i++) {
+      if (items[i].src !== items[i + half].src || items[i].caption !== items[i + half].caption) { isDup = false; break; }
+    }
+    if (isDup) return items.slice(0, half);
+  }
+  return items;
+}
+
+function renderLightboxImage() {
+  var it = lbItems[lbIndex];
+  if (!it) return;
+  document.getElementById('lb-img').src = it.src;
+  document.getElementById('lb-caption').textContent = it.caption || '';
+  var showNav = lbItems.length > 1;
+  document.getElementById('lb-prev').style.display = showNav ? '' : 'none';
+  document.getElementById('lb-next').style.display = showNav ? '' : 'none';
+}
+
+function openLightbox(items, index) {
+  lbItems = items;
+  lbIndex = index;
+  renderLightboxImage();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -480,6 +531,26 @@ function closeLightbox(e) {
   document.body.style.overflow = '';
   setTimeout(function() { document.getElementById('lb-img').src = ''; }, 200);
 }
+function lbPrev(e) {
+  if (e) e.stopPropagation();
+  if (!lbItems.length) return;
+  lbIndex = (lbIndex - 1 + lbItems.length) % lbItems.length;
+  renderLightboxImage();
+}
+function lbNext(e) {
+  if (e) e.stopPropagation();
+  if (!lbItems.length) return;
+  lbIndex = (lbIndex + 1) % lbItems.length;
+  renderLightboxImage();
+}
+
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  else if (e.key === 'ArrowLeft') lbPrev();
+  else if (e.key === 'ArrowRight') lbNext();
+});
 
 /* ── Click delegation ─────────────────────────────────────────────────────── */
 document.addEventListener('click', function(e) {
@@ -488,7 +559,15 @@ document.addEventListener('click', function(e) {
   if (item.dataset.link) {
     window.open(item.dataset.link, '_blank', 'noopener,noreferrer');
   } else if (item.dataset.lightbox) {
-    openLightbox(item.dataset.lightbox, item.dataset.caption || '');
+    var track = item.closest('.asset-track');
+    var nodes = track ? Array.from(track.querySelectorAll('.asset-item[data-lightbox]')) : [item];
+    var items = dedupeCycle(nodes.map(function(n) {
+      return { src: n.dataset.lightbox, caption: n.dataset.caption || '' };
+    }));
+    var idx = items.findIndex(function(it) {
+      return it.src === item.dataset.lightbox && it.caption === (item.dataset.caption || '');
+    });
+    openLightbox(items, idx < 0 ? 0 : idx);
   }
 });
 
