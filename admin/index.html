@@ -679,9 +679,22 @@ select { cursor: pointer; appearance: none; }
           <label><input type="radio" v-model="modalTile.type" value="video" /> Video (120px wide)</label>
         </div>
         <p v-if="modalTile.type==='video'" style="font-size:.72rem;color:var(--muted);margin-top:6px">
-          Shows a play icon over the image below. Use a cover frame or short GIF from the video,
-          and set "On click → Open link" pointing at the video so it opens in a new tab.
+          Shows a play icon over the image below. Paste a YouTube or Vimeo link to auto-fill the
+          cover image and title, or set a cover frame/GIF and link manually.
         </p>
+      </div>
+
+      <div v-if="modalTile.type==='video'" class="form-group">
+        <label>Video URL (YouTube or Vimeo)</label>
+        <input
+          type="url"
+          v-model="videoUrlInput"
+          @blur="fetchVideoMeta"
+          @keyup.enter="fetchVideoMeta"
+          placeholder="https://vimeo.com/123456789 or https://youtube.com/watch?v=..."
+        />
+        <p v-if="fetchingVideoMeta" style="font-size:.72rem;color:var(--muted);margin-top:6px">Fetching video info…</p>
+        <p v-if="videoMetaError" style="color:#c07070;font-size:.72rem;margin-top:6px">{{ videoMetaError }}</p>
       </div>
 
       <div class="form-group">
@@ -769,6 +782,11 @@ createApp({
       editingTileIdx:    null,
       editingSourceType: null, // 'project' | 'note'
       editingSourceIdx:  null,
+
+      // Video URL auto-fill (YouTube / Vimeo)
+      videoUrlInput:     '',
+      fetchingVideoMeta: false,
+      videoMetaError:    '',
 
       // Upload
       uploading:   false,
@@ -938,8 +956,57 @@ createApp({
         if (!this.modalTile.link)    this.modalTile.link    = '';
         if (!this.modalTile.caption) this.modalTile.caption = '';
       }
-      this.uploadError = '';
-      this.showModal   = true;
+      this.uploadError      = '';
+      this.videoUrlInput    = this.modalTile.type === 'video' ? (this.modalTile.link || '') : '';
+      this.videoMetaError   = '';
+      this.showModal        = true;
+    },
+
+    // ── Video URL auto-fill ──────────────────────────────────────────────────
+    async fetchVideoMeta() {
+      const url = (this.videoUrlInput || '').trim();
+      this.videoMetaError = '';
+      if (!url) return;
+
+      const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+
+      if (!ytMatch && !vimeoMatch) {
+        this.videoMetaError = 'Paste a YouTube or Vimeo link.';
+        return;
+      }
+
+      this.fetchingVideoMeta = true;
+      this.modalTile.type   = 'video';
+      this.modalTile.action = 'link';
+      this.modalTile.link   = url;
+
+      try {
+        if (ytMatch) {
+          const id = ytMatch[1];
+          this.modalTile.img = 'https://img.youtube.com/vi/' + id + '/hqdefault.jpg';
+          try {
+            const r = await fetch('https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json');
+            if (r.ok) {
+              const d = await r.json();
+              if (!this.modalTile.label && d.title) this.modalTile.label = d.title;
+            }
+          } catch (_) { /* thumbnail already set; title is a nice-to-have */ }
+        } else if (vimeoMatch) {
+          const r = await fetch('https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url));
+          if (r.ok) {
+            const d = await r.json();
+            if (d.thumbnail_url) this.modalTile.img = d.thumbnail_url;
+            if (!this.modalTile.label && d.title) this.modalTile.label = d.title;
+          } else {
+            this.videoMetaError = 'Could not fetch Vimeo info (video may be private) — paste a cover image URL manually below.';
+          }
+        }
+      } catch (e) {
+        this.videoMetaError = 'Could not fetch video info — paste a cover image URL manually below.';
+      } finally {
+        this.fetchingVideoMeta = false;
+      }
     },
 
     saveTile() {
