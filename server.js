@@ -35,6 +35,10 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '50mb' }));
+// Serve uploads from UPLOADS_DIR (the volume in production) before the
+// general static middleware, since uploaded files no longer live in
+// public/uploads once DATA_DIR is set.
+app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ── File uploads ──────────────────────────────────────────────────────────────

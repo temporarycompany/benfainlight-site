@@ -676,7 +676,12 @@ select { cursor: pointer; appearance: none; }
         <div class="radio-group">
           <label><input type="radio" v-model="modalTile.type" value="logo" /> Logo (80px wide)</label>
           <label><input type="radio" v-model="modalTile.type" value="photo" /> Photo (120px wide)</label>
+          <label><input type="radio" v-model="modalTile.type" value="video" /> Video (120px wide)</label>
         </div>
+        <p v-if="modalTile.type==='video'" style="font-size:.72rem;color:var(--muted);margin-top:6px">
+          Shows a play icon over the image below. Use a cover frame or short GIF from the video,
+          and set "On click → Open link" pointing at the video so it opens in a new tab.
+        </p>
       </div>
 
       <div class="form-group">
@@ -685,7 +690,7 @@ select { cursor: pointer; appearance: none; }
       </div>
 
       <div class="form-group">
-        <label>Image URL <span style="color:var(--muted);font-size:.65rem;text-transform:none;letter-spacing:0">(clearbit, wsrv.nl, YouTube thumb, or uploaded file)</span></label>
+        <label>{{ modalTile.type === 'video' ? 'Cover Image / GIF URL' : 'Image URL' }} <span style="color:var(--muted);font-size:.65rem;text-transform:none;letter-spacing:0">(clearbit, wsrv.nl, YouTube thumb, or uploaded file)</span></label>
         <input type="url" v-model="modalTile.img" placeholder="https://logo.clearbit.com/nba.com" />
       </div>
 

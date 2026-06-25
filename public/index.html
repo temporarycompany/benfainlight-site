@@ -188,10 +188,29 @@ nav button.active { color: var(--ink); background: var(--dim); }
 }
 .asset-item:hover { border-color: var(--muted); }
 .asset-item.photo { width: 120px; }
+.asset-item.video { width: 120px; }
 .asset-item.logo  { width: 80px; background: #fff; }
 
 .asset-item img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 8px; box-sizing: border-box; }
 .asset-item.logo img { padding: 12px; }
+
+.video-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .6rem;
+  pointer-events: none;
+  z-index: 1;
+}
 
 .asset-label, .photo-label {
   font-size: .6rem;
@@ -588,8 +607,11 @@ function renderTile(tile) {
   if (tile.img) {
     inner = '<img src="' + esc(tile.img) + '" alt="' + esc(tile.label || '') + '" onerror="imgFallback(this)" />';
   } else {
-    var labelCls = tile.type === 'photo' ? 'photo-label' : 'asset-label';
+    var labelCls = (tile.type === 'photo' || tile.type === 'video') ? 'photo-label' : 'asset-label';
     inner = '<span class="' + labelCls + '">' + esc(tile.label || '') + '</span>';
+  }
+  if (tile.type === 'video') {
+    inner += '<span class="video-play-icon" aria-hidden="true">▶</span>';
   }
   return '<div class="' + cls + '"' + action + '>' + inner + '</div>';
 }
