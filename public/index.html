@@ -433,9 +433,15 @@ function esc(s) {
 }
 
 /* ── Theme ────────────────────────────────────────────────────────────────── */
+// If the visitor has never toggled the theme on this site, default to
+// their OS/browser color-scheme preference. Once they explicitly toggle,
+// that choice is saved and always wins over the system preference.
 (function() {
-  var saved = localStorage.getItem('bf-theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
+  var saved = localStorage.getItem('bf-theme');
+  var theme = saved || (
+    (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark'
+  );
+  document.documentElement.setAttribute('data-theme', theme);
 })();
 
 function toggleTheme() {
@@ -449,7 +455,7 @@ function toggleTheme() {
 
 // Set correct icon on load
 document.addEventListener('DOMContentLoaded', function() {
-  var t = localStorage.getItem('bf-theme') || 'dark';
+  var t = document.documentElement.getAttribute('data-theme');
   document.getElementById('theme-btn').textContent = t === 'dark' ? '○' : '●';
 });
 
