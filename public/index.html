@@ -135,10 +135,10 @@ nav button.active { color: var(--ink); background: var(--dim); }
 
 .links-bg {
   position: absolute;
-  top: -20px;
-  bottom: -20px;
-  left: -24px;
-  right: calc(-1 * var(--pad));
+  top: -12px;
+  bottom: -28px;
+  left: 0;
+  right: 0;
   background-size: cover;
   background-position: center 30%;
   opacity: 0;
@@ -927,7 +927,7 @@ function initLinksZone(linksData) {
     [outletEl, titleEl, descEl].forEach(function(el) { el.style.opacity = '0'; });
 
     var nextItem = linksData[(n + linksData.length) % linksData.length];
-    if (bgEl && hovered && nextItem.img && nextItem.img !== linksData[cur].img) {
+    if (bgEl && hovered && nextItem.img !== linksData[cur].img) {
       bgEl.style.opacity = '0';
     }
 
