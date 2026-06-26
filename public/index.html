@@ -130,7 +130,7 @@ nav button.active { color: var(--ink); background: var(--dim); }
      never pushes the page below down — overflow is clipped and title/desc
      are line-clamped instead. The bg overlay is a sibling, outside this
      box, so it isn't clipped by this. */
-  height: 130px;
+  height: 168px;
   overflow: hidden;
 }
 
@@ -150,26 +150,31 @@ nav button.active { color: var(--ink); background: var(--dim); }
 }
 
 .links-outlet {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
   font-size: .8rem;
   font-weight: 400;
   letter-spacing: .04em;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 4px;
+  color: var(--ink);
+  background: var(--dim);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
   transition: opacity .2s;
 }
 
 .links-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   overflow: hidden;
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: clamp(.85rem, 1.6vw, .98rem);
   color: var(--ink);
   line-height: 1.25;
   text-decoration: none;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   transition: opacity .2s;
 }
 .links-title:hover { text-decoration: underline; text-underline-offset: 3px; }
