@@ -406,6 +406,7 @@ select { cursor: pointer; appearance: none; }
         <div class="sidebar-section-label">Content</div>
         <button class="nav-item" :class="{active:section==='meta'}"   @click="section='meta'">Site & Contact</button>
         <button class="nav-item" :class="{active:section==='intro'}"  @click="section='intro'">Intro</button>
+        <button class="nav-item" :class="{active:section==='links'}"  @click="section='links'">Links</button>
 
         <div class="sidebar-section-label">Projects</div>
         <div v-for="(p, i) in content.projects" :key="p.id" class="nav-item-row">
@@ -482,6 +483,52 @@ select { cursor: pointer; appearance: none; }
             <textarea v-model="content.intro" rows="5"></textarea>
           </div>
           <div style="margin-top:12px;padding:14px;background:var(--surface);border:1px solid var(--dim);font-size:.82rem;color:var(--warm);line-height:1.7" v-html="content.intro"></div>
+        </div>
+
+        <!-- ── Links ──────────────────────────────────────────────────── -->
+        <div v-if="section==='links'" class="editor-section">
+          <div class="section-title">Links</div>
+          <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px">
+            Rotates through the homepage intro area. Image URL is optional — leave blank for a text-only item.
+          </p>
+
+          <div v-for="(l, li) in content.links" :key="li" style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--dim)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div class="reorder-btns" style="flex-direction:row">
+                <button @click="moveLink(li, -1)" :disabled="li===0">▲</button>
+                <button @click="moveLink(li,  1)" :disabled="li===content.links.length-1">▼</button>
+              </div>
+              <button class="btn-icon" @click="content.links.splice(li,1)" title="Delete">✕</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div class="form-group">
+                <label>Outlet</label>
+                <input type="text" v-model="l.outlet" placeholder="Dezeen" />
+              </div>
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" v-model="l.title" placeholder="Flat Pack Jeanneret" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea v-model="l.desc" rows="2" placeholder="A short, 1–2 sentence description."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>URL</label>
+              <input type="url" v-model="l.url" placeholder="https://www.dezeen.com/..." />
+            </div>
+
+            <div class="form-group">
+              <label>Image URL <span style="color:var(--muted);font-size:.65rem;text-transform:none;letter-spacing:0">(optional — leave blank for no background image)</span></label>
+              <input type="url" v-model="l.img" placeholder="https://..." />
+            </div>
+          </div>
+
+          <button class="btn btn-sm" @click="content.links.push({outlet:'',title:'',desc:'',url:'',img:''})">+ Add link</button>
         </div>
 
         <!-- ── Project editor ─────────────────────────────────────────── -->
@@ -801,6 +848,7 @@ createApp({
     sectionTitle() {
       if (this.section === 'meta')    return 'Site & Contact';
       if (this.section === 'intro')   return 'Intro';
+      if (this.section === 'links')   return 'Links';
       if (this.section === 'about')   return 'About';
       if (this.section === 'notes')   return 'Notes';
       if (this.section === 'project' && this.currentProject) {
@@ -933,6 +981,16 @@ createApp({
         const n = i + 1;
         p.num = n < 10 ? '0' + n : '' + n;
       });
+    },
+
+    // ── Links ───────────────────────────────────────────────────────────────
+    moveLink(idx, dir) {
+      const links = this.content.links;
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= links.length) return;
+      const tmp = links[idx];
+      links[idx] = links[newIdx];
+      links[newIdx] = tmp;
     },
 
     // ── Rail tiles ────────────────────────────────────────────────────────────

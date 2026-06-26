@@ -578,6 +578,43 @@
       ]
     }
   ],
+  "links": [
+    {
+      "outlet": "Dezeen",
+      "title": "Flat Pack Jeanneret",
+      "desc": "A 3D-printed, flat-packed reimagining of Pierre Jeanneret's Chandigarh Easy Chair — the streetwearification of design.",
+      "url": "https://www.dezeen.com/2020/11/24/pierre-jeanneret-chandigarh-easy-chair-benjamin-fainlight/",
+      "img": "https://static.dezeen.com/uploads/2020/11/benjamin-fainlight-jeanneret-easy-chair-chandigarh-3d-printed-flatpack_dezeen_2364_hero_3-852x556.jpg"
+    },
+    {
+      "outlet": "Hypebeast",
+      "title": "RR Sofa drop",
+      "desc": "Coverage of the limited furniture release and its sell-through.",
+      "url": "https://hypebeast.com",
+      "img": ""
+    },
+    {
+      "outlet": "SSENSE",
+      "title": "CP-1 Stool capsule",
+      "desc": "Jeanneret-inspired furniture meets a new distribution channel.",
+      "url": "https://www.ssense.com",
+      "img": ""
+    },
+    {
+      "outlet": "Courier",
+      "title": "Jeanneret feature",
+      "desc": "How a decades-old Indian government chair became a $50k status object.",
+      "url": "https://couriermedia.co",
+      "img": ""
+    },
+    {
+      "outlet": "StockX News",
+      "title": "DropX launch",
+      "desc": "Inside the new experiential format that brought physical product drops to StockX.",
+      "url": "https://stockx.com/news",
+      "img": ""
+    }
+  ],
   "about": {
     "lead": "Executive with an operator's instinct and an entrepreneur's bias for building. I've led brand, partnerships, and marketing functions from inception across seed-stage startups and multi-billion dollar platforms.",
     "body": [

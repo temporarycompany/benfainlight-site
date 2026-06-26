@@ -27,6 +27,29 @@ if (process.env.DATA_DIR && !require('fs').existsSync(CONTENT_FILE)) {
   console.log('Seeded content.json from repo to volume.');
 }
 
+// One-time additive migration: if the volume's content.json already existed
+// (from before a new top-level key was introduced in the repo), merge in any
+// keys it's missing without touching anything the user has already edited.
+if (process.env.DATA_DIR && require('fs').existsSync(CONTENT_FILE)) {
+  try {
+    const live = JSON.parse(require('fs').readFileSync(CONTENT_FILE, 'utf8'));
+    const seed = JSON.parse(require('fs').readFileSync(SEED_FILE, 'utf8'));
+    let migrated = false;
+    Object.keys(seed).forEach((key) => {
+      if (!(key in live)) {
+        live[key] = seed[key];
+        migrated = true;
+      }
+    });
+    if (migrated) {
+      require('fs').writeFileSync(CONTENT_FILE, JSON.stringify(live, null, 2), 'utf8');
+      console.log('Migrated content.json on volume with new top-level keys.');
+    }
+  } catch (e) {
+    console.error('Content migration check failed:', e.message);
+  }
+}
+
 const UPLOADS_DIR = process.env.DATA_DIR
   ? path.join(process.env.DATA_DIR, 'uploads')
   : path.join(__dirname, 'public', 'uploads');

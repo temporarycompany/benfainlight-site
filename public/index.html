@@ -106,6 +106,112 @@ nav button.active { color: var(--ink); background: var(--dim); }
 }
 .intro strong { color: var(--ink); font-weight: 500; }
 
+.intro-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  position: relative;
+}
+.intro-bio { flex: 1.4; min-width: 0; }
+
+/* ── Links zone ───────────────────────────────────────────────────────────── */
+.links-zone {
+  flex: 1;
+  position: relative;
+  padding: 4px 0 0;
+  min-width: 0;
+}
+
+.links-bg {
+  position: absolute;
+  top: -20px;
+  bottom: -20px;
+  left: -24px;
+  right: calc(-1 * var(--pad));
+  background-size: cover;
+  background-position: center 30%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .45s ease;
+  border-radius: 12px;
+  z-index: 0;
+}
+
+.links-content { position: relative; z-index: 1; }
+
+.links-outlet {
+  font-size: .65rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  transition: opacity .2s;
+}
+
+.links-title {
+  display: block;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  color: var(--ink);
+  line-height: 1.25;
+  text-decoration: none;
+  margin-bottom: 6px;
+  transition: opacity .2s;
+}
+.links-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.links-desc {
+  font-size: .76rem;
+  color: var(--warm);
+  line-height: 1.65;
+  margin-bottom: 16px;
+  transition: opacity .2s;
+  max-width: 38ch;
+}
+
+.links-controls { display: flex; align-items: center; gap: 10px; }
+.links-dots { display: flex; gap: 5px; align-items: center; }
+
+.links-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--dim);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background .2s;
+}
+.links-dot.active { background: var(--muted); }
+
+.links-next {
+  font-size: .65rem;
+  color: var(--muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: color .15s;
+}
+.links-next:hover { color: var(--ink); }
+
+@media (max-width: 680px) {
+  .intro-row { flex-direction: column; }
+
+  .links-zone {
+    width: 100%;
+    padding: 16px 0 0;
+    border-top: 1px solid var(--dim);
+    margin-top: 4px;
+  }
+
+  /* Hover doesn't apply on touch devices */
+  .links-bg { display: none; }
+
+  .links-title { font-size: 1.15rem; }
+}
+
 /* ── Project list ─────────────────────────────────────────────────────────── */
 .project-list { list-style: none; }
 .project-item { border-bottom: 1px solid var(--dim); }
@@ -405,7 +511,27 @@ footer {
 
   <!-- Work -->
   <div id="view-work" class="view active">
-    <div class="intro"><p id="intro-text"></p></div>
+    <div class="intro">
+      <div class="intro-row">
+        <p id="intro-text" class="intro-bio"></p>
+
+        <div class="links-zone" id="links-zone">
+          <!-- Background image overlay — appears on hover when current item has an img -->
+          <div class="links-bg" id="links-bg" aria-hidden="true"></div>
+
+          <!-- Rotating content -->
+          <div class="links-content">
+            <p class="links-outlet" id="links-outlet"></p>
+            <a class="links-title" id="links-title" href="#" target="_blank" rel="noopener"></a>
+            <p class="links-desc" id="links-desc"></p>
+            <div class="links-controls">
+              <div class="links-dots" id="links-dots"></div>
+              <button class="links-next" id="links-next">next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <ul class="project-list" id="project-list"></ul>
   </div>
 
@@ -731,6 +857,94 @@ function renderNotes(notes) {
   }).join('');
 }
 
+/* ── Links zone ───────────────────────────────────────────────────────────── */
+function initLinksZone(linksData) {
+  if (!linksData || !linksData.length) return;
+
+  var zoneEl   = document.getElementById('links-zone');
+  var bgEl     = document.getElementById('links-bg');
+  var outletEl = document.getElementById('links-outlet');
+  var titleEl  = document.getElementById('links-title');
+  var descEl   = document.getElementById('links-desc');
+  var dotsEl   = document.getElementById('links-dots');
+  var nextBtn  = document.getElementById('links-next');
+  if (!zoneEl) return;
+
+  var cur       = 0;
+  var animating = false;
+  var hovered   = false;
+
+  linksData.forEach(function(_, i) {
+    var dot = document.createElement('button');
+    dot.className = 'links-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Item ' + (i + 1));
+    dot.addEventListener('click', function() { goTo(i); });
+    dotsEl.appendChild(dot);
+  });
+
+  function updateDots() {
+    dotsEl.querySelectorAll('.links-dot').forEach(function(d, i) {
+      d.classList.toggle('active', i === cur);
+    });
+  }
+
+  function applyBg(item) {
+    if (!bgEl) return;
+    if (item.img) {
+      bgEl.style.backgroundImage = 'url("' + item.img + '")';
+      if (hovered) bgEl.style.opacity = '0.13';
+    } else {
+      bgEl.style.opacity = '0';
+    }
+  }
+
+  function goTo(n) {
+    if (animating) return;
+    animating = true;
+
+    [outletEl, titleEl, descEl].forEach(function(el) { el.style.opacity = '0'; });
+
+    var nextItem = linksData[(n + linksData.length) % linksData.length];
+    if (bgEl && hovered && nextItem.img && nextItem.img !== linksData[cur].img) {
+      bgEl.style.opacity = '0';
+    }
+
+    setTimeout(function() {
+      cur = (n + linksData.length) % linksData.length;
+      var item = linksData[cur];
+      outletEl.textContent = item.outlet;
+      titleEl.textContent  = item.title;
+      titleEl.href         = item.url;
+      descEl.textContent   = item.desc;
+      [outletEl, titleEl, descEl].forEach(function(el) { el.style.opacity = '1'; });
+      updateDots();
+      applyBg(item);
+      animating = false;
+    }, 220);
+  }
+
+  outletEl.textContent = linksData[0].outlet;
+  titleEl.textContent  = linksData[0].title;
+  titleEl.href         = linksData[0].url;
+  descEl.textContent   = linksData[0].desc;
+  if (linksData[0].img) bgEl.style.backgroundImage = 'url("' + linksData[0].img + '")';
+
+  nextBtn.addEventListener('click', function() { goTo(cur + 1); });
+
+  if (zoneEl && bgEl) {
+    zoneEl.addEventListener('mouseenter', function() {
+      hovered = true;
+      if (linksData[cur].img) bgEl.style.opacity = '0.13';
+    });
+    zoneEl.addEventListener('mouseleave', function() {
+      hovered = false;
+      bgEl.style.opacity = '0';
+    });
+  }
+
+  setInterval(function() { goTo(cur + 1); }, 6000);
+}
+
 /* ── Boot ─────────────────────────────────────────────────────────────────── */
 Promise.all([
   fetch('/api/content').then(function(r) { return r.json(); }),
@@ -746,6 +960,9 @@ Promise.all([
   // Projects
   var listEl = document.getElementById('project-list');
   if (listEl) listEl.innerHTML = (c.projects || []).map(renderProject).join('');
+
+  // Links zone
+  initLinksZone(c.links);
 
   // About
   var aboutEl = document.getElementById('about-content');
