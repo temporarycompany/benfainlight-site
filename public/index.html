@@ -109,7 +109,7 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .intro-row {
   display: flex;
   align-items: flex-start;
-  gap: 32px;
+  gap: 28px;
   position: relative;
 }
 .intro-bio { flex: 1.4; min-width: 0; }
@@ -118,8 +118,19 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .links-zone {
   flex: 1;
   position: relative;
-  padding: 4px 0 0;
+  padding: 2px 0 0 24px;
   min-width: 0;
+  border-left: 1px solid var(--dim);
+}
+
+.links-content {
+  position: relative;
+  z-index: 1;
+  /* Fixed height so longer item text never pushes the page below down —
+     overflow is clipped and title/desc are line-clamped instead. The bg
+     overlay is a sibling, outside this box, so it isn't clipped by this. */
+  height: 96px;
+  overflow: hidden;
 }
 
 .links-bg {
@@ -137,36 +148,41 @@ nav button.active { color: var(--ink); background: var(--dim); }
   z-index: 0;
 }
 
-.links-content { position: relative; z-index: 1; }
-
 .links-outlet {
-  font-size: .65rem;
+  font-size: .6rem;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   transition: opacity .2s;
 }
 
 .links-title {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-size: clamp(.92rem, 1.8vw, 1.05rem);
   color: var(--ink);
   line-height: 1.25;
   text-decoration: none;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   transition: opacity .2s;
 }
 .links-title:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 .links-desc {
-  font-size: .76rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: .7rem;
   color: var(--warm);
-  line-height: 1.65;
-  margin-bottom: 16px;
+  line-height: 1.55;
+  margin-bottom: 10px;
   transition: opacity .2s;
-  max-width: 38ch;
+  max-width: 36ch;
 }
 
 .links-controls { display: flex; align-items: center; gap: 10px; }
@@ -203,13 +219,19 @@ nav button.active { color: var(--ink); background: var(--dim); }
     width: 100%;
     padding: 16px 0 0;
     border-top: 1px solid var(--dim);
+    border-left: 0;
     margin-top: 4px;
   }
+
+  .links-content { height: auto; overflow: visible; }
 
   /* Hover doesn't apply on touch devices */
   .links-bg { display: none; }
 
-  .links-title { font-size: 1.15rem; }
+  .links-title {
+    font-size: 1.05rem;
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* ── Project list ─────────────────────────────────────────────────────────── */
