@@ -126,17 +126,18 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .links-content {
   position: relative;
   z-index: 1;
-  /* Fixed height so longer item text never pushes the page below down —
-     overflow is clipped and title/desc are line-clamped instead. The bg
-     overlay is a sibling, outside this box, so it isn't clipped by this. */
-  height: 96px;
+  /* Fixed height (~2/3 of the bio-to-divider space) so longer item text
+     never pushes the page below down — overflow is clipped and title/desc
+     are line-clamped instead. The bg overlay is a sibling, outside this
+     box, so it isn't clipped by this. */
+  height: 130px;
   overflow: hidden;
 }
 
 .links-bg {
   position: absolute;
   top: -12px;
-  bottom: -28px;
+  bottom: -36px;
   left: 0;
   right: 0;
   background-size: cover;
@@ -149,7 +150,7 @@ nav button.active { color: var(--ink); background: var(--dim); }
 }
 
 .links-outlet {
-  font-size: .6rem;
+  font-size: .55rem;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -175,11 +176,11 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .links-desc {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
-  font-size: .7rem;
+  font-size: .68rem;
   color: var(--warm);
-  line-height: 1.55;
+  line-height: 1.5;
   margin-bottom: 10px;
   transition: opacity .2s;
   max-width: 36ch;
