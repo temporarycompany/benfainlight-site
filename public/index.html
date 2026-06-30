@@ -220,6 +220,20 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .links-next:hover { color: var(--ink); }
 
 @media (max-width: 680px) {
+  header { gap: 8px; }
+  .site-name {
+    font-size: clamp(1rem, 5.5vw, 1.3rem);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-right { gap: 8px; }
+  nav { gap: 0; }
+  nav button {
+    font-size: .62rem;
+    padding: 3px 6px;
+    letter-spacing: .02em;
+  }
+
   .intro-row { flex-direction: column; }
 
   .links-zone {
@@ -261,6 +275,18 @@ nav button.active { color: var(--ink); background: var(--dim); }
 .project-title { font-size: .95rem; color: var(--ink); font-weight: 400; }
 .project-tag  { font-size: .72rem; color: var(--muted); letter-spacing: .03em; }
 .project-year { font-size: .72rem; color: var(--muted); letter-spacing: .02em; text-align: right; }
+
+@media (max-width: 680px) {
+  .project-row {
+    grid-template-columns: 22px minmax(50%, 1fr) minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px 10px;
+  }
+  .project-tag {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}
 
 /* ── Project detail ───────────────────────────────────────────────────────── */
 .project-detail {
