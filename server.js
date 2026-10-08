@@ -160,6 +160,21 @@ if (!fs.existsSync(COLLECTION_FILE) && fs.existsSync(COLLECTION_SEED)) {
   console.log('Seeded collection.json to volume.');
 }
 
+// Seed images — copy seed/collection-img/* to uploads only if not already there
+const COLLECTION_IMG_SEED = path.join(__dirname, 'seed', 'collection-img');
+if (fs.existsSync(COLLECTION_IMG_SEED)) {
+  const seedFiles = fs.readdirSync(COLLECTION_IMG_SEED);
+  let seeded = 0;
+  for (const f of seedFiles) {
+    const dst = path.join(COLLECTION_DIR, f);
+    if (!fs.existsSync(dst)) {
+      fs.copyFileSync(path.join(COLLECTION_IMG_SEED, f), dst);
+      seeded++;
+    }
+  }
+  if (seeded > 0) console.log(`Seeded ${seeded} collection images to volume.`);
+}
+
 function readCollection() {
   try { return JSON.parse(fs.readFileSync(COLLECTION_FILE, 'utf8')); }
   catch(e) { return []; }
