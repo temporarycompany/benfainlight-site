@@ -245,7 +245,8 @@ function runNextCutout() {
   const args = [path.join(__dirname, 'pipeline/cutout.py'), job.src, job.dst];
   if (job.mode) args.push(job.mode);
 
-  const child = spawn('python3', args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const python = fs.existsSync('/app/.venv/bin/python3') ? '/app/.venv/bin/python3' : 'python3';
+  const child = spawn(python, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });
   let stdout = '', stderr = '';
   let peakKB = 0;
 
