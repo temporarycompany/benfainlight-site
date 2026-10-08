@@ -198,10 +198,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   .opbar .home .where{display:none}
   .opbar .nav{gap:14px;font-size:13px}
   .opcols{padding:20px 16px 48px;gap:28px}
-  .plate{height:auto;min-height:340px;padding:28px}
+  .plate{height:auto;min-height:0;padding:16px}
+  .stage.carousel .plate{height:min(70vw,420px)}
+  .stage.carousel .plate .pl-lab{display:none}
   .side h1{font-size:30px}
   .side{position:static}
   .tc-spec{grid-template-columns:120px minmax(0,1fr);gap:12px}
+  /* mobile carousel */
+  .stage.carousel{position:relative;overflow:hidden}
+  .stage.carousel .plate{display:none}
+  .stage.carousel .plate.active{display:flex}
+  .car-ctrl{display:flex;align-items:center;justify-content:space-between;padding:10px 0 4px;font-family:var(--tc-mono);font-size:13px;color:var(--tc-grey-text)}
+  .car-ctrl button{padding:6px 14px;border:1px solid var(--tc-rule);font:inherit;color:var(--tc-ink);background:var(--tc-paper);cursor:pointer}
+  .car-ctrl button:disabled{color:var(--tc-grey-faint);border-color:var(--tc-rule);cursor:default}
 }
 @media (max-width:360px){.tb-desc{font-size:10px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -510,8 +519,8 @@ function drawObj(){
    </span>
   </header>
   <div class="opcols">
-   <div class="stage">
-    ${plates.map((q,i)=>`<figure class="plate${q.photo?' photo':''}"><span class="pl-lab">Plate ${i+1} of ${plates.length} · ${q.cap}</span><img src="${q.src}" alt="${esc(named(x))}, ${q.cap.toLowerCase()}"${q.w?` width="${q.w}" height="${q.h}"`:''}${i?` loading="lazy"`:''}></figure>`).join('')}
+   <div class="stage" id="op-stage">
+    ${plates.map((q,i)=>`<figure class="plate${q.photo?' photo':''}${i===0?' active':''}"><span class="pl-lab">Plate ${i+1} of ${plates.length} · ${q.cap}</span><img src="${q.src}" alt="${esc(named(x))}, ${q.cap.toLowerCase()}"${q.w?` width="${q.w}" height="${q.h}"`:''}${i?` loading="lazy"`:''}></figure>`).join('')}
    </div>
    <aside class="side">
     <div><span class="tc-tag tc-tag--m${tagClass(x)}">${esc(pendingLabel(x))}</span></div>
@@ -534,6 +543,44 @@ function drawObj(){
     <div class="cite">Cite as: temporary collection, archive department of temporary.company, acc. ${esc(acc(x))}</div>
    </aside>
   </div>`;
+  if(innerWidth<760)initCarousel();
+}
+
+function initCarousel(){
+  const stage=$('#op-stage');
+  if(!stage)return;
+  const plates=[...stage.querySelectorAll('.plate')];
+  if(plates.length<=1)return;
+  stage.classList.add('carousel');
+  let ci=0;
+  // inject controls
+  const ctrl=document.createElement('div');
+  ctrl.className='car-ctrl';
+  ctrl.innerHTML='<button id="car-prev" aria-label="Previous plate">← Prev</button><span id="car-pos">1 / '+plates.length+'</span><button id="car-next" aria-label="Next plate">Next →</button>';
+  stage.after(ctrl);
+  function go(n){
+    plates[ci].classList.remove('active');
+    ci=Math.max(0,Math.min(plates.length-1,n));
+    plates[ci].classList.add('active');
+    // lazy-load
+    const img=plates[ci].querySelector('img');
+    if(img&&img.dataset.src){img.src=img.dataset.src;delete img.dataset.src}
+    $('#car-pos').textContent=(ci+1)+' / '+plates.length;
+    $('#car-prev').disabled=ci===0;
+    $('#car-next').disabled=ci===plates.length-1;
+  }
+  go(0);
+  ctrl.addEventListener('click',e=>{
+    if(e.target.id==='car-prev')go(ci-1);
+    if(e.target.id==='car-next')go(ci+1);
+  });
+  // swipe
+  let tx=0;
+  stage.addEventListener('pointerdown',e=>{tx=e.clientX},{ passive:true });
+  stage.addEventListener('pointerup',e=>{
+    const d=e.clientX-tx;
+    if(Math.abs(d)>40){d<0?go(ci+1):go(ci-1)}
+  },{ passive:true });
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
