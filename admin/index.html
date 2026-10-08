@@ -824,6 +824,14 @@ select { cursor: pointer; appearance: none; }
           </div>
 
           <div class="form-group">
+            <label>Custom facts <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">One per line. If set, replaces auto-generated pink boxes.</span></label>
+            <textarea rows="4" style="width:100%;resize:vertical"
+              :value="(colForm.customFacts||[]).join('\n')"
+              @input="colForm.customFacts=$event.target.value.split('\n').map(s=>s.trim()).filter(Boolean)"
+              placeholder="is the only shirt with a contrast collar.&#10;is one of 3 Anvil label items."></textarea>
+          </div>
+
+          <div class="form-group">
             <label>Provenance</label>
             <input type="text" v-model="colForm.provenance" placeholder="" />
           </div>
@@ -1381,6 +1389,7 @@ createApp({
         description: null, sleeve: null, label: null,
         bodyColour: '#888888', provenance: null, condition: null,
         note: null, seenIn: null, seenInUrl: null,
+        customFacts: [],
         media: { kind: 'Watch', query: '', youtubeId: null },
         images: [],
       };
@@ -1394,6 +1403,7 @@ createApp({
     editObj(o) {
       this.colForm = JSON.parse(JSON.stringify(o));
       if (!this.colForm.media) this.colForm.media = { kind: 'Watch', query: '', youtubeId: null };
+      if (!this.colForm.customFacts) this.colForm.customFacts = [];
       this.section = 'col-edit';
     },
 

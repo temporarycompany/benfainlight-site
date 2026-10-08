@@ -533,11 +533,12 @@ function drawObj(){
      ${x.description?spec('Description',esc(x.description)):''}
      ${x.label?spec('Label',esc(x.label)):''}
      ${spec('Department',esc(x.department))}
+     ${x.note?spec('Detail',esc(x.note)):''}
      ${x.provenance?spec('Provenance',esc(x.provenance)):''}
      ${x.condition?spec('Condition',esc(x.condition)):''}
      ${x.bodyColour?spec('Body colour',`<span class="dot" style="background:${x.bodyColour}"></span>&nbsp; ${x.bodyColour}`):''}
     </dl>
-    <div class="facts">${facts(x).map(t=>`<div class="tc-fact"><b>${esc(named(x))}</b> ${esc(t)}</div>`).join('')}</div>
+    <div class="facts">${(x.customFacts&&x.customFacts.length?x.customFacts:facts(x)).map(t=>`<div class="tc-fact"><b>${esc(named(x))}</b> ${esc(t)}</div>`).join('')}</div>
     <div class="sec"><h4>${esc(mediaKind)}</h4>${mediaHtml}</div>
     ${x.seenIn?`<div class="sec"><h4>Seen in</h4><p>${x.seenInUrl?`<a href="${esc(x.seenInUrl)}" target="_blank" rel="noopener">${esc(x.seenIn)}</a>`:esc(x.seenIn)}</p></div>`:''}
     <div class="cite">Cite as: temporary collection, archive department of temporary.company, acc. ${esc(acc(x))}</div>
