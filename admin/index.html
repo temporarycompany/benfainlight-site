@@ -425,10 +425,15 @@ select { cursor: pointer; appearance: none; }
         <div class="sidebar-section-label">Pages</div>
         <button class="nav-item" :class="{active:section==='about'}" @click="section='about'">About</button>
         <button class="nav-item" :class="{active:section==='notes'}" @click="section='notes'">Notes</button>
+
+        <div class="sidebar-section-label">Collection</div>
+        <button class="nav-item" :class="{active:section==='col-list'}" @click="section='col-list';fetchCol()">Objects <span v-if="colObjects.length" style="color:var(--muted);font-size:.65rem">({{colObjects.length}})</span></button>
+        <button class="nav-item" :class="{active:section==='col-add'}"  @click="startAddObj">+ Add object</button>
       </nav>
 
       <div class="sidebar-footer">
         <a class="btn btn-sm" href="/" target="_blank">View site</a>
+        <a class="btn btn-sm" href="/collection" target="_blank">Collection ↗</a>
         <button class="btn btn-sm btn-danger" @click="logout">Sign out</button>
       </div>
     </aside>
@@ -701,6 +706,209 @@ select { cursor: pointer; appearance: none; }
           <button class="btn btn-sm" @click="content.notes.push({title:'',sub:'',type:'',body:'',assets:[]})">+ Add note</button>
         </div>
 
+        <!-- ── Collection: object list ─────────────────────────────────── -->
+        <div v-if="section==='col-list'" style="max-width:900px">
+          <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+            <input type="text" v-model="colSearch" placeholder="Search objects…" style="width:220px;flex-shrink:0" />
+            <select v-model="colStatusFilter" style="width:140px">
+              <option value="all">All statuses</option>
+              <option value="accessioned">Accessioned</option>
+              <option value="pending">Pending</option>
+              <option value="retired">Retired</option>
+            </select>
+            <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">{{ colFiltered.length }} of {{ colObjects.length }} objects</span>
+          </div>
+          <div v-if="colLoading" style="color:var(--muted);font-size:.82rem">Loading…</div>
+          <table v-else style="width:100%;border-collapse:collapse;font-size:.82rem">
+            <thead>
+              <tr style="border-bottom:1px solid var(--dim)">
+                <th style="text-align:left;padding:6px 10px 6px 0;font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap">Acc. No.</th>
+                <th style="text-align:left;padding:6px 10px 6px 0;font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">Object</th>
+                <th style="text-align:left;padding:6px 10px 6px 0;font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">Dept</th>
+                <th style="text-align:left;padding:6px 10px 6px 0;font-size:.65rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">Status</th>
+                <th style="width:80px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="o in colFiltered" :key="o.accession||o.seq" style="border-bottom:1px solid var(--dim)">
+                <td style="padding:8px 10px 8px 0;font-family:monospace;white-space:nowrap">
+                  <span :style="{opacity: o.status==='retired'?0.5:1, textDecoration: o.status==='retired'?'line-through':'none'}">{{ o.accession || `${new Date().getFullYear()}.___` }}</span>
+                </td>
+                <td style="padding:8px 10px 8px 0">{{ o.maker }}<em style="color:var(--muted);">, {{ o.title }}</em></td>
+                <td style="padding:8px 10px 8px 0;color:var(--muted)">{{ o.department }}</td>
+                <td style="padding:8px 10px 8px 0">
+                  <select :value="o.status" @change="quickStatus(o, $event.target.value)" style="background:var(--bg);border:1px solid var(--dim);color:var(--ink);font-size:.72rem;padding:2px 4px">
+                    <option>accessioned</option><option>pending</option><option>retired</option>
+                  </select>
+                </td>
+                <td style="padding:8px 0;text-align:right;white-space:nowrap">
+                  <button class="btn-icon" @click="editObj(o)" title="Edit">✎</button>
+                  <a :href="`/collection/${o.accession}`" target="_blank" class="btn-icon" style="display:inline-flex;align-items:center;padding:5px 6px;color:var(--muted)" title="View">↗</a>
+                  <button class="btn-icon" style="color:#c07070" @click="deleteObj(o)" title="Delete">✕</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-if="!colLoading && !colFiltered.length" style="color:var(--muted);font-size:.82rem;margin-top:12px">No objects match.</p>
+        </div>
+
+        <!-- ── Collection: add / edit form ────────────────────────────────── -->
+        <div v-if="section==='col-add' || section==='col-edit'" style="max-width:680px">
+          <div class="section-title">{{ section==='col-add' ? 'Add object' : 'Edit ' + (colForm.accession || 'pending') }}</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Status</label>
+              <select v-model="colForm.status">
+                <option>accessioned</option><option>pending</option><option>retired</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select v-model="colForm.type">
+                <option>Shirt</option><option>Book</option><option>Ephemera</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Maker</label>
+              <input type="text" v-model="colForm.maker" placeholder="Third Eye Blind" />
+            </div>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" v-model="colForm.title" placeholder="Tour" />
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="text" v-model="colForm.date" placeholder="1997–98" />
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <select v-model="colForm.department">
+                <option>Music</option><option>Art</option><option>Film &amp; TV</option><option>Corporate</option><option>Sport</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sleeve</label>
+              <select v-model="colForm.sleeve">
+                <option value="">—</option><option value="short">Short</option><option value="long">Long</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" v-model="colForm.description" placeholder="Printed cotton T-shirt, short sleeve" />
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Label</label>
+              <input type="text" v-model="colForm.label" placeholder="Anvil" />
+            </div>
+            <div class="form-group">
+              <label>Body colour</label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="color" v-model="colForm.bodyColour" style="width:36px;height:36px;padding:2px;border:1px solid var(--dim);background:none;cursor:pointer;flex-shrink:0" />
+                <input type="text" v-model="colForm.bodyColour" placeholder="#414e53" style="flex:1" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Detail / note <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(ringer, crew shirt, named collar, etc.)</span></label>
+            <input type="text" v-model="colForm.note" placeholder="" />
+          </div>
+
+          <div class="form-group">
+            <label>Provenance</label>
+            <input type="text" v-model="colForm.provenance" placeholder="" />
+          </div>
+
+          <div class="form-group">
+            <label>Condition</label>
+            <input type="text" v-model="colForm.condition" placeholder="" />
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>Seen in (text)</label>
+              <input type="text" v-model="colForm.seenIn" placeholder="Vogue, Sept 2024" />
+            </div>
+            <div class="form-group">
+              <label>Seen in URL</label>
+              <input type="url" v-model="colForm.seenInUrl" placeholder="https://…" />
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--dim);margin:20px 0">
+          <div class="section-title">Media</div>
+          <div style="display:grid;grid-template-columns:100px 1fr;gap:10px">
+            <div class="form-group">
+              <label>Kind</label>
+              <select v-model="colForm.media.kind">
+                <option>Listen</option><option>Watch</option><option>Look</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Search query</label>
+              <input type="text" v-model="colForm.media.query" placeholder="Third Eye Blind live 1998" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>YouTube ID <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(optional — embeds player instead of search link)</span></label>
+            <input type="text" v-model="colForm.media.youtubeId" placeholder="dQw4w9WgXcQ" />
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--dim);margin:20px 0">
+          <div class="section-title">Images</div>
+          <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Upload front, back, label, and any detail shots. Then run cutout on front/back.</p>
+
+          <div v-for="(img, ii) in colForm.images" :key="ii" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;padding:10px;border:1px solid var(--dim)">
+            <img :src="img.src" alt="" style="width:60px;height:60px;object-fit:contain;background:#1a1a18;flex-shrink:0" />
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;gap:8px;margin-bottom:6px">
+                <select v-model="img.role" style="font-size:.75rem">
+                  <option>front</option><option>back</option><option>label</option><option>detail</option>
+                </select>
+                <label style="display:flex;align-items:center;gap:4px;font-size:.72rem;text-transform:none;letter-spacing:0;margin:0;cursor:pointer">
+                  <input type="checkbox" v-model="img.cutout" /> cutout
+                </label>
+              </div>
+              <div style="font-family:monospace;font-size:.65rem;color:var(--muted);word-break:break-all">{{ img.src }}</div>
+              <div v-if="img.original" style="font-family:monospace;font-size:.65rem;color:var(--muted);margin-top:2px">original: {{ img.original }}</div>
+              <div v-if="img.cutout && img.role !== 'label' && section==='col-edit'" style="margin-top:6px">
+                <button class="btn btn-sm" @click="runCutout(img)" :disabled="!cutoutEnabled">
+                  {{ colJobStatus(img) }}
+                </button>
+                <span v-if="!cutoutEnabled" style="font-size:.65rem;color:var(--muted);margin-left:6px">Set CUTOUT_ENABLED=true on Railway</span>
+              </div>
+            </div>
+            <button class="btn-icon" style="color:#c07070;flex-shrink:0" @click="colForm.images.splice(ii,1)">✕</button>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+            <label class="btn btn-sm" style="cursor:pointer">
+              Upload photo
+              <input type="file" accept="image/*,.heic,.heif" multiple @change="uploadColImages" style="display:none" />
+            </label>
+            <span v-if="colUploading" style="font-size:.75rem;color:var(--muted);align-self:center">Uploading…</span>
+            <span v-if="colUploadErr" style="font-size:.75rem;color:#c07070;align-self:center">{{ colUploadErr }}</span>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--dim)">
+            <button class="btn btn-primary" @click="saveColForm" :disabled="colSaving">{{ colSaving ? 'Saving…' : (section==='col-add' ? 'Create object' : 'Save changes') }}</button>
+            <button v-if="section==='col-edit'" class="btn btn-danger" @click="deleteObj(colForm)">Delete object</button>
+            <button class="btn" @click="section='col-list'">Cancel</button>
+            <span v-if="colSaveMsg" :style="{fontSize:'.75rem', color: colSaveMsgType==='ok'?'#78b88a':'#c07070'}">{{ colSaveMsg }}</span>
+          </div>
+        </div>
+
       </div><!-- /main-body -->
     </main>
   </div><!-- /shell -->
@@ -838,6 +1046,21 @@ createApp({
       // Upload
       uploading:   false,
       uploadError: '',
+
+      // Collection
+      colObjects:      [],
+      colLoading:      false,
+      colSearch:       '',
+      colStatusFilter: 'all',
+      colSaving:       false,
+      colSaveMsg:      '',
+      colSaveMsgType:  'ok',
+      colUploading:    false,
+      colUploadErr:    '',
+      cutoutEnabled:   false,
+      colJobs:         {}, // imgSrc → jobId
+      colJobPoll:      {}, // jobId → intervalId
+      colForm:         null,
     };
   },
 
@@ -849,12 +1072,24 @@ createApp({
       if (this.section === 'meta')    return 'Site & Contact';
       if (this.section === 'intro')   return 'Intro';
       if (this.section === 'links')   return 'Links';
-      if (this.section === 'about')   return 'About';
-      if (this.section === 'notes')   return 'Notes';
+      if (this.section === 'about')    return 'About';
+      if (this.section === 'notes')    return 'Notes';
+      if (this.section === 'col-list') return 'Collection';
+      if (this.section === 'col-add')  return 'Add Object';
+      if (this.section === 'col-edit') return `Edit ${this.colForm?.accession || 'Object'}`;
       if (this.section === 'project' && this.currentProject) {
         return `${this.currentProject.num} · ${this.currentProject.title}`;
       }
       return '';
+    },
+    colFiltered() {
+      let L = this.colObjects;
+      if (this.colStatusFilter !== 'all') L = L.filter(o => o.status === this.colStatusFilter);
+      if (this.colSearch.trim()) {
+        const q = this.colSearch.toLowerCase();
+        L = L.filter(o => [o.maker, o.title, o.accession, o.department].join(' ').toLowerCase().includes(q));
+      }
+      return L;
     },
   },
 
@@ -1117,6 +1352,164 @@ createApp({
         this.uploading = false;
         event.target.value = '';
       }
+    },
+
+    // ── Collection ────────────────────────────────────────────────────────────
+    async fetchCol() {
+      this.colLoading = true;
+      try {
+        const r = await fetch('/api/collection?all=1', {
+          headers: { Authorization: 'Bearer ' + this.token },
+        });
+        if (r.ok) this.colObjects = await r.json();
+        // Check if cutout is enabled
+        const ce = await fetch('/api/collection/cutout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+          body: JSON.stringify({}),
+        });
+        const ced = await ce.json();
+        this.cutoutEnabled = ce.status !== 503;
+      } catch(e) {} finally {
+        this.colLoading = false;
+      }
+    },
+
+    blankColForm() {
+      return {
+        accession: null, seq: null, status: 'pending',
+        type: 'Shirt', department: 'Music',
+        maker: '', title: '', date: null,
+        description: null, sleeve: null, label: null,
+        bodyColour: '#888888', provenance: null, condition: null,
+        note: null, seenIn: null, seenInUrl: null,
+        media: { kind: 'Watch', query: '', youtubeId: null },
+        images: [],
+      };
+    },
+
+    startAddObj() {
+      this.colForm = this.blankColForm();
+      this.section = 'col-add';
+    },
+
+    editObj(o) {
+      this.colForm = JSON.parse(JSON.stringify(o));
+      if (!this.colForm.media) this.colForm.media = { kind: 'Watch', query: '', youtubeId: null };
+      this.section = 'col-edit';
+    },
+
+    async saveColForm() {
+      this.colSaving = true;
+      this.colSaveMsg = '';
+      try {
+        let r;
+        if (this.section === 'col-add') {
+          r = await fetch('/api/collection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+            body: JSON.stringify(this.colForm),
+          });
+        } else {
+          r = await fetch('/api/collection/' + this.colForm.accession, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+            body: JSON.stringify(this.colForm),
+          });
+        }
+        const d = await r.json();
+        if (!r.ok) { this.colSaveMsg = d.error || 'Save failed'; this.colSaveMsgType = 'err'; return; }
+        this.colSaveMsg = 'Saved'; this.colSaveMsgType = 'ok';
+        await this.fetchCol();
+        if (this.section === 'col-add') { this.colForm = d; this.section = 'col-edit'; }
+      } catch(e) {
+        this.colSaveMsg = 'Network error'; this.colSaveMsgType = 'err';
+      } finally {
+        this.colSaving = false;
+        setTimeout(() => { this.colSaveMsg = ''; }, 3000);
+      }
+    },
+
+    async quickStatus(o, status) {
+      await fetch('/api/collection/' + o.accession, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+        body: JSON.stringify({ status }),
+      });
+      o.status = status;
+    },
+
+    async deleteObj(o) {
+      if (!confirm(`Delete ${o.accession || 'this object'}? This cannot be undone.`)) return;
+      await fetch('/api/collection/' + o.accession, {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + this.token },
+      });
+      await this.fetchCol();
+      this.section = 'col-list';
+    },
+
+    async uploadColImages(event) {
+      const files = [...(event.target.files || [])];
+      if (!files.length) return;
+      this.colUploading = true;
+      this.colUploadErr = '';
+      for (const file of files) {
+        try {
+          const fd = new FormData(); fd.append('file', file);
+          const r = await fetch('/api/collection/upload', {
+            method: 'POST', headers: { Authorization: 'Bearer ' + this.token }, body: fd,
+          });
+          const d = await r.json();
+          if (!r.ok) { this.colUploadErr = d.error || 'Upload failed'; continue; }
+          // Guess role from filename or order
+          const name = file.name.toLowerCase();
+          const role = name.includes('back') ? 'back' : name.includes('label') || name.includes('tag') ? 'label' : name.includes('detail') ? 'detail' : 'front';
+          this.colForm.images.push({ role, src: d.url, cutout: role === 'front' || role === 'back', original: d.url });
+        } catch(e) { this.colUploadErr = 'Upload failed'; }
+      }
+      this.colUploading = false;
+      event.target.value = '';
+    },
+
+    async runCutout(img) {
+      const r = await fetch('/api/collection/cutout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+        body: JSON.stringify({ src: img.original || img.src, accession: this.colForm.accession, role: img.role }),
+      });
+      const d = await r.json();
+      if (!r.ok) { alert(d.error || d.hint || 'Cutout failed'); return; }
+      const jobId = d.jobId;
+      this.colJobs[img.src] = jobId;
+      const poll = setInterval(async () => {
+        const pr = await fetch('/api/collection/jobs/' + jobId, {
+          headers: { Authorization: 'Bearer ' + this.token },
+        });
+        const pd = await pr.json();
+        if (pd.status === 'done') {
+          clearInterval(poll);
+          delete this.colJobPoll[jobId];
+          // Update image src to cutout result
+          img.src = pd.dstUrl;
+          img.cutout = true;
+          if (pd.result?.bodyColour) this.colForm.bodyColour = pd.result.bodyColour;
+          if (pd.result?.w) { img.w = pd.result.w; img.h = pd.result.h; }
+          delete this.colJobs[img.original || img.src];
+        } else if (pd.status === 'error') {
+          clearInterval(poll);
+          delete this.colJobPoll[jobId];
+          alert('Cutout failed: ' + pd.error);
+        }
+      }, 3000);
+      this.colJobPoll[jobId] = poll;
+    },
+
+    colJobStatus(img) {
+      const jobId = this.colJobs[img.src] || this.colJobs[img.original];
+      if (!jobId) return 'Run cutout';
+      const job = this.colJobPoll[jobId] ? 'Processing…' : 'Run cutout';
+      return job;
     },
   },
 

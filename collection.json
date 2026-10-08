@@ -1,0 +1,1829 @@
+[
+  {
+    "accession": "2026.001",
+    "seq": 1,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Sub Pop",
+    "title": "Loser",
+    "date": null,
+    "description": "Printed cotton T-shirt, long sleeve",
+    "sleeve": "long",
+    "label": "Fruit of the Loom Best",
+    "detail": null,
+    "bodyColour": "#181816",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Sub Pop Records 1990s documentary",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4287.webp",
+        "w": 1600,
+        "h": 1166,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4289.webp",
+        "w": 1600,
+        "h": 1226,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4288.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.002",
+    "seq": 2,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "N.E.R.D",
+    "title": "Provider",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Anvil",
+    "detail": null,
+    "bodyColour": "#0e1314",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "N.E.R.D Provider",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4290.webp",
+        "w": 1600,
+        "h": 1417,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4291.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.003",
+    "seq": 3,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "N.E.R.D",
+    "title": "Wolf",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Custom label",
+    "detail": null,
+    "bodyColour": "#1a1f20",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "N.E.R.D In Search Of",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4292.webp",
+        "w": 1591,
+        "h": 1419,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4294.webp",
+        "w": 1600,
+        "h": 1417,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4293.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.004",
+    "seq": 4,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Blur",
+    "title": "Blur",
+    "date": null,
+    "description": "Printed cotton T-shirt, long sleeve",
+    "sleeve": "long",
+    "label": "Cotton boll label",
+    "detail": null,
+    "bodyColour": "#26292b",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Blur official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4295.webp",
+        "w": 1600,
+        "h": 1448,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4297.webp",
+        "w": 1600,
+        "h": 1344,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4296.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.005",
+    "seq": 5,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Oasis",
+    "title": "(What’s the Story) Morning Glory?",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Unknown",
+    "detail": "Ringer",
+    "bodyColour": "#202120",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Oasis (What's the Story) Morning Glory",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4298.webp",
+        "w": 1600,
+        "h": 1261,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4299.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.006",
+    "seq": 6,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Björk",
+    "title": "Logo",
+    "date": null,
+    "description": "Printed cotton T-shirt, long sleeve",
+    "sleeve": "long",
+    "label": "Faded",
+    "detail": null,
+    "bodyColour": "#8e6330",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Björk official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4300.webp",
+        "w": 1600,
+        "h": 1205,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4301.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.007",
+    "seq": 7,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Third Eye Blind",
+    "title": "Tour",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Giant",
+    "detail": null,
+    "bodyColour": "#414e53",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Third Eye Blind live 1998",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4302.webp",
+        "w": 1600,
+        "h": 1369,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4304.webp",
+        "w": 1600,
+        "h": 1370,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4303.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.008",
+    "seq": 8,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Frank Ocean",
+    "title": "Blonded, Panorama NYC",
+    "date": "2017",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Gildan Heavy Cotton",
+    "detail": null,
+    "bodyColour": "#95948e",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Frank Ocean Panorama 2017",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4305.webp",
+        "w": 1434,
+        "h": 1543,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/d4307.webp",
+        "cutout": false,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4306.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.009",
+    "seq": 9,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Bloc Party",
+    "title": "Bloc Party",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Gildan Ultra Cotton",
+    "detail": null,
+    "bodyColour": "#151a1e",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Bloc Party official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4308.webp",
+        "w": 1600,
+        "h": 1280,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4309.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.010",
+    "seq": 10,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Boyz II Men",
+    "title": "I’ll Make Love to You",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Faded",
+    "detail": null,
+    "bodyColour": "#2d2b26",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Boyz II Men I'll Make Love to You",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4310.webp",
+        "w": 1600,
+        "h": 1240,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4312.webp",
+        "w": 1600,
+        "h": 1202,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4311.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.011",
+    "seq": 11,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "My Bloody Valentine",
+    "title": "Logo",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Fruit of the Loom Best",
+    "detail": null,
+    "bodyColour": "#84857f",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "My Bloody Valentine official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4315.webp",
+        "w": 1600,
+        "h": 1336,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4316.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.012",
+    "seq": 12,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Hole",
+    "title": "Hole 1995",
+    "date": "1995",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Jerzees",
+    "detail": null,
+    "bodyColour": "#8b8a82",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Hole live 1995",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4317.webp",
+        "w": 1590,
+        "h": 1395,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4318.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.013",
+    "seq": 13,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Tracy Chapman",
+    "title": "Telling Stories Tour Crew",
+    "date": "2000",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Anvil",
+    "detail": "Crew shirt",
+    "bodyColour": "#232b2f",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Tracy Chapman Telling Stories",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4319.webp",
+        "w": 1600,
+        "h": 1457,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4320.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.014",
+    "seq": 14,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "The Cranberries",
+    "title": "Local Crew",
+    "date": "1994–95",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Screen Stars",
+    "detail": "Crew shirt",
+    "bodyColour": "#151918",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "The Cranberries live 1995",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4321.webp",
+        "w": 1491,
+        "h": 1454,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4322.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.015",
+    "seq": 15,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Art",
+    "maker": "David Hockney",
+    "title": "Dog Days",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Comfort Colors",
+    "detail": null,
+    "bodyColour": "#a1a199",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "David Hockney dog days dachshunds",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4323.webp",
+        "w": 1599,
+        "h": 1548,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4325.webp",
+        "w": 1466,
+        "h": 1525,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4324.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.016",
+    "seq": 16,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Portishead",
+    "title": "Portishead",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Jerzees",
+    "detail": null,
+    "bodyColour": "#1c2636",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Portishead official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4328.webp",
+        "w": 1600,
+        "h": 1306,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4329.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.017",
+    "seq": 17,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Art",
+    "maker": "Ginseng Strip 2002",
+    "title": "Skeleton",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Ginseng Strip",
+    "detail": null,
+    "bodyColour": "#272b2e",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Look",
+      "query": "Ginseng Strip 2002",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4330.webp",
+        "w": 1600,
+        "h": 1326,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4332.webp",
+        "w": 1600,
+        "h": 1335,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4331.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.018",
+    "seq": 18,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Art",
+    "maker": "Ginseng Strip 2002",
+    "title": "Collage",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Ginseng Strip",
+    "detail": null,
+    "bodyColour": "#5f5555",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Look",
+      "query": "Ginseng Strip 2002",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4333.webp",
+        "w": 1600,
+        "h": 1273,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4335.webp",
+        "w": 1600,
+        "h": 1290,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4334.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.019",
+    "seq": 19,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Drop Nineteens",
+    "title": "Sierra’s Barber Shop",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Fruit of the Loom Best",
+    "detail": null,
+    "bodyColour": "#15191e",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Drop Nineteens official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4337.webp",
+        "w": 1600,
+        "h": 1322,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4339.webp",
+        "w": 1600,
+        "h": 1347,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4338.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.020",
+    "seq": 20,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Amyl and the Sniffers",
+    "title": "Amyl and the Sniffers",
+    "date": null,
+    "description": "Printed cotton T-shirt, long sleeve",
+    "sleeve": "long",
+    "label": "Earth Positive",
+    "detail": null,
+    "bodyColour": "#10151b",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Amyl and the Sniffers official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4340.webp",
+        "w": 1600,
+        "h": 1230,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4341.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.021",
+    "seq": 21,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "The Sundays",
+    "title": "Ammonites",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Fruit of the Loom Heavy HD",
+    "detail": null,
+    "bodyColour": "#111b25",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "The Sundays official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4342.webp",
+        "w": 1600,
+        "h": 1431,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4343.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.022",
+    "seq": 22,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "The Killers",
+    "title": "The Killers",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Cinder Block",
+    "detail": null,
+    "bodyColour": "#11171e",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "The Killers official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4344.webp",
+        "w": 1600,
+        "h": 1278,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4345.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.023",
+    "seq": 23,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Nine Inch Nails",
+    "title": "Peel It Back Tour",
+    "date": "2026",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Gildan",
+    "detail": null,
+    "bodyColour": "#0c141c",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Nine Inch Nails Peel It Back tour",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4346.webp",
+        "w": 1600,
+        "h": 1501,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4348.webp",
+        "w": 1600,
+        "h": 1506,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4347.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.024",
+    "seq": 24,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Gorillaz",
+    "title": "Gorillaz",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Custom label",
+    "detail": null,
+    "bodyColour": "#0c1821",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Gorillaz official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4349.webp",
+        "w": 1600,
+        "h": 1207,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4350.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.025",
+    "seq": 25,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Film & TV",
+    "maker": "The West Wing",
+    "title": "The West Wing",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Alstyle",
+    "detail": null,
+    "bodyColour": "#102134",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "The West Wing opening titles",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4351.webp",
+        "w": 1600,
+        "h": 1383,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4352.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.026",
+    "seq": 26,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "New Order",
+    "title": "★ 89",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Fruit of the Loom",
+    "detail": null,
+    "bodyColour": "#e58592",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "New Order official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4355.webp",
+        "w": 1600,
+        "h": 1416,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4357.webp",
+        "w": 1600,
+        "h": 1419,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4356.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.027",
+    "seq": 27,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "L7",
+    "title": "L7",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Giant / Tultex",
+    "detail": null,
+    "bodyColour": "#dedcd2",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "L7 official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4358.webp",
+        "w": 1600,
+        "h": 1317,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4360.webp",
+        "w": 1567,
+        "h": 1270,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4359.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.028",
+    "seq": 28,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Sade",
+    "title": "Sade",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Screen Stars Best",
+    "detail": null,
+    "bodyColour": "#e2e0d3",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Sade official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4361.webp",
+        "w": 1600,
+        "h": 1262,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4362.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.029",
+    "seq": 29,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "The Smashing Pumpkins",
+    "title": "Heart",
+    "date": null,
+    "description": "Printed cotton T-shirt, long sleeve",
+    "sleeve": "long",
+    "label": "Giant / Tee Jays",
+    "detail": null,
+    "bodyColour": "#e5e4d9",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "The Smashing Pumpkins official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4363.webp",
+        "w": 1600,
+        "h": 1039,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4365.webp",
+        "w": 1600,
+        "h": 1004,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4364.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.030",
+    "seq": 30,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Art",
+    "maker": "Perrotin",
+    "title": "Voyager Golden Record",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Custom label",
+    "detail": null,
+    "bodyColour": "#dfded5",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Look",
+      "query": "Voyager Golden Record",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4366.webp",
+        "w": 1540,
+        "h": 1324,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4367.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.031",
+    "seq": 31,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Art",
+    "maker": "Jenny Holzer",
+    "title": "Abuse of Power Comes as No Surprise",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Tagless",
+    "detail": null,
+    "bodyColour": "#dfded5",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Look",
+      "query": "Jenny Holzer Truisms",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4368.webp",
+        "w": 1600,
+        "h": 1300,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4369.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.032",
+    "seq": 32,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Corporate",
+    "maker": "Maxell",
+    "title": "Take Your Music to the Max",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Anvil",
+    "detail": "Named collar: JON",
+    "bodyColour": "#dedcd3",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Maxell blown away commercial",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4370.webp",
+        "w": 1600,
+        "h": 1320,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4371.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.033",
+    "seq": 33,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Nirvana",
+    "title": "Smiley / In Utero",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Screen Stars Best",
+    "detail": null,
+    "bodyColour": "#dfded2",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Nirvana official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4372.webp",
+        "w": 1600,
+        "h": 1275,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4374.webp",
+        "w": 1600,
+        "h": 1281,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4373.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.034",
+    "seq": 34,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Sun Ra",
+    "title": "Arkestra",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Oneita Power-T",
+    "detail": null,
+    "bodyColour": "#dbdad1",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Sun Ra official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4375.webp",
+        "w": 1600,
+        "h": 1241,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4376.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.035",
+    "seq": 35,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Björk",
+    "title": "Portrait",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Ginseng Strip",
+    "detail": null,
+    "bodyColour": "#e2decf",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Björk official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4377.webp",
+        "w": 1600,
+        "h": 1241,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4379.webp",
+        "w": 1600,
+        "h": 1202,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4378.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.036",
+    "seq": 36,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Turnstile",
+    "title": "I Care",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Turnstile “Never Enough”",
+    "detail": null,
+    "bodyColour": "#6796cf",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Listen",
+      "query": "Turnstile official music video",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4380.webp",
+        "w": 1600,
+        "h": 1327,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4381.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.037",
+    "seq": 37,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Music",
+    "maker": "Clairo",
+    "title": "Summer Tour ’23",
+    "date": "2023",
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Gildan",
+    "detail": null,
+    "bodyColour": "#ddd9ca",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Clairo live 2023",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4382.webp",
+        "w": 1600,
+        "h": 1426,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4384.webp",
+        "w": 1600,
+        "h": 1402,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4383.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.038",
+    "seq": 38,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Film & TV",
+    "maker": "Twin Peaks",
+    "title": "Fire Walk With Me",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Mega Top",
+    "detail": null,
+    "bodyColour": "#e3dcca",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Twin Peaks Fire Walk With Me trailer",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4390.webp",
+        "w": 1600,
+        "h": 1116,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4393.webp",
+        "w": 1600,
+        "h": 1128,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4391.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  },
+  {
+    "accession": "2026.039",
+    "seq": 39,
+    "status": "accessioned",
+    "type": "Shirt",
+    "department": "Sport",
+    "maker": "Würth Racing",
+    "title": "The Choice of Professionals",
+    "date": null,
+    "description": "Printed cotton T-shirt, short sleeve",
+    "sleeve": "short",
+    "label": "Fruit of the Loom",
+    "detail": null,
+    "bodyColour": "#e0d9c9",
+    "provenance": null,
+    "condition": null,
+    "note": null,
+    "seenIn": null,
+    "seenInUrl": null,
+    "media": {
+      "kind": "Watch",
+      "query": "Würth racing",
+      "youtubeId": null
+    },
+    "images": [
+      {
+        "role": "front",
+        "src": "/uploads/collection/c4394.webp",
+        "w": 1531,
+        "h": 1294,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "back",
+        "src": "/uploads/collection/c4396.webp",
+        "w": 1590,
+        "h": 1338,
+        "cutout": true,
+        "original": null
+      },
+      {
+        "role": "label",
+        "src": "/uploads/collection/t4395.webp",
+        "cutout": false,
+        "original": null
+      }
+    ],
+    "createdAt": "2026-10-08T01:51:27.851Z",
+    "updatedAt": "2026-10-08T01:51:27.851Z"
+  }
+]
