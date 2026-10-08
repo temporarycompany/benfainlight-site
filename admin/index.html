@@ -789,9 +789,7 @@ select { cursor: pointer; appearance: none; }
             </div>
             <div class="form-group">
               <label>Department</label>
-              <select v-model="colForm.department">
-                <option>Music</option><option>Art</option><option>Film &amp; TV</option><option>Corporate</option><option>Sport</option>
-              </select>
+              <input type="text" v-model="colForm.department" placeholder="e.g. Music, Art, Film & TV">
             </div>
             <div class="form-group">
               <label>Sleeve</label>
