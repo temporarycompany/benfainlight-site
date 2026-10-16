@@ -544,6 +544,7 @@ function drawObj(){
     <div class="cite">Cite as: temporary collection, archive department of temporary.company, acc. ${esc(acc(x))}</div>
    </aside>
   </div>`;
+  $('#op').scrollTop=0;
   if(innerWidth<760)initCarousel();
 }
 
@@ -601,7 +602,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.dept){st.dept=t.dataset.dept;save();render();return}
   if(t.dataset.ty){st.ty=t.dataset.ty;save();render();return}
   if('closeo' in t.dataset){e.preventDefault();closeObj();return}
-  if(t.dataset.step){cur+=+t.dataset.step;drawObj();$('#op').scrollTop=0;return}
+  if(t.dataset.step){cur+=+t.dataset.step;drawObj();return}
   if(t.dataset.open){e.preventDefault();$('#peek').hidden=true;closeMenu();openObj(t.dataset.open)}
 });
 

@@ -373,6 +373,27 @@ function runNextCutout() {
       let result = {};
       try { result = JSON.parse(stdout.trim()); } catch(_) {}
       cutoutJobs.set(job.id, { status: 'done', result: { ...result, peakMB }, dstUrl: job.dstUrl });
+      // Auto-patch the object if accession+role are known
+      if (job.accession && job.role) {
+        try {
+          const objects = readCollection();
+          const idx = objects.findIndex(o => o.accession === job.accession);
+          if (idx !== -1) {
+            const images = (objects[idx].images || []).map(img => {
+              if (img.role !== job.role) return img;
+              return { ...img, src: job.dstUrl, cutout: true,
+                w: result.w || img.w, h: result.h || img.h };
+            });
+            const bodyColour = job.role === 'front' && result.dominantColour
+              ? result.dominantColour : objects[idx].bodyColour;
+            objects[idx] = { ...objects[idx], images, bodyColour, updatedAt: new Date().toISOString() };
+            writeCollection(objects);
+            console.log(`[cutout] auto-patched ${job.accession} ${job.role} → ${job.dstUrl}`);
+          }
+        } catch(e) {
+          console.error('[cutout] auto-patch failed:', e.message);
+        }
+      }
     } else {
       cutoutJobs.set(job.id, { status: 'error', error: stderr.slice(-800), peakMB });
     }
@@ -582,6 +603,27 @@ app.post('/api/collection/bulk-publish', requireAuth, (req, res) => {
     }
 
     writeCollection(objects);
+
+    // Auto-queue cutouts for front/back images when pipeline is enabled
+    if (process.env.CUTOUT_ENABLED === 'true') {
+      for (const { obj, idx } of toPublish) {
+        const saved = objects[idx];
+        for (const img of (saved.images || [])) {
+          if (img.role !== 'front' && img.role !== 'back') continue;
+          if (!img.src) continue;
+          const srcPath = path.join(COLLECTION_DIR, path.basename(img.src.replace(/^\/uploads\/collection\//, '')));
+          if (!fs.existsSync(srcPath)) continue;
+          const outName = 'cut-' + path.basename(srcPath, path.extname(srcPath)) + '.webp';
+          const dstPath = path.join(COLLECTION_DIR, outName);
+          const dstUrl  = '/uploads/collection/' + outName;
+          const jobId   = crypto.randomBytes(8).toString('hex');
+          cutoutQueue.push({ id: jobId, src: srcPath, dst: dstPath, dstUrl, accession: saved.accession, role: img.role, mode: 'cutout' });
+          console.log(`[cutout] queued ${saved.accession} ${img.role}`);
+        }
+      }
+      runNextCutout();
+    }
+
     res.json({ published });
   });
 });
@@ -791,4 +833,31 @@ app.listen(PORT, () => {
   console.log(`\n  ✦ Site    → http://localhost:${PORT}`);
   console.log(`  ✦ Admin   → http://localhost:${PORT}/admin`);
   console.log(`  ✦ Press Ctrl+C to stop\n`);
+
+  // On startup, queue cutouts for any front/back image where cutout flag was set
+  // prematurely (src === original) — fixes the batch uploaded without rembg processing.
+  if (process.env.CUTOUT_ENABLED === 'true') {
+    const objects = readCollection();
+    let queued = 0;
+    for (const obj of objects) {
+      if (obj.status !== 'accessioned') continue;
+      for (const img of (obj.images || [])) {
+        if (img.role !== 'front' && img.role !== 'back') continue;
+        if (!img.cutout || !img.src || img.src !== img.original) continue;
+        const srcPath = path.join(COLLECTION_DIR, path.basename(img.src.replace(/^\/uploads\/collection\//, '')));
+        if (!fs.existsSync(srcPath)) continue;
+        const outName = 'cut-' + path.basename(srcPath, path.extname(srcPath)) + '.webp';
+        const dstPath = path.join(COLLECTION_DIR, outName);
+        if (fs.existsSync(dstPath)) continue; // already processed
+        const dstUrl = '/uploads/collection/' + outName;
+        const jobId  = crypto.randomBytes(8).toString('hex');
+        cutoutQueue.push({ id: jobId, src: srcPath, dst: dstPath, dstUrl, accession: obj.accession, role: img.role, mode: 'cutout' });
+        queued++;
+      }
+    }
+    if (queued > 0) {
+      console.log(`[cutout] startup: queued ${queued} pending cutout(s)`);
+      runNextCutout();
+    }
+  }
 });
