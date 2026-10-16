@@ -372,6 +372,198 @@ select { cursor: pointer; appearance: none; }
 
 /* ── Divider ──────────────────────────────────────────────────────────────── */
 .divider { border: none; border-top: 1px solid var(--dim); margin: 20px 0; }
+
+/* ── Bulk upload ──────────────────────────────────────────────────────────── */
+.bulk-stage-nav {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--dim);
+}
+.bulk-stage-tab {
+  padding: 8px 20px;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: default;
+  font-family: inherit;
+}
+.bulk-stage-tab.done  { color: var(--warm); cursor: pointer; }
+.bulk-stage-tab.done:hover { color: var(--ink); }
+.bulk-stage-tab.active { color: var(--ink); border-bottom-color: var(--warm); }
+
+.drop-zone {
+  border: 1px dashed var(--muted);
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  margin-bottom: 20px;
+}
+.drop-zone:hover, .drop-zone.over { background: var(--surface2); border-color: var(--warm); }
+.drop-zone p { font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+.drop-zone .drop-hint { font-size: .68rem; color: var(--muted); }
+
+.bulk-file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--dim);
+  font-size: .78rem;
+}
+.bulk-file-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bulk-file-status { font-size: .68rem; width: 80px; flex-shrink: 0; }
+.bulk-file-status.ok   { color: #78b88a; }
+.bulk-file-status.err  { color: #c07070; }
+.bulk-file-status.wait { color: var(--muted); }
+.bulk-file-status.prog { color: var(--warm); }
+
+.bulk-progress { width: 80px; height: 4px; background: var(--dim); flex-shrink: 0; }
+.bulk-progress-bar { height: 100%; background: var(--warm); transition: width .2s; }
+
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.group-card {
+  border: 1px solid var(--dim);
+  background: var(--surface);
+  padding: 12px;
+  transition: border-color .15s;
+}
+.group-card.drop-target { border-color: var(--warm); background: var(--surface2); }
+.group-key-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.group-key-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .75rem;
+  padding: 4px 8px;
+  outline: none;
+}
+.group-key-input:focus { border-color: var(--muted); }
+.group-plates { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.plate-thumb {
+  position: relative;
+  width: 60px;
+  flex-shrink: 0;
+  cursor: grab;
+}
+.plate-thumb img { width: 60px; height: 60px; object-fit: cover; background: var(--bg); display: block; }
+.plate-thumb.dragging { opacity: .4; }
+.plate-thumb.drag-over img { outline: 2px solid var(--warm); }
+.plate-role {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  color: var(--muted);
+  font-size: .6rem;
+  padding: 1px 2px;
+  font-family: inherit;
+  margin-top: 2px;
+}
+.plate-remove {
+  position: absolute;
+  top: 1px; right: 1px;
+  background: rgba(0,0,0,.6);
+  border: none;
+  color: #c07070;
+  font-size: .6rem;
+  cursor: pointer;
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.group-actions { display: flex; gap: 6px; }
+
+.bulk-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.bulk-table th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--dim);
+  white-space: nowrap;
+}
+.bulk-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--dim);
+  vertical-align: middle;
+}
+.bulk-table tr.selected td { background: rgba(196,184,166,.06); }
+.bulk-table tr.has-error td { background: rgba(139,58,58,.08); }
+.bulk-td-input {
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .78rem;
+  padding: 3px 6px;
+  width: 100%;
+  min-width: 80px;
+  outline: none;
+}
+.bulk-td-input:focus { border-color: var(--muted); }
+.bulk-error-badge {
+  display: inline-block;
+  font-size: .6rem;
+  color: #c07070;
+  border: 1px solid #8b3a3a;
+  padding: 1px 4px;
+  margin-top: 2px;
+}
+.bulk-suggest-badge {
+  font-size: .6rem;
+  color: var(--warm);
+  font-style: italic;
+}
+.bulk-dupe-badge {
+  font-size: .6rem;
+  color: #c07070;
+  border: 1px solid #8b3a3a;
+  padding: 1px 4px;
+}
+.bulk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.publish-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dim);
+  font-size: .82rem;
+}
+.publish-acc {
+  font-family: monospace;
+  font-size: .78rem;
+  color: var(--warm);
+  width: 90px;
+  flex-shrink: 0;
+}
+.publish-thumb { width: 40px; height: 40px; object-fit: cover; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -429,6 +621,7 @@ select { cursor: pointer; appearance: none; }
         <div class="sidebar-section-label">Collection</div>
         <button class="nav-item" :class="{active:section==='col-list'}" @click="section='col-list';fetchCol()">Objects <span v-if="colObjects.length" style="color:var(--muted);font-size:.65rem">({{colObjects.length}})</span></button>
         <button class="nav-item" :class="{active:section==='col-add'}"  @click="startAddObj">+ Add object</button>
+        <button class="nav-item" :class="{active:section==='col-bulk'}" @click="startBulkUpload">Bulk upload</button>
       </nav>
 
       <div class="sidebar-footer">
@@ -915,6 +1108,282 @@ select { cursor: pointer; appearance: none; }
           </div>
         </div>
 
+        <!-- ── Bulk upload ─────────────────────────────────────────────── -->
+        <div v-if="section==='col-bulk'" style="max-width:960px">
+
+          <!-- Stage nav -->
+          <div class="bulk-stage-nav">
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='drop',done:true}" @click="bulkStage='drop'">1 · Drop</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='group',done:bulkStage==='group'||bulkStage==='review'||bulkStage==='publish'}" @click="bulkGoGroup" :disabled="!bulkCanGroup">2 · Group</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='review',done:bulkStage==='review'||bulkStage==='publish'}" @click="bulkGoReview" :disabled="!bulkCanReview">3 · Review</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='publish',done:bulkStage==='publish'}" @click="bulkGoPublish" :disabled="!bulkCanPublish">4 · Publish</button>
+          </div>
+
+          <!-- ── Stage 1: Drop ───────────────────────────────────────── -->
+          <div v-if="bulkStage==='drop'">
+            <div class="drop-zone" :class="{over:bulkDragOver}"
+                 @dragover.prevent="bulkDragOver=true"
+                 @dragleave="bulkDragOver=false"
+                 @drop.prevent="bulkOnDrop"
+                 @click="$refs.bulkInput.click()">
+              <input ref="bulkInput" type="file" multiple accept="image/*,.heic,.heif,.csv" @change="bulkOnFiles" style="display:none" />
+              <p>Drop images + optional CSV here, or click to browse</p>
+              <p class="drop-hint">JPG, PNG, HEIC, WebP · CSV with columns: key, maker, title, date, type, department, label, description, provenance, condition</p>
+            </div>
+
+            <div v-if="bulkFiles.length || bulkCsvFile" style="margin-bottom:16px">
+              <div v-if="bulkCsvFile" class="bulk-file-row">
+                <span style="font-size:.7rem;color:var(--warm);border:1px solid var(--dim);padding:1px 6px;flex-shrink:0">CSV</span>
+                <span class="bulk-file-name">{{ bulkCsvFile.name }}</span>
+                <span class="bulk-file-status ok">{{ Object.keys(bulkCsvRows).length }} rows parsed</span>
+                <button class="btn-icon" @click="bulkCsvFile=null;bulkCsvRows={}" style="color:#c07070">✕</button>
+              </div>
+              <div v-for="f in bulkFiles" :key="f.id" class="bulk-file-row">
+                <span class="bulk-file-name">{{ f.originalName }}</span>
+                <div class="bulk-progress"><div class="bulk-progress-bar" :style="{width:f.progress+'%'}"></div></div>
+                <span class="bulk-file-status" :class="f.status">
+                  {{ f.status==='wait'?'Queued':f.status==='prog'?'Uploading…':f.status==='ok'?'✓':f.error||'Error' }}
+                </span>
+                <button class="btn-icon" v-if="f.status==='wait'||f.status==='err'" @click="bulkRemoveFile(f.id)" style="color:#c07070">✕</button>
+              </div>
+            </div>
+
+            <div v-if="bulkUploadRunning" style="font-size:.75rem;color:var(--muted);margin-bottom:12px">
+              Uploading {{ bulkUploadDone }} of {{ bulkFiles.length }}…
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn btn-primary" @click="bulkStartUpload" :disabled="bulkUploadRunning||!bulkWaiting.length">
+                {{ bulkUploadRunning ? 'Uploading…' : 'Upload ' + bulkWaiting.length + ' file' + (bulkWaiting.length===1?'':'s') }}
+              </button>
+              <button class="btn" @click="bulkGoGroup" :disabled="!bulkCanGroup">Next: Group →</button>
+              <span style="font-size:.72rem;color:var(--muted)">{{ bulkUploadDone }} uploaded{{ bulkErrorFiles.length ? ', ' + bulkErrorFiles.length + ' failed' : '' }}</span>
+            </div>
+          </div>
+
+          <!-- ── Stage 2: Group ──────────────────────────────────────── -->
+          <div v-if="bulkStage==='group'">
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:16px">
+              Drag photos between groups. Edit the key name. Set each plate's role. Gaps &gt; <input v-model.number="bulkGapSec" type="number" min="5" max="120" style="width:44px;padding:1px 4px;background:var(--bg);border:1px solid var(--dim);color:var(--ink);font-size:.78rem;text-align:center"> s trigger a new group when no filename match found.
+            </p>
+
+            <div class="group-grid">
+              <div v-for="(g, gi) in bulkGroups" :key="g.id" class="group-card"
+                   :class="{'drop-target': bulkDropTarget===gi}"
+                   @dragover.prevent="bulkDropTarget=gi"
+                   @dragleave="bulkDropTarget=null"
+                   @drop.prevent="bulkDropOnGroup(gi)">
+                <div class="group-key-row">
+                  <input class="group-key-input" v-model="g.key" placeholder="group key" />
+                  <button class="btn-icon" style="color:#c07070;flex-shrink:0" @click="bulkDeleteGroup(gi)" title="Delete group">✕</button>
+                </div>
+                <div class="group-plates">
+                  <div v-for="(p, pi) in g.plates" :key="p.id" class="plate-thumb"
+                       :draggable="true"
+                       @dragstart="bulkDragPlate(gi, pi)"
+                       @dragend="bulkDragEnd">
+                    <img :src="p.url" />
+                    <button class="plate-remove" @click.stop="bulkRemovePlate(gi, pi)">✕</button>
+                    <select class="plate-role" v-model="p.role">
+                      <option>front</option><option>back</option><option>label</option><option>detail</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="group-actions">
+                  <button class="btn btn-sm" @click="bulkSplitGroup(gi)" :disabled="g.plates.length<2" title="Move last plate to a new group">Split</button>
+                  <button class="btn btn-sm" @click="bulkMergeUp(gi)" :disabled="gi===0" title="Merge into previous group">← Merge</button>
+                </div>
+              </div>
+
+              <div class="group-card" style="display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:100px"
+                   @click="bulkAddGroup">
+                <span style="color:var(--muted);font-size:.78rem">+ New group</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button class="btn" @click="bulkStage='drop'">← Back</button>
+              <button class="btn btn-primary" @click="bulkGoReview" :disabled="!bulkCanReview">Next: Review →</button>
+            </div>
+          </div>
+
+          <!-- ── Stage 3: Review ─────────────────────────────────────── -->
+          <div v-if="bulkStage==='review'">
+
+            <!-- Toolbar -->
+            <div class="bulk-toolbar">
+              <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;margin:0;text-transform:none;letter-spacing:0">
+                <input type="checkbox" :checked="bulkAllSelected" @change="bulkToggleAll" />
+                <span style="color:var(--muted)">{{ bulkSelectedSeqs.length }} of {{ bulkDrafts.length }} selected</span>
+              </label>
+              <span style="color:var(--dim)">|</span>
+              <!-- Bulk field setter -->
+              <select v-model="bulkBulkField" style="font-size:.75rem;padding:3px 6px;background:var(--bg);border:1px solid var(--dim);color:var(--ink)">
+                <option value="">Bulk set…</option>
+                <option value="type">Type</option>
+                <option value="department">Department</option>
+                <option value="label">Label</option>
+                <option value="provenance">Provenance</option>
+                <option value="condition">Condition</option>
+              </select>
+              <input v-if="bulkBulkField" v-model="bulkBulkValue" type="text" style="font-size:.75rem;padding:3px 6px;background:var(--bg);border:1px solid var(--dim);color:var(--ink);width:140px" :placeholder="'Value for '+bulkBulkField" @keyup.enter="bulkApplyBulkField" />
+              <button v-if="bulkBulkField" class="btn btn-sm" @click="bulkApplyBulkField">Apply to selected</button>
+              <span style="color:var(--dim)">|</span>
+              <button class="btn btn-sm" @click="bulkSuggestAll" :disabled="bulkSuggestRunning||!bulkSelectedSeqs.length||!bulkAiAvailable">
+                {{ bulkSuggestRunning ? 'Suggesting…' : '✦ AI suggest selected' }}
+              </button>
+              <span v-if="!bulkAiAvailable" style="font-size:.65rem;color:var(--muted)">Set ANTHROPIC_API_KEY</span>
+              <span v-if="bulkSuggestCost" style="font-size:.65rem;color:var(--muted)">~{{ bulkSuggestCost }} tokens used</span>
+            </div>
+
+            <!-- Table -->
+            <div style="overflow-x:auto">
+              <table class="bulk-table">
+                <thead>
+                  <tr>
+                    <th style="width:28px"></th>
+                    <th style="width:52px">Plate</th>
+                    <th style="min-width:100px">Maker</th>
+                    <th style="min-width:100px">Title</th>
+                    <th style="width:70px">Date</th>
+                    <th style="width:80px">Type</th>
+                    <th style="min-width:80px">Dept.</th>
+                    <th style="width:80px">Label</th>
+                    <th style="min-width:120px">Description</th>
+                    <th style="width:52px">Colour</th>
+                    <th style="width:36px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="d in bulkDrafts" :key="d._id"
+                      :class="{selected: bulkSelectedIds.has(d._id), 'has-error': d._errors.length}">
+                    <td>
+                      <input type="checkbox" :checked="bulkSelectedIds.has(d._id)" @change="bulkToggleRow(d._id)" />
+                    </td>
+                    <td>
+                      <img v-if="d.images[0]" :src="d.images[0].src" class="publish-thumb" style="width:44px;height:44px" />
+                      <span v-if="d._dupe" class="bulk-dupe-badge" :title="'Possible duplicate of '+d._dupe">⚠ {{ d._dupe }}</span>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.maker" @change="bulkValidateRow(d)" />
+                      <span v-if="d._suggested?.maker && !d.maker" class="bulk-suggest-badge">→ {{ d._suggested.maker }}</span>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.title" @change="bulkValidateRow(d)" />
+                      <span v-if="d._suggested?.title && !d.title" class="bulk-suggest-badge">→ {{ d._suggested.title }}</span>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.date" style="min-width:60px" />
+                      <span v-if="d._suggested?.date && !d.date" class="bulk-suggest-badge">→ {{ d._suggested.date }}</span>
+                    </td>
+                    <td>
+                      <select class="bulk-td-input" v-model="d.type" @change="bulkValidateRow(d)">
+                        <option>Shirt</option><option>Book</option><option>Ephemera</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.department" @change="bulkValidateRow(d)" />
+                      <span v-if="d._suggested?.department && !d.department" class="bulk-suggest-badge">→ {{ d._suggested.department }}</span>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.label" />
+                      <span v-if="d._suggested?.label && !d.label" class="bulk-suggest-badge">→ {{ d._suggested.label }}</span>
+                    </td>
+                    <td>
+                      <input class="bulk-td-input" v-model="d.description" style="min-width:140px" />
+                      <span v-if="d._suggested?.description && !d.description" class="bulk-suggest-badge">→ {{ d._suggested.description }}</span>
+                    </td>
+                    <td>
+                      <div style="display:flex;gap:4px;align-items:center">
+                        <input type="color" v-model="d.bodyColour" style="width:28px;height:28px;padding:1px;border:1px solid var(--dim);background:none;cursor:pointer" />
+                      </div>
+                    </td>
+                    <td>
+                      <button class="btn-icon" v-if="bulkAiAvailable" @click="bulkSuggestOne(d)" :disabled="d._suggesting" :title="d._suggesting?'Suggesting…':'AI suggest'" style="font-size:.8rem">
+                        {{ d._suggesting ? '…' : '✦' }}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Validation summary -->
+            <div v-if="bulkDrafts.some(d => d._errors.length)" style="margin-top:12px;padding:10px;background:rgba(139,58,58,.12);border:1px solid #8b3a3a">
+              <div v-for="d in bulkDrafts.filter(d => d._errors.length)" :key="d._id" style="font-size:.75rem;color:#c07070;margin-bottom:4px">
+                <strong>{{ d.key || d._id }}</strong>: {{ d._errors.join(', ') }}
+              </div>
+            </div>
+
+            <!-- AI accept buttons for rows with suggestions -->
+            <div v-if="bulkDrafts.some(d => d._suggested && Object.values(d._suggested).some(v => v))" style="margin-top:12px">
+              <button class="btn btn-sm" @click="bulkAcceptAllSuggestions">Accept all suggestions for blank fields</button>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px">
+              <button class="btn" @click="bulkStage='group'">← Back</button>
+              <button class="btn btn-primary" @click="bulkSaveDrafts" :disabled="bulkSaveRunning">
+                {{ bulkSaveRunning ? 'Saving drafts…' : 'Save drafts & continue →' }}
+              </button>
+              <span v-if="bulkSaveMsg" style="font-size:.75rem;align-self:center" :style="{color:bulkSaveMsgType==='ok'?'#78b88a':'#c07070'}">{{ bulkSaveMsg }}</span>
+            </div>
+          </div>
+
+          <!-- ── Stage 4: Publish ────────────────────────────────────── -->
+          <div v-if="bulkStage==='publish'">
+            <p style="font-size:.78rem;color:var(--muted);margin-bottom:16px">
+              Select drafts to publish. Accession numbers are assigned in the order listed, continuing from the current highest.
+            </p>
+
+            <div style="margin-bottom:16px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;cursor:pointer;margin:0;text-transform:none;letter-spacing:0">
+                <input type="checkbox" :checked="bulkPublishAllSelected" @change="bulkTogglePublishAll" />
+                Select all {{ bulkPublishDrafts.length }} drafts
+              </label>
+            </div>
+
+            <div v-for="(d, di) in bulkPublishDrafts" :key="d._id" class="publish-row">
+              <input type="checkbox" :checked="bulkPublishIds.has(d._id)" @change="bulkTogglePublish(d._id)" />
+              <img v-if="d.images[0]" :src="d.images[0].src" class="publish-thumb" />
+              <div style="flex:1;min-width:0">
+                <div style="font-size:.82rem">{{ d.maker }}<em style="color:var(--muted)">, {{ d.title }}</em></div>
+                <div style="font-size:.68rem;color:var(--muted)">{{ d.type }} · {{ d.department }}</div>
+              </div>
+              <div class="publish-acc">
+                {{ bulkPublishIds.has(d._id) ? (bulkPublishPreview[d._id] || '…') : '—' }}
+              </div>
+              <div v-if="d._errors.length" style="font-size:.65rem;color:#c07070" :title="d._errors.join(', ')">⚠ incomplete</div>
+            </div>
+
+            <div v-if="!bulkPublishDrafts.length" style="font-size:.78rem;color:var(--muted);margin:20px 0">
+              No saved drafts. Go back to Review and save drafts first.
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px;align-items:center">
+              <button class="btn" @click="bulkStage='review'">← Back</button>
+              <button class="btn btn-primary" @click="bulkConfirmPublish" :disabled="bulkPublishing||!bulkPublishIds.size||bulkPublishDrafts.some(d=>bulkPublishIds.has(d._id)&&d._errors.length)">
+                {{ bulkPublishing ? 'Publishing…' : 'Publish ' + bulkPublishIds.size + ' object' + (bulkPublishIds.size===1?'':'s') }}
+              </button>
+              <span v-if="bulkPublishDrafts.some(d=>bulkPublishIds.has(d._id)&&d._errors.length)" style="font-size:.72rem;color:#c07070">Some selected objects have validation errors</span>
+            </div>
+
+            <!-- Publish result -->
+            <div v-if="bulkPublishResult.length" style="margin-top:24px;padding:16px;background:var(--surface);border:1px solid var(--dim)">
+              <div style="font-size:.75rem;color:#78b88a;margin-bottom:12px">Published {{ bulkPublishResult.length }} objects:</div>
+              <div v-for="r in bulkPublishResult" :key="r.accession" style="display:flex;gap:12px;align-items:center;margin-bottom:6px;font-size:.82rem">
+                <span style="font-family:monospace;color:var(--warm)">{{ r.accession }}</span>
+                <span>{{ r.maker }}<em style="color:var(--muted)">, {{ r.title }}</em></span>
+                <a :href="'/collection/' + r.accession" target="_blank" class="btn-icon" style="font-size:.72rem">↗</a>
+              </div>
+              <div style="margin-top:12px">
+                <button class="btn btn-sm" @click="startBulkUpload">Start new bulk upload</button>
+                <a class="btn btn-sm" href="/collection" target="_blank" style="margin-left:8px">View collection ↗</a>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /col-bulk -->
+
       </div><!-- /main-body -->
     </main>
   </div><!-- /shell -->
@@ -1053,6 +1522,33 @@ createApp({
       uploading:   false,
       uploadError: '',
 
+      // Bulk upload
+      bulkStage:       'drop',
+      bulkFiles:       [], // { id, originalName, status, progress, error, url, hash, w, h, bodyColour, exif }
+      bulkCsvFile:     null,
+      bulkCsvRows:     {}, // key → {maker,title,...}
+      bulkDragOver:    false,
+      bulkDragSrc:     null, // { gi, pi } — plate being dragged
+      bulkDropTarget:  null,
+      bulkGroups:      [], // { id, key, plates: [{id,url,role,hash,bodyColour}] }
+      bulkDrafts:      [], // { _id, key, seq, maker, title, date, type, department, label, description, bodyColour, provenance, condition, images, _errors, _suggested, _suggesting }
+      bulkGapSec:      20,
+      bulkUploadRunning: false,
+      bulkUploadDone:  0,
+      bulkSelectedIds: new Set(),
+      bulkBulkField:   '',
+      bulkBulkValue:   '',
+      bulkSuggestRunning: false,
+      bulkSuggestCost: 0,
+      bulkAiAvailable: false,
+      bulkSaveRunning: false,
+      bulkSaveMsg:     '',
+      bulkSaveMsgType: 'ok',
+      bulkPublishIds:  new Set(),
+      bulkPublishPreview: {}, // draftId → predicted accession
+      bulkPublishing:  false,
+      bulkPublishResult: [],
+
       // Collection
       colObjects:      [],
       colLoading:      false,
@@ -1083,6 +1579,7 @@ createApp({
       if (this.section === 'col-list') return 'Collection';
       if (this.section === 'col-add')  return 'Add Object';
       if (this.section === 'col-edit') return `Edit ${this.colForm?.accession || 'Object'}`;
+      if (this.section === 'col-bulk') return 'Bulk Upload';
       if (this.section === 'project' && this.currentProject) {
         return `${this.currentProject.num} · ${this.currentProject.title}`;
       }
@@ -1097,6 +1594,15 @@ createApp({
       }
       return L;
     },
+    bulkWaiting() { return this.bulkFiles.filter(f => f.status === 'wait'); },
+    bulkErrorFiles() { return this.bulkFiles.filter(f => f.status === 'err'); },
+    bulkCanGroup() { return this.bulkFiles.some(f => f.status === 'ok'); },
+    bulkCanReview() { return this.bulkGroups.length > 0; },
+    bulkCanPublish() { return this.bulkDrafts.some(d => d.seq); },
+    bulkAllSelected() { return this.bulkDrafts.length > 0 && this.bulkSelectedIds.size === this.bulkDrafts.length; },
+    bulkSelectedSeqs() { return this.bulkDrafts.filter(d => this.bulkSelectedIds.has(d._id)).map(d => d.seq).filter(Boolean); },
+    bulkPublishDrafts() { return this.bulkDrafts.filter(d => d.seq); },
+    bulkPublishAllSelected() { return this.bulkPublishDrafts.length > 0 && this.bulkPublishIds.size === this.bulkPublishDrafts.length; },
   },
 
   methods: {
@@ -1518,6 +2024,516 @@ createApp({
       if (!jobId) return 'Run cutout';
       const job = this.colJobPoll[jobId] ? 'Processing…' : 'Run cutout';
       return job;
+    },
+
+    // ── Bulk upload ────────────────────────────────────────────────────────────
+
+    startBulkUpload() {
+      this.bulkStage = 'drop';
+      this.bulkFiles = [];
+      this.bulkCsvFile = null;
+      this.bulkCsvRows = {};
+      this.bulkGroups = [];
+      this.bulkDrafts = [];
+      this.bulkUploadRunning = false;
+      this.bulkUploadDone = 0;
+      this.bulkSelectedIds = new Set();
+      this.bulkPublishIds = new Set();
+      this.bulkPublishPreview = {};
+      this.bulkPublishResult = [];
+      this.bulkSuggestCost = 0;
+      this.bulkSaveMsg = '';
+      this.section = 'col-bulk';
+      // Check if AI is available
+      this.checkAiAvailable();
+    },
+
+    async checkAiAvailable() {
+      try {
+        const r = await fetch('/api/collection/suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+          body: JSON.stringify({ imageUrls: [] }),
+        });
+        this.bulkAiAvailable = r.status !== 503;
+      } catch(_) { this.bulkAiAvailable = false; }
+    },
+
+    bulkOnDrop(e) {
+      this.bulkDragOver = false;
+      const files = [...(e.dataTransfer.files || [])];
+      this.bulkAddFilesToQueue(files);
+    },
+
+    bulkOnFiles(e) {
+      const files = [...(e.target.files || [])];
+      this.bulkAddFilesToQueue(files);
+      e.target.value = '';
+    },
+
+    bulkAddFilesToQueue(files) {
+      for (const file of files) {
+        if (/\.csv$/i.test(file.name)) {
+          this.parseCsv(file);
+          continue;
+        }
+        const isImage = /\.(jpe?g|png|gif|webp|heic|heif|tiff?)$/i.test(file.name) || file.type.startsWith('image/');
+        if (!isImage) continue;
+        this.bulkFiles.push({
+          id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+          originalName: file.name,
+          file,
+          status: 'wait',
+          progress: 0,
+          error: '',
+          url: null, hash: null, w: null, h: null, bodyColour: '#888888', exif: {},
+        });
+      }
+    },
+
+    bulkRemoveFile(id) {
+      this.bulkFiles = this.bulkFiles.filter(f => f.id !== id);
+    },
+
+    parseCsv(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+        if (!lines.length) return;
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+        const keyIdx = headers.indexOf('key');
+        if (keyIdx === -1) { alert('CSV must have a "key" column'); return; }
+        const rows = {};
+        for (let i = 1; i < lines.length; i++) {
+          // Simple CSV parse (handles quoted fields)
+          const cols = lines[i].match(/("([^"]*)"|([^,]*))(,|$)/g)?.map(c => c.replace(/,?$/, '').replace(/^"|"$/g, '').trim()) || [];
+          const key = cols[keyIdx];
+          if (!key) continue;
+          const row = {};
+          headers.forEach((h, hi) => { if (cols[hi] !== undefined) row[h] = cols[hi]; });
+          rows[key] = row;
+        }
+        this.bulkCsvRows = rows;
+        this.bulkCsvFile = file;
+      };
+      reader.readAsText(file);
+    },
+
+    async bulkStartUpload() {
+      if (this.bulkUploadRunning || !this.bulkWaiting.length) return;
+      this.bulkUploadRunning = true;
+      this.bulkUploadDone = this.bulkFiles.filter(f => f.status === 'ok').length;
+
+      const concurrency = 3;
+      const queue = this.bulkFiles.filter(f => f.status === 'wait');
+
+      const doUpload = async (f) => {
+        f.status = 'prog';
+        const fd = new FormData();
+        fd.append('file', f.file);
+        try {
+          // Use XMLHttpRequest for progress
+          await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/collection/bulk/upload');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + this.token);
+            xhr.upload.onprogress = (e) => { if (e.lengthComputable) f.progress = Math.round(e.loaded / e.total * 90); };
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                  const d = JSON.parse(xhr.responseText);
+                  f.url = d.url; f.hash = d.hash; f.w = d.w; f.h = d.h;
+                  f.bodyColour = d.bodyColour || '#888888';
+                  f.exif = d.exif || {};
+                  f.dupe = d.dupe || null;
+                  f.status = 'ok'; f.progress = 100;
+                  this.bulkUploadDone++;
+                  resolve();
+                } catch(e) { f.status = 'err'; f.error = 'Bad response'; reject(e); }
+              } else {
+                f.status = 'err';
+                try { f.error = JSON.parse(xhr.responseText).error || 'Upload failed'; } catch(_) { f.error = 'Upload failed'; }
+                reject(new Error(f.error));
+              }
+            };
+            xhr.onerror = () => { f.status = 'err'; f.error = 'Network error'; reject(new Error('Network error')); };
+            xhr.send(fd);
+          });
+        } catch(_) {}
+      };
+
+      // Process in batches of `concurrency`
+      for (let i = 0; i < queue.length; i += concurrency) {
+        await Promise.all(queue.slice(i, i + concurrency).map(f => doUpload(f)));
+      }
+
+      this.bulkUploadRunning = false;
+    },
+
+    bulkGoGroup() {
+      if (!this.bulkCanGroup) return;
+      this.bulkAutoGroup();
+      this.bulkStage = 'group';
+    },
+
+    bulkAutoGroup() {
+      const uploaded = this.bulkFiles.filter(f => f.status === 'ok');
+
+      // Suffix patterns for plate roles
+      const suffixRole = (name) => {
+        const stem = name.replace(/\.[^.]+$/, '').toLowerCase();
+        const suffixes = [
+          [/[_-]front$|[_-]f$|[_-]1$/, 'front'],
+          [/[_-]back$|[_-]b$|[_-]2$/, 'back'],
+          [/[_-]label$|[_-]tag$|[_-]l$|[_-]3$/, 'label'],
+          [/[_-]detail$|[_-]d$|[_-]4$/, 'detail'],
+        ];
+        for (const [re, role] of suffixes) {
+          if (re.test(stem)) return { key: stem.replace(re, ''), role };
+        }
+        return { key: stem, role: 'front' };
+      };
+
+      // First pass: group by filename stem
+      const byKey = {};
+      const ungrouped = [];
+      for (const f of uploaded) {
+        const { key, role } = suffixRole(f.originalName);
+        if (!byKey[key]) byKey[key] = [];
+        byKey[key].push({ ...f, role });
+      }
+
+      // Second pass: time-gap grouping for files without a matched key (key === stem)
+      // Find files whose key matches no other file (lone files)
+      const keyCount = {};
+      for (const key of Object.keys(byKey)) keyCount[key] = byKey[key].length;
+
+      const groups = [];
+      const uniqueId = () => Math.random().toString(36).slice(2);
+
+      // Files that DO share a key with another file → keep grouped
+      const sharedKeys = Object.keys(byKey).filter(k => keyCount[k] > 1 || byKey[k][0].role !== 'front');
+      for (const key of sharedKeys) {
+        groups.push({
+          id: uniqueId(), key,
+          plates: byKey[key].map(f => ({ id: uniqueId(), url: f.url, role: f.role, hash: f.hash, bodyColour: f.bodyColour, originalName: f.originalName })),
+        });
+        delete byKey[key];
+      }
+
+      // Remaining lone files: sort by EXIF taken time, then gap-group
+      const loneFiles = Object.values(byKey).flat().sort((a, b) => {
+        const ta = a.exif?.takenAt ? new Date(a.exif.takenAt).getTime() : 0;
+        const tb = b.exif?.takenAt ? new Date(b.exif.takenAt).getTime() : 0;
+        return ta - tb || a.originalName.localeCompare(b.originalName);
+      });
+
+      if (loneFiles.length) {
+        let cur = { id: uniqueId(), key: loneFiles[0].key, plates: [{ id: uniqueId(), url: loneFiles[0].url, role: loneFiles[0].role, hash: loneFiles[0].hash, bodyColour: loneFiles[0].bodyColour, originalName: loneFiles[0].originalName }] };
+        for (let i = 1; i < loneFiles.length; i++) {
+          const prev = loneFiles[i - 1];
+          const curr = loneFiles[i];
+          const tPrev = prev.exif?.takenAt ? new Date(prev.exif.takenAt).getTime() : null;
+          const tCurr = curr.exif?.takenAt ? new Date(curr.exif.takenAt).getTime() : null;
+          const gap = tPrev && tCurr ? (tCurr - tPrev) / 1000 : 0;
+          if (gap > this.bulkGapSec) {
+            groups.push(cur);
+            cur = { id: uniqueId(), key: curr.key, plates: [] };
+          }
+          cur.plates.push({ id: uniqueId(), url: curr.url, role: cur.plates.length === 0 ? 'front' : 'back', hash: curr.hash, bodyColour: curr.bodyColour, originalName: curr.originalName });
+        }
+        groups.push(cur);
+      }
+
+      // Merge CSV data into group keys
+      for (const g of groups) {
+        const csvMatch = this.bulkCsvRows[g.key];
+        if (csvMatch) Object.assign(g, { csvData: csvMatch });
+      }
+
+      // Sort: multi-plate groups first, then by key
+      groups.sort((a, b) => b.plates.length - a.plates.length || a.key.localeCompare(b.key));
+      this.bulkGroups = groups;
+    },
+
+    bulkDragPlate(gi, pi) {
+      this.bulkDragSrc = { gi, pi };
+    },
+
+    bulkDragEnd() {
+      this.bulkDropTarget = null;
+    },
+
+    bulkDropOnGroup(targetGi) {
+      this.bulkDropTarget = null;
+      if (!this.bulkDragSrc) return;
+      const { gi, pi } = this.bulkDragSrc;
+      this.bulkDragSrc = null;
+      if (gi === targetGi) return;
+      const plate = this.bulkGroups[gi].plates.splice(pi, 1)[0];
+      this.bulkGroups[targetGi].plates.push(plate);
+      if (!this.bulkGroups[gi].plates.length) this.bulkGroups.splice(gi, 1);
+    },
+
+    bulkRemovePlate(gi, pi) {
+      this.bulkGroups[gi].plates.splice(pi, 1);
+      if (!this.bulkGroups[gi].plates.length) this.bulkGroups.splice(gi, 1);
+    },
+
+    bulkSplitGroup(gi) {
+      const g = this.bulkGroups[gi];
+      if (g.plates.length < 2) return;
+      const plate = g.plates.pop();
+      const newKey = g.key + '_b';
+      this.bulkGroups.splice(gi + 1, 0, {
+        id: Math.random().toString(36).slice(2), key: newKey, plates: [plate],
+      });
+    },
+
+    bulkMergeUp(gi) {
+      if (gi === 0) return;
+      const plates = this.bulkGroups.splice(gi, 1)[0].plates;
+      this.bulkGroups[gi - 1].plates.push(...plates);
+    },
+
+    bulkDeleteGroup(gi) {
+      if (!confirm('Delete this group? The photos will be lost.')) return;
+      this.bulkGroups.splice(gi, 1);
+    },
+
+    bulkAddGroup() {
+      this.bulkGroups.push({
+        id: Math.random().toString(36).slice(2), key: 'new_group_' + this.bulkGroups.length, plates: [],
+      });
+    },
+
+    bulkGoReview() {
+      if (!this.bulkCanReview) return;
+      // Build drafts from groups (merge with any existing draft data by key)
+      const existing = {};
+      for (const d of this.bulkDrafts) existing[d.key] = d;
+
+      this.bulkDrafts = this.bulkGroups.filter(g => g.plates.length).map(g => {
+        const prev = existing[g.key] || {};
+        const csv  = this.bulkCsvRows[g.key] || {};
+        const front = g.plates.find(p => p.role === 'front') || g.plates[0];
+        const d = {
+          _id:         prev._id || Math.random().toString(36).slice(2),
+          seq:         prev.seq || null,
+          key:         g.key,
+          maker:       prev.maker || csv.maker || '',
+          title:       prev.title || csv.title || '',
+          date:        prev.date  || csv.date  || '',
+          type:        prev.type  || csv.type  || 'Shirt',
+          department:  prev.department || csv.department || 'Music',
+          label:       prev.label || csv.label || '',
+          description: prev.description || csv.description || '',
+          bodyColour:  prev.bodyColour || front?.bodyColour || '#888888',
+          provenance:  prev.provenance || csv.provenance || '',
+          condition:   prev.condition || csv.condition || '',
+          note:        prev.note || '',
+          customFacts: prev.customFacts || [],
+          images:      g.plates.map(p => ({ role: p.role, src: p.url, hash: p.hash })),
+          _errors:     [],
+          _suggested:  prev._suggested || null,
+          _suggesting: false,
+          _dupe:       g.plates.some(p => p.dupe) ? g.plates.find(p => p.dupe)?.dupe : null,
+        };
+        this.bulkValidateRow(d);
+        return d;
+      });
+
+      this.bulkSelectedIds = new Set(this.bulkDrafts.map(d => d._id));
+      this.bulkStage = 'review';
+    },
+
+    bulkValidateRow(d) {
+      const errs = [];
+      if (!d.maker) errs.push('maker required');
+      if (!d.title) errs.push('title required');
+      if (!d.type)  errs.push('type required');
+      if (!d.department) errs.push('department required');
+      if (!d.images.length) errs.push('at least one image required');
+      d._errors = errs;
+    },
+
+    bulkToggleAll(e) {
+      if (e.target.checked) this.bulkSelectedIds = new Set(this.bulkDrafts.map(d => d._id));
+      else this.bulkSelectedIds = new Set();
+    },
+
+    bulkToggleRow(id) {
+      const s = new Set(this.bulkSelectedIds);
+      if (s.has(id)) s.delete(id); else s.add(id);
+      this.bulkSelectedIds = s;
+    },
+
+    bulkApplyBulkField() {
+      if (!this.bulkBulkField || !this.bulkBulkValue) return;
+      for (const d of this.bulkDrafts) {
+        if (!this.bulkSelectedIds.has(d._id)) continue;
+        d[this.bulkBulkField] = this.bulkBulkValue;
+        this.bulkValidateRow(d);
+      }
+      this.bulkBulkValue = '';
+    },
+
+    async bulkSuggestOne(d) {
+      if (!this.bulkAiAvailable || d._suggesting) return;
+      d._suggesting = true;
+      try {
+        const imageUrls = d.images.map(i => i.src);
+        const r = await fetch('/api/collection/suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+          body: JSON.stringify({ imageUrls }),
+        });
+        if (!r.ok) { d._suggesting = false; return; }
+        const data = await r.json();
+        d._suggested = data.suggestions || {};
+        this.bulkSuggestCost += (data.inputTokens || 0) + (data.outputTokens || 0);
+      } catch(_) {}
+      d._suggesting = false;
+    },
+
+    async bulkSuggestAll() {
+      if (!this.bulkAiAvailable || this.bulkSuggestRunning) return;
+      this.bulkSuggestRunning = true;
+      const selected = this.bulkDrafts.filter(d => this.bulkSelectedIds.has(d._id));
+      const concurrency = 2;
+      for (let i = 0; i < selected.length; i += concurrency) {
+        await Promise.all(selected.slice(i, i + concurrency).map(d => this.bulkSuggestOne(d)));
+      }
+      this.bulkSuggestRunning = false;
+    },
+
+    bulkAcceptAllSuggestions() {
+      for (const d of this.bulkDrafts) {
+        if (!d._suggested) continue;
+        for (const [k, v] of Object.entries(d._suggested)) {
+          if (v && !d[k]) d[k] = v;
+        }
+        d._suggested = null;
+        this.bulkValidateRow(d);
+      }
+    },
+
+    async bulkSaveDrafts() {
+      this.bulkSaveRunning = true;
+      this.bulkSaveMsg = '';
+      let saved = 0;
+      try {
+        for (const d of this.bulkDrafts) {
+          const body = {
+            status: 'pending',
+            type: d.type, department: d.department,
+            maker: d.maker, title: d.title, date: d.date || null,
+            description: d.description || null, label: d.label || null,
+            bodyColour: d.bodyColour || null, provenance: d.provenance || null,
+            condition: d.condition || null, note: d.note || null,
+            customFacts: d.customFacts || [],
+            images: d.images,
+          };
+          if (d.seq) {
+            // Update existing draft
+            const r = await fetch('/api/collection/by-seq/' + d.seq, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+              body: JSON.stringify(body),
+            });
+            if (r.ok) saved++;
+          } else {
+            // Create new draft
+            const r = await fetch('/api/collection', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+              body: JSON.stringify(body),
+            });
+            if (r.ok) {
+              const created = await r.json();
+              d.seq = created.seq;
+              saved++;
+            }
+          }
+        }
+        this.bulkSaveMsg = `Saved ${saved} draft${saved === 1 ? '' : 's'}`;
+        this.bulkSaveMsgType = 'ok';
+        this.bulkGoPublish();
+      } catch(e) {
+        this.bulkSaveMsg = 'Save failed: ' + e.message;
+        this.bulkSaveMsgType = 'err';
+      } finally {
+        this.bulkSaveRunning = false;
+        setTimeout(() => { this.bulkSaveMsg = ''; }, 4000);
+      }
+    },
+
+    bulkGoPublish() {
+      if (!this.bulkCanPublish) return;
+      // Pre-select all valid drafts
+      this.bulkPublishIds = new Set(this.bulkPublishDrafts.filter(d => !d._errors.length).map(d => d._id));
+      this.bulkBuildPublishPreview();
+      this.bulkStage = 'publish';
+    },
+
+    bulkTogglePublish(id) {
+      const s = new Set(this.bulkPublishIds);
+      if (s.has(id)) s.delete(id); else s.add(id);
+      this.bulkPublishIds = s;
+      this.bulkBuildPublishPreview();
+    },
+
+    bulkTogglePublishAll(e) {
+      if (e.target.checked) this.bulkPublishIds = new Set(this.bulkPublishDrafts.map(d => d._id));
+      else this.bulkPublishIds = new Set();
+      this.bulkBuildPublishPreview();
+    },
+
+    bulkBuildPublishPreview() {
+      // Compute predicted accession numbers (client-side preview using current max)
+      const year = new Date().getFullYear();
+      // We don't know the exact current max without a server call, so show placeholders
+      // The real numbers are assigned server-side
+      const preview = {};
+      let n = 1;
+      for (const d of this.bulkPublishDrafts) {
+        if (this.bulkPublishIds.has(d._id)) {
+          preview[d._id] = `${year}.${String(999 + n++).padStart(3, '0')}*`;
+        }
+      }
+      this.bulkPublishPreview = preview;
+    },
+
+    async bulkConfirmPublish() {
+      if (this.bulkPublishing || !this.bulkPublishIds.size) return;
+      const selectedDrafts = this.bulkPublishDrafts.filter(d => this.bulkPublishIds.has(d._id));
+      if (selectedDrafts.some(d => d._errors.length)) {
+        alert('Some selected objects have validation errors. Fix them before publishing.');
+        return;
+      }
+      const seqs = selectedDrafts.map(d => d.seq).filter(Boolean);
+      if (!seqs.length) { alert('No saved drafts to publish.'); return; }
+
+      this.bulkPublishing = true;
+      try {
+        const r = await fetch('/api/collection/bulk-publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+          body: JSON.stringify({ seqs }),
+        });
+        const data = await r.json();
+        if (!r.ok) { alert(data.error || 'Publish failed'); return; }
+        this.bulkPublishResult = data.published || [];
+        // Remove published drafts from bulkDrafts list
+        const publishedSeqs = new Set(data.published.map(p => p.seq));
+        this.bulkDrafts = this.bulkDrafts.filter(d => !publishedSeqs.has(d.seq));
+        this.bulkPublishIds = new Set();
+        await this.fetchCol();
+      } catch(e) {
+        alert('Publish failed: ' + e.message);
+      } finally {
+        this.bulkPublishing = false;
+      }
     },
   },
 

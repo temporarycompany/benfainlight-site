@@ -6,6 +6,15 @@ const crypto    = require('crypto');
 const { spawn } = require('child_process');
 const RSSParser = require('rss-parser');
 
+let sharp;
+try { sharp = require('sharp'); } catch(_) { console.warn('[server] sharp not available — image processing disabled'); }
+
+let exifr;
+try { exifr = require('exifr'); } catch(_) {}
+
+let Anthropic;
+try { Anthropic = require('@anthropic-ai/sdk').default || require('@anthropic-ai/sdk'); } catch(_) {}
+
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
@@ -197,16 +206,107 @@ function writeCollection(objects) {
   fs.renameSync(tmp, COLLECTION_FILE);
 }
 
+// ── Tombstones (prevent accession number reuse after deletion) ────────────────
+const TOMBSTONES_FILE = path.join(DATA_DIR, 'tombstones.json');
+
+function readTombstones() {
+  try { return JSON.parse(fs.readFileSync(TOMBSTONES_FILE, 'utf8')); }
+  catch(_) { return []; }
+}
+
+function addTombstone(accession) {
+  if (!accession) return;
+  const t = readTombstones();
+  if (!t.includes(accession)) {
+    t.push(accession);
+    fs.writeFileSync(TOMBSTONES_FILE, JSON.stringify(t), 'utf8');
+  }
+}
+
+// Promise-chain mutex so concurrent publish requests are serialised
+let accessionLock = Promise.resolve();
+function withAccessionLock(fn) {
+  const next = accessionLock.then(fn);
+  accessionLock = next.catch(() => {});
+  return next;
+}
+
 function nextAccession() {
-  const year  = new Date().getFullYear();
-  const objs  = readCollection();
-  const nums  = objs
-    .map(o => o.accession)
-    .filter(a => a && a.startsWith(String(year) + '.'))
-    .map(a => parseInt(a.split('.')[1], 10))
-    .filter(n => !isNaN(n));
-  const next = nums.length ? Math.max(...nums) + 1 : 1;
-  return `${year}.${String(next).padStart(3, '0')}`;
+  const year = new Date().getFullYear();
+  const objs = readCollection();
+  const tombstones = readTombstones();
+  const nums = [
+    ...objs.map(o => o.accession),
+    ...tombstones,
+  ].filter(a => a && a.startsWith(String(year) + '.'))
+   .map(a => parseInt(a.split('.')[1], 10))
+   .filter(n => !isNaN(n));
+  const max = nums.length ? Math.max(...nums) : 0;
+  return `${year}.${String(max + 1).padStart(3, '0')}`;
+}
+
+// ── Image processing helpers ──────────────────────────────────────────────────
+
+async function computeBodyColour(buf) {
+  if (!sharp) return '#888888';
+  try {
+    const raw = await sharp(buf)
+      .resize(100, 100, { fit: 'cover', position: 'centre' })
+      .removeAlpha()
+      .raw()
+      .toBuffer();
+    const counts = {};
+    for (let i = 0; i < raw.length; i += 3) {
+      const r = raw[i], g = raw[i + 1], b = raw[i + 2];
+      if (r > 215 && g > 215 && b > 215) continue; // near-white
+      if (r < 40  && g < 40  && b < 40)  continue; // near-black
+      const rq = Math.round(r / 32) * 32;
+      const gq = Math.round(g / 32) * 32;
+      const bq = Math.round(b / 32) * 32;
+      const key = `${rq},${gq},${bq}`;
+      counts[key] = (counts[key] || 0) + 1;
+    }
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    if (!top) return '#888888';
+    const [r, g, b] = top[0].split(',').map(Number);
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+  } catch(_) { return '#888888'; }
+}
+
+async function computeHash(buf) {
+  if (!sharp) return null;
+  try {
+    const raw = await sharp(buf)
+      .resize(8, 8, { fit: 'fill' })
+      .grayscale()
+      .raw()
+      .toBuffer();
+    const avg = raw.reduce((s, v) => s + v, 0) / 64;
+    let bits = '';
+    for (const v of raw) bits += v >= avg ? '1' : '0';
+    return BigInt('0b' + bits).toString(16).padStart(16, '0');
+  } catch(_) { return null; }
+}
+
+function hashDistance(h1, h2) {
+  if (!h1 || !h2) return 64;
+  try {
+    let xor = BigInt('0x' + h1) ^ BigInt('0x' + h2);
+    let dist = 0;
+    while (xor > 0n) { if (xor & 1n) dist++; xor >>= 1n; }
+    return dist;
+  } catch(_) { return 64; }
+}
+
+function findHashDupe(objects, hash) {
+  if (!hash) return null;
+  for (const o of objects) {
+    if (o.status !== 'accessioned') continue;
+    for (const img of (o.images || [])) {
+      if (img.hash && hashDistance(img.hash, hash) < 10) return o.accession;
+    }
+  }
+  return null;
 }
 
 // Collection upload (separate multer to collection subdir)
@@ -350,6 +450,33 @@ app.delete('/api/collection/:accession', requireAuth, (req, res) => {
   const objects = readCollection();
   const idx     = objects.findIndex(o => o.accession === req.params.accession);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  const acc = objects[idx].accession;
+  objects.splice(idx, 1);
+  writeCollection(objects);
+  if (acc) addTombstone(acc);
+  res.json({ ok: true });
+});
+
+// Protected: patch pending draft by seq (accession is null for pending objects)
+app.patch('/api/collection/by-seq/:seq', requireAuth, (req, res) => {
+  const seq = parseInt(req.params.seq, 10);
+  const objects = readCollection();
+  const idx = objects.findIndex(o => o.seq === seq);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  const updated = { ...objects[idx], ...req.body, updatedAt: new Date().toISOString() };
+  updated.accession = objects[idx].accession;
+  updated.seq       = objects[idx].seq;
+  objects[idx] = updated;
+  writeCollection(objects);
+  res.json(objects[idx]);
+});
+
+// Protected: delete pending draft by seq
+app.delete('/api/collection/by-seq/:seq', requireAuth, (req, res) => {
+  const seq = parseInt(req.params.seq, 10);
+  const objects = readCollection();
+  const idx = objects.findIndex(o => o.seq === seq);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
   objects.splice(idx, 1);
   writeCollection(objects);
   res.json({ ok: true });
@@ -359,6 +486,159 @@ app.delete('/api/collection/:accession', requireAuth, (req, res) => {
 app.post('/api/collection/upload', requireAuth, collectionUpload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file received' });
   res.json({ url: '/uploads/collection/' + req.file.filename, filename: req.file.filename });
+});
+
+// Protected: bulk upload — processes image (resize, EXIF strip, hash, body colour)
+app.post('/api/collection/bulk/upload', requireAuth, collectionUpload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file received' });
+
+  const srcPath = req.file.path;
+  const base    = path.basename(srcPath, path.extname(srcPath));
+  const webpName = base + '.webp';
+  const webpPath = path.join(COLLECTION_DIR, webpName);
+  const webpUrl  = '/uploads/collection/' + webpName;
+  const origUrl  = '/uploads/collection/' + req.file.filename;
+
+  // Default result (used when sharp is absent)
+  let result = { url: origUrl, originalUrl: origUrl, filename: req.file.filename, w: null, h: null, hash: null, bodyColour: '#888888', exif: {}, dupe: null };
+
+  // Read EXIF date before processing (exifr reads original)
+  let takenAt = null;
+  if (exifr) {
+    try {
+      const parsed = await exifr.parse(srcPath, { pick: ['DateTimeOriginal', 'CreateDate'] });
+      takenAt = (parsed?.DateTimeOriginal || parsed?.CreateDate || null)?.toISOString() ?? null;
+    } catch(_) {}
+  }
+
+  if (sharp) {
+    try {
+      const img = sharp(srcPath).rotate();
+      const { data, info } = await img
+        .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
+        .withMetadata(false)
+        .webp({ quality: 85 })
+        .toBuffer({ resolveWithObject: true });
+
+      fs.writeFileSync(webpPath, data);
+
+      const [hash, bodyColour] = await Promise.all([computeHash(data), computeBodyColour(data)]);
+      const dupe = findHashDupe(readCollection(), hash);
+
+      // Remove original (we keep WebP only)
+      try { fs.unlinkSync(srcPath); } catch(_) {}
+
+      result = { url: webpUrl, originalUrl: webpUrl, filename: webpName, w: info.width, h: info.height, hash, bodyColour, exif: { takenAt }, dupe };
+    } catch (err) {
+      console.error('[bulk/upload] sharp error:', err.message);
+      result.exif = { takenAt };
+    }
+  } else {
+    result.exif = { takenAt };
+  }
+
+  res.json(result);
+});
+
+// Protected: atomic publish of selected pending drafts (by seq[])
+app.post('/api/collection/bulk-publish', requireAuth, (req, res) => {
+  const { seqs } = req.body || {};
+  if (!Array.isArray(seqs) || !seqs.length) return res.status(400).json({ error: 'seqs[] required' });
+
+  return withAccessionLock(async () => {
+    const objects    = readCollection();
+    const tombstones = readTombstones();
+    const year       = new Date().getFullYear();
+    const prefix     = `${year}.`;
+
+    // Build set of already-used numbers (live + tombstones)
+    const usedNums = new Set(
+      [...objects.map(o => o.accession), ...tombstones]
+        .filter(a => a && a.startsWith(prefix))
+        .map(a => parseInt(a.split('.')[1], 10))
+        .filter(n => !isNaN(n))
+    );
+
+    // Resolve seq → index, in order supplied
+    const toPublish = [];
+    for (const seq of seqs) {
+      const idx = objects.findIndex(o => o.seq === seq);
+      if (idx === -1) return res.status(400).json({ error: `seq ${seq} not found` });
+      if (objects[idx].status !== 'pending') return res.status(400).json({ error: `seq ${seq} is not pending` });
+      toPublish.push({ idx, obj: objects[idx] });
+    }
+
+    // Assign accessions sequentially
+    const published = [];
+    let n = usedNums.size ? Math.max(...usedNums) + 1 : 1;
+    const now = new Date().toISOString();
+    for (const { idx, obj } of toPublish) {
+      const accession = `${year}.${String(n++).padStart(3, '0')}`;
+      usedNums.add(n - 1);
+      objects[idx] = { ...obj, accession, status: 'accessioned', updatedAt: now };
+      published.push({ seq: obj.seq, accession, title: obj.title, maker: obj.maker });
+    }
+
+    writeCollection(objects);
+    res.json({ published });
+  });
+});
+
+// Protected: AI suggestions for a pending draft
+app.post('/api/collection/suggest', requireAuth, async (req, res) => {
+  if (!Anthropic || !process.env.ANTHROPIC_API_KEY) {
+    return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured' });
+  }
+  const { imageUrls } = req.body || {};
+  if (!Array.isArray(imageUrls) || !imageUrls.length) {
+    return res.status(400).json({ error: 'imageUrls[] required' });
+  }
+
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  // Load up to 3 images from disk
+  const imageContent = [];
+  for (const url of imageUrls.slice(0, 3)) {
+    const filePath = path.join(COLLECTION_DIR, path.basename(url));
+    if (!fs.existsSync(filePath)) continue;
+    try {
+      const data = fs.readFileSync(filePath);
+      imageContent.push({
+        type: 'image',
+        source: { type: 'base64', media_type: 'image/webp', data: data.toString('base64') }
+      });
+    } catch(_) {}
+  }
+  if (!imageContent.length) return res.status(400).json({ error: 'No readable images found' });
+
+  try {
+    const msg = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 400,
+      messages: [{
+        role: 'user',
+        content: [
+          ...imageContent,
+          {
+            type: 'text',
+            text: `This is a vintage collectible item. From the photos, identify:\n1. maker (artist/band/brand name)\n2. title (e.g. "Self-Titled Tour", "1997 Tour")\n3. date (year or range, e.g. "1997" or "1997–98")\n4. label (the tag brand inside, e.g. "Anvil", "Giant", "Screen Stars", "Delta")\n5. description (one brief sentence, e.g. "Black cotton T-shirt with screen-printed logo")\n6. department (one of: Music, Art, Film & TV, Sport, Other)\n\nReply ONLY with JSON, no explanation:\n{"maker":"","title":"","date":"","label":"","description":"","department":""}\nLeave fields as empty string "" when genuinely uncertain.`
+          }
+        ]
+      }]
+    });
+
+    const text = msg.content?.[0]?.text || '';
+    let suggestions = {};
+    try {
+      const match = text.match(/\{[\s\S]*?\}/);
+      if (match) suggestions = JSON.parse(match[0]);
+    } catch(_) {}
+
+    res.json({ suggestions, inputTokens: msg.usage?.input_tokens || 0, outputTokens: msg.usage?.output_tokens || 0 });
+  } catch (err) {
+    console.error('[suggest] error:', err.message);
+    res.status(500).json({ error: 'AI suggestion failed: ' + err.message });
+  }
 });
 
 // Protected: queue a cutout job
