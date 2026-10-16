@@ -1371,15 +1371,33 @@ select { cursor: pointer; appearance: none; }
 
             <!-- Publish result -->
             <div v-if="bulkPublishResult.length" style="margin-top:24px;padding:16px;background:var(--surface);border:1px solid var(--dim)">
-              <div style="font-size:.75rem;color:#78b88a;margin-bottom:12px">Published {{ bulkPublishResult.length }} objects:</div>
+              <div style="font-size:.75rem;color:#78b88a;margin-bottom:12px">Published {{ bulkPublishResult.length }} object{{ bulkPublishResult.length===1?'':'s' }}:</div>
               <div v-for="r in bulkPublishResult" :key="r.accession" style="display:flex;gap:12px;align-items:center;margin-bottom:6px;font-size:.82rem">
-                <span style="font-family:monospace;color:var(--warm)">{{ r.accession }}</span>
-                <span>{{ r.maker }}<em style="color:var(--muted)">, {{ r.title }}</em></span>
-                <a :href="'/collection/' + r.accession" target="_blank" class="btn-icon" style="font-size:.72rem">↗</a>
+                <img v-if="r.images[0]" :src="r.images[0].src" style="width:36px;height:36px;object-fit:cover;flex-shrink:0" />
+                <span style="font-family:monospace;color:var(--warm);flex-shrink:0">{{ r.accession }}</span>
+                <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.maker }}<em style="color:var(--muted)">, {{ r.title }}</em></span>
+                <!-- Per-object cutout status -->
+                <span v-if="bulkCutoutJobs[r.accession]" style="font-size:.68rem;flex-shrink:0"
+                      :style="{color: bulkCutoutJobs[r.accession].status==='done'?'#78b88a': bulkCutoutJobs[r.accession].status==='error'?'#c07070':'var(--muted)'}">
+                  {{ bulkCutoutJobs[r.accession].status==='queued'?'Queued…': bulkCutoutJobs[r.accession].status==='running'?'Cutting…': bulkCutoutJobs[r.accession].status==='done'?'✓ Done':'⚠ Failed' }}
+                </span>
+                <a :href="'/collection/' + r.accession" target="_blank" class="btn-icon" style="font-size:.72rem;flex-shrink:0">↗</a>
               </div>
-              <div style="margin-top:12px">
+
+              <!-- Cutout controls -->
+              <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dim);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <button v-if="cutoutEnabled" class="btn btn-sm" @click="bulkRunCutouts" :disabled="bulkCutoutRunning">
+                  {{ bulkCutoutRunning ? 'Running cutouts…' : 'Remove backgrounds for all ' + bulkPublishResult.length + ' objects' }}
+                </button>
+                <span v-if="!cutoutEnabled" style="font-size:.72rem;color:var(--muted)">Set CUTOUT_ENABLED=true in Railway to enable background removal.</span>
+                <span v-if="bulkCutoutRunning" style="font-size:.72rem;color:var(--muted)">
+                  {{ Object.values(bulkCutoutJobs).filter(j=>j.status==='done').length }} / {{ bulkPublishResult.length }} done
+                </span>
+              </div>
+
+              <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
                 <button class="btn btn-sm" @click="startBulkUpload">Start new bulk upload</button>
-                <a class="btn btn-sm" href="/collection" target="_blank" style="margin-left:8px">View collection ↗</a>
+                <a class="btn btn-sm" href="/collection" target="_blank">View collection ↗</a>
               </div>
             </div>
           </div>
@@ -1550,6 +1568,8 @@ createApp({
       bulkPublishPreview: {}, // draftId → predicted accession
       bulkPublishing:  false,
       bulkPublishResult: [],
+      bulkCutoutJobs:  {}, // accession → { jobId, status, log }
+      bulkCutoutRunning: false,
 
       // Collection
       colObjects:      [],
@@ -2043,6 +2063,8 @@ createApp({
       this.bulkPublishIds = new Set();
       this.bulkPublishPreview = {};
       this.bulkPublishResult = [];
+      this.bulkCutoutJobs = {};
+      this.bulkCutoutRunning = false;
       this.bulkSuggestCost = 0;
       this.bulkSaveMsg = '';
       this.section = 'col-bulk';
@@ -2525,6 +2547,72 @@ createApp({
       this.bulkPublishPreview = preview;
     },
 
+    async bulkRunCutouts() {
+      if (this.bulkCutoutRunning || !this.cutoutEnabled) return;
+      this.bulkCutoutRunning = true;
+
+      for (const r of this.bulkPublishResult) {
+        // Queue cutout jobs for front + back plates
+        const plates = r.images.filter(img => img.role === 'front' || img.role === 'back');
+        for (const img of plates) {
+          this.$set ? this.$set(this.bulkCutoutJobs, r.accession, { status: 'queued' })
+                    : (this.bulkCutoutJobs[r.accession] = { status: 'queued' });
+          try {
+            const qr = await fetch('/api/collection/cutout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+              body: JSON.stringify({ src: img.src, accession: r.accession, role: img.role }),
+            });
+            const qd = await qr.json();
+            if (!qr.ok) { this.bulkCutoutJobs[r.accession] = { status: 'error', msg: qd.error }; continue; }
+            const jobId = qd.jobId;
+            this.bulkCutoutJobs[r.accession] = { status: 'running', jobId };
+
+            // Poll until done
+            await new Promise((resolve) => {
+              const poll = setInterval(async () => {
+                try {
+                  const pr = await fetch('/api/collection/jobs/' + jobId, {
+                    headers: { Authorization: 'Bearer ' + this.token },
+                  });
+                  const pd = await pr.json();
+                  if (pd.status === 'done') {
+                    clearInterval(poll);
+                    this.bulkCutoutJobs[r.accession] = { status: 'done', jobId };
+                    // Patch the object's image src to the cutout result
+                    if (pd.dstUrl) {
+                      await fetch('/api/collection/' + r.accession, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+                        body: JSON.stringify({
+                          images: r.images.map(i => i.role === img.role
+                            ? { ...i, src: pd.dstUrl, cutout: true, original: i.src,
+                                ...(pd.result?.w ? { w: pd.result.w, h: pd.result.h } : {}) }
+                            : i),
+                          ...(pd.result?.bodyColour ? { bodyColour: pd.result.bodyColour } : {}),
+                        }),
+                      });
+                    }
+                    resolve();
+                  } else if (pd.status === 'error') {
+                    clearInterval(poll);
+                    this.bulkCutoutJobs[r.accession] = { status: 'error', msg: pd.error };
+                    resolve();
+                  }
+                } catch(_) {}
+              }, 4000);
+            });
+          } catch(e) {
+            this.bulkCutoutJobs[r.accession] = { status: 'error', msg: e.message };
+          }
+          break; // one cutout job per object (front plate wins, then back on re-run)
+        }
+      }
+
+      this.bulkCutoutRunning = false;
+      await this.fetchCol();
+    },
+
     async bulkConfirmPublish() {
       if (this.bulkPublishing || !this.bulkPublishIds.size) return;
       const selectedDrafts = this.bulkPublishDrafts.filter(d => this.bulkPublishIds.has(d._id));
@@ -2544,9 +2632,13 @@ createApp({
         });
         const data = await r.json();
         if (!r.ok) { alert(data.error || 'Publish failed'); return; }
-        this.bulkPublishResult = data.published || [];
-        // Remove published drafts from bulkDrafts list
         const publishedSeqs = new Set(data.published.map(p => p.seq));
+        // Capture image data before removing published drafts
+        const draftBySeq = {};
+        for (const d of this.bulkDrafts) { if (publishedSeqs.has(d.seq)) draftBySeq[d.seq] = d; }
+        this.bulkPublishResult = (data.published || []).map(p => ({
+          ...p, images: draftBySeq[p.seq]?.images || [],
+        }));
         this.bulkDrafts = this.bulkDrafts.filter(d => !publishedSeqs.has(d.seq));
         this.bulkPublishIds = new Set();
         await this.fetchCol();
