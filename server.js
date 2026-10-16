@@ -575,7 +575,9 @@ app.post('/api/collection/bulk-publish', requireAuth, (req, res) => {
     for (const { idx, obj } of toPublish) {
       const accession = `${year}.${String(n++).padStart(3, '0')}`;
       usedNums.add(n - 1);
-      objects[idx] = { ...obj, accession, status: 'accessioned', updatedAt: now };
+      // Normalise images: accept either {src,role} or {url,plate} from any client
+      const images = (obj.images || []).map(img => img.src ? img : { ...img, src: img.url, role: img.plate });
+      objects[idx] = { ...obj, accession, status: 'accessioned', images, updatedAt: now };
       published.push({ seq: obj.seq, accession, title: obj.title, maker: obj.maker });
     }
 

@@ -2258,7 +2258,7 @@ createApp({
       for (const key of sharedKeys) {
         groups.push({
           id: uniqueId(), key,
-          plates: byKey[key].map(f => ({ id: uniqueId(), url: f.url, role: f.role, hash: f.hash, bodyColour: f.bodyColour, originalName: f.originalName })),
+          plates: byKey[key].map(f => ({ id: uniqueId(), url: f.url, role: f.role, hash: f.hash, bodyColour: f.bodyColour, originalName: f.originalName, w: f.w || null, h: f.h || null })),
         });
         delete byKey[key];
       }
@@ -2272,7 +2272,7 @@ createApp({
 
       if (loneFiles.length) {
         const f0 = loneFiles[0];
-        let cur = { id: uniqueId(), key: f0.stemKey || f0.originalName.replace(/\.[^.]+$/, ''), plates: [{ id: uniqueId(), url: f0.url, role: f0.role, hash: f0.hash, bodyColour: f0.bodyColour, originalName: f0.originalName }] };
+        let cur = { id: uniqueId(), key: f0.stemKey || f0.originalName.replace(/\.[^.]+$/, ''), plates: [{ id: uniqueId(), url: f0.url, role: f0.role, hash: f0.hash, bodyColour: f0.bodyColour, originalName: f0.originalName, w: f0.w || null, h: f0.h || null }] };
         for (let i = 1; i < loneFiles.length; i++) {
           const prev = loneFiles[i - 1];
           const curr = loneFiles[i];
@@ -2283,7 +2283,7 @@ createApp({
             groups.push(cur);
             cur = { id: uniqueId(), key: curr.stemKey || curr.originalName.replace(/\.[^.]+$/, ''), plates: [] };
           }
-          cur.plates.push({ id: uniqueId(), url: curr.url, role: cur.plates.length === 0 ? 'front' : 'back', hash: curr.hash, bodyColour: curr.bodyColour, originalName: curr.originalName });
+          cur.plates.push({ id: uniqueId(), url: curr.url, role: cur.plates.length === 0 ? 'front' : 'back', hash: curr.hash, bodyColour: curr.bodyColour, originalName: curr.originalName, w: curr.w || null, h: curr.h || null });
         }
         groups.push(cur);
       }
@@ -2376,7 +2376,7 @@ createApp({
           condition:   prev.condition || csv.condition || '',
           note:        prev.note || '',
           customFacts: prev.customFacts || [],
-          images:      g.plates.map(p => ({ role: p.role, src: p.url, hash: p.hash })),
+          images:      g.plates.map(p => ({ role: p.role, src: p.url, w: p.w || null, h: p.h || null, hash: p.hash })),
           _errors:     [],
           _suggested:  prev._suggested || null,
           _suggesting: false,
