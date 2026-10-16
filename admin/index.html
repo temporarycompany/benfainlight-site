@@ -1114,9 +1114,9 @@ select { cursor: pointer; appearance: none; }
           <!-- Stage nav -->
           <div class="bulk-stage-nav">
             <button class="bulk-stage-tab" :class="{active:bulkStage==='drop',done:true}" @click="bulkStage='drop'">1 · Drop</button>
-            <button class="bulk-stage-tab" :class="{active:bulkStage==='group',done:bulkStage==='group'||bulkStage==='review'||bulkStage==='publish'}" @click="bulkGoGroup" :disabled="!bulkCanGroup">2 · Group</button>
-            <button class="bulk-stage-tab" :class="{active:bulkStage==='review',done:bulkStage==='review'||bulkStage==='publish'}" @click="bulkGoReview" :disabled="!bulkCanReview">3 · Review</button>
-            <button class="bulk-stage-tab" :class="{active:bulkStage==='publish',done:bulkStage==='publish'}" @click="bulkGoPublish" :disabled="!bulkCanPublish">4 · Publish</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='group',done:bulkCanGroup}" @click="bulkGoGroup" :disabled="!bulkCanGroup">2 · Group</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='review',done:bulkCanReview}" @click="bulkGoReview" :disabled="!bulkCanReview">3 · Review</button>
+            <button class="bulk-stage-tab" :class="{active:bulkStage==='publish',done:bulkCanPublish}" @click="bulkGoPublish" :disabled="!bulkCanPublish">4 · Publish</button>
           </div>
 
           <!-- ── Stage 1: Drop ───────────────────────────────────────── -->
@@ -1153,11 +1153,13 @@ select { cursor: pointer; appearance: none; }
             </div>
 
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <button class="btn btn-primary" @click="bulkStartUpload" :disabled="bulkUploadRunning||!bulkWaiting.length">
-                {{ bulkUploadRunning ? 'Uploading…' : 'Upload ' + bulkWaiting.length + ' file' + (bulkWaiting.length===1?'':'s') }}
+              <button class="btn btn-primary" @click="bulkGoGroup" :disabled="!bulkCanGroup">
+                {{ bulkUploadRunning ? 'Uploading… ' + bulkUploadDone + ' / ' + bulkFiles.length : 'Next: Group →' }}
               </button>
-              <button class="btn" @click="bulkGoGroup" :disabled="!bulkCanGroup">Next: Group →</button>
-              <span style="font-size:.72rem;color:var(--muted)">{{ bulkUploadDone }} uploaded{{ bulkErrorFiles.length ? ', ' + bulkErrorFiles.length + ' failed' : '' }}</span>
+              <button v-if="bulkWaiting.length && !bulkUploadRunning" class="btn btn-sm" @click="bulkStartUpload">
+                Retry {{ bulkWaiting.length }} failed
+              </button>
+              <span v-if="bulkFiles.length" style="font-size:.72rem;color:var(--muted)">{{ bulkUploadDone }} ready{{ bulkErrorFiles.length ? ', ' + bulkErrorFiles.length + ' failed' : '' }}</span>
             </div>
           </div>
 
@@ -2089,6 +2091,9 @@ createApp({
           url: null, hash: null, w: null, h: null, bodyColour: '#888888', exif: {},
         });
       }
+      // Auto-start uploading after a short pause so batched drops are queued first
+      clearTimeout(this._bulkUploadTimer);
+      this._bulkUploadTimer = setTimeout(() => this.bulkStartUpload(), 200);
     },
 
     bulkRemoveFile(id) {
@@ -2170,7 +2175,23 @@ createApp({
       this.bulkUploadRunning = false;
     },
 
-    bulkGoGroup() {
+    async bulkGoGroup() {
+      if (!this.bulkCanGroup && !this.bulkWaiting.length) return;
+      // If uploads are still running, wait for them
+      if (this.bulkUploadRunning) {
+        // Poll until done
+        await new Promise(resolve => {
+          const t = setInterval(() => { if (!this.bulkUploadRunning) { clearInterval(t); resolve(); } }, 300);
+        });
+      }
+      // Start any waiting files that haven't uploaded yet
+      if (this.bulkWaiting.length && !this.bulkUploadRunning) {
+        await this.bulkStartUpload();
+        // Wait for them to finish
+        await new Promise(resolve => {
+          const t = setInterval(() => { if (!this.bulkUploadRunning) { clearInterval(t); resolve(); } }, 300);
+        });
+      }
       if (!this.bulkCanGroup) return;
       this.bulkAutoGroup();
       this.bulkStage = 'group';
@@ -2196,11 +2217,10 @@ createApp({
 
       // First pass: group by filename stem
       const byKey = {};
-      const ungrouped = [];
       for (const f of uploaded) {
         const { key, role } = suffixRole(f.originalName);
         if (!byKey[key]) byKey[key] = [];
-        byKey[key].push({ ...f, role });
+        byKey[key].push({ ...f, role, stemKey: key });
       }
 
       // Second pass: time-gap grouping for files without a matched key (key === stem)
@@ -2229,7 +2249,8 @@ createApp({
       });
 
       if (loneFiles.length) {
-        let cur = { id: uniqueId(), key: loneFiles[0].key, plates: [{ id: uniqueId(), url: loneFiles[0].url, role: loneFiles[0].role, hash: loneFiles[0].hash, bodyColour: loneFiles[0].bodyColour, originalName: loneFiles[0].originalName }] };
+        const f0 = loneFiles[0];
+        let cur = { id: uniqueId(), key: f0.stemKey || f0.originalName.replace(/\.[^.]+$/, ''), plates: [{ id: uniqueId(), url: f0.url, role: f0.role, hash: f0.hash, bodyColour: f0.bodyColour, originalName: f0.originalName }] };
         for (let i = 1; i < loneFiles.length; i++) {
           const prev = loneFiles[i - 1];
           const curr = loneFiles[i];
@@ -2238,7 +2259,7 @@ createApp({
           const gap = tPrev && tCurr ? (tCurr - tPrev) / 1000 : 0;
           if (gap > this.bulkGapSec) {
             groups.push(cur);
-            cur = { id: uniqueId(), key: curr.key, plates: [] };
+            cur = { id: uniqueId(), key: curr.stemKey || curr.originalName.replace(/\.[^.]+$/, ''), plates: [] };
           }
           cur.plates.push({ id: uniqueId(), url: curr.url, role: cur.plates.length === 0 ? 'front' : 'back', hash: curr.hash, bodyColour: curr.bodyColour, originalName: curr.originalName });
         }
