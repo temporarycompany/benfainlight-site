@@ -9,4 +9,4 @@ cmds = [
 ]
 
 [start]
-cmd = "node server.js"
+cmd = "LD_LIBRARY_PATH=/nix/store/ybjcla5bhj8g1y84998pn4a2drfxybkv-gcc-13.3.0-lib/lib:$LD_LIBRARY_PATH node server.js"
