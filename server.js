@@ -546,8 +546,8 @@ app.post('/api/collection/bulk/upload', requireAuth, collectionUpload.single('fi
       const [hash, bodyColour] = await Promise.all([computeHash(data), computeBodyColour(data)]);
       const dupe = findHashDupe(readCollection(), hash);
 
-      // Remove original (we keep WebP only)
-      try { fs.unlinkSync(srcPath); } catch(_) {}
+      // Remove original (we keep WebP only); skip if sharp wrote to the same path
+      if (srcPath !== webpPath) try { fs.unlinkSync(srcPath); } catch(_) {}
 
       result = { url: webpUrl, originalUrl: webpUrl, filename: webpName, w: info.width, h: info.height, hash, bodyColour, exif: { takenAt }, dupe };
     } catch (err) {
