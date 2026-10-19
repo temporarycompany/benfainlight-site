@@ -14,6 +14,12 @@ and then:
                         frames it (stone plate, 48px padding, contain);
                         flagged plates are outlined in red
 
+Optional: <images_dir>/fixes.json removes leftover surface by hand:
+  {"<key>_<plate>": {"remove": [[[x, y], [x, y], ...], ...]}}
+Each inner list is a line drawn along leftover surface (e.g. down the strip
+between a long sleeve and the body); x, y are fractions of the photo's
+width and height.
+
 Optional: --reference front.webp,back.webp,label.webp puts an object that is
 already on the site at the top of the sheet for comparison.
 
@@ -46,13 +52,20 @@ def main(src_dir: str, out_dir: str, reference: list = None):
             print(f"skip {f}: plate must be one of {PLATES}", file=sys.stderr)
             continue
         jobs.append((key, plate, f))
+    fixes = {}
+    fp = os.path.join(src_dir, "fixes.json")
+    if os.path.exists(fp):
+        fixes = json.load(open(fp))
     qa = {}
     for i, (key, plate, f) in enumerate(jobs, 1):
         dst = os.path.join(out_dir, f"{key}_{plate}.webp")
         if plate == "label":
             res = {**cut.label_crop(f, dst), "cutout": False, "review": False}
         else:
-            res = {**cut.cutout(f, dst), "cutout": True}
+            seeds = fixes.get(f"{key}_{plate}", {}).get("remove")
+            res = {**cut.cutout(f, dst, seeds=seeds), "cutout": True}
+            if seeds:
+                res["seeds"] = seeds
         res["file"] = os.path.basename(dst)
         qa.setdefault(key, {})[plate] = res
         flag = "REVIEW" if res.get("review") else "ok"

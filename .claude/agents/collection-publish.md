@@ -65,11 +65,33 @@ QA flags a plate (`"review": true`) when:
    - **The whole garment:** the full hem along the bottom, both cuffs, both sleeve ends and the collar. Compare each cutout with its source photo. Any trimmed edge is a fail.
    - **Leftover surface** (quilt, mat, sheet) along the edges, under the arms, or below the hem.
    - **Bites or holes** in the garment, especially sun-lit sleeves.
+   - **Long sleeves:** the strip between each sleeve and the body, and the area just below each cuff, must be fully clear.
    - **Size and placement** that match the reference row.
 2. Show `review.jpg` to the user. List the flagged plates and anything else you saw.
 3. Stop until the user approves. They'll either accept a plate as-is, ask you to reshoot it, or ask you to drop that plate.
 
 Never fix a cutout by uploading the original photo instead. If a photo can't be cut out cleanly (most often a white or pale garment on a white sheet), the fix is a reshoot on the dark mat. Until then, leave the plate on the site as it is and tell the user.
+
+
+### Leftover surface the automatic steps miss: `fixes.json`
+
+Long sleeves lying close to the body are the common case. Both models fill in the strip of quilt between sleeve and body; `remove_sleeve_gaps()` catches most of these, but not all.
+
+When the review sheet still shows surface:
+1. Put a `fixes.json` next to the photos:
+   ```json
+   {"<key>_<plate>": {"remove": [[[x, y], [x, y], ...], ...]}}
+   ```
+   - Each inner list is a line drawn along the leftover strip, for example top to bottom down the gap between sleeve and body.
+   - `x` and `y` are fractions of the original photo's width and height.
+   - GrabCut snaps to the real edges within about 2.5% of the line, so it can't eat into the rest of the garment.
+   - **Near cuffs, hems and collars use a tight band:** `{"line": [[x, y], ...], "band": 0.006}`. The default band once cut the bottom off a cuff (2026.060 front).
+2. Re-run `prep_batch.py`.
+3. Check the review sheet again.
+
+Keep `fixes.json` with the batch so the result can be reproduced.
+
+**Also check under the cuffs.** Quilt below a long sleeve's cuff is easy to miss on the review sheet.
 
 ## Step 3: Get an auth token
 

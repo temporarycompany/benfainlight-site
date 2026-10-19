@@ -15,7 +15,10 @@ What it does:
    rembg's u2net and isnet-general-use masks (each alone sometimes clips a
    hem or cuff). isnet then proposes pockets of surface still inside the
    outline (under the arms); each is removed only if its colour and
-   texture match the surface around the object. The outline is then snapped to the
+   texture match the surface around the object. Then the strip of surface
+   between a long sleeve and the body (both models fill it in when the
+   sleeve lies close) is removed: a tall, light, surface-textured ridge with
+   garment on both sides. The outline is then snapped to the
    real edge with GrabCut, allowed to move only ~1% of the image either
    way (u2net sometimes clips a hem by a few pixels).
    History: the first version merged both models and refined with OpenCV
@@ -170,7 +173,113 @@ def snap_edge(a: np.ndarray, m: np.ndarray, frac: float = 0.01) -> np.ndarray:
     return _tidy(out)
 
 
-def build_mask(work: Image.Image):
+def remove_sleeve_gaps(a, m):
+    """Remove the strip of surface between a long sleeve and the body.
+    Both models fill it in when the sleeve lies close to the body. A strip
+    is removed only if (1) its brightness and texture match the surface
+    around the object, (2) it touches the outside, (3) on most of its rows
+    there is garment both to its left and to its right, and (4) it is
+    taller than it is wide. Sun-lit areas on an outer edge fail (3).
+    Returns (mask, removed_share)."""
+    h, w = m.shape
+    L = cv2.cvtColor(a, cv2.COLOR_RGB2LAB)[..., 0].astype(np.float32)
+    Lb = cv2.blur(L, (9, 9))
+    tex = cv2.blur(np.abs(L - cv2.GaussianBlur(L, (0, 0), 1.5)), (15, 15))
+    bg = ~ndi.binary_dilation(m, iterations=max(8, int(0.01 * max(h, w))))
+    if bg.sum() < 1000:
+        return m, 0.0
+    lo, hi = np.percentile(Lb[bg], [3, 97])
+    tlo = np.percentile(tex[bg], 10)
+    # (a) surface-like brightness and texture
+    surf = (Lb >= lo) & (Lb <= hi) & (tex >= tlo)
+    # (b) a light ridge: brighter than the fabric a short way to either side
+    d = max(8, int(0.012 * w))
+    Lv = cv2.blur(L, (5, 21))
+    left = np.roll(Lv, d, axis=1); right = np.roll(Lv, -d, axis=1)
+    ridge = np.minimum(Lv - left, Lv - right) > 6
+    ridge = ndi.binary_dilation(ridge, iterations=2)
+    cand = m & surf & ridge
+    cand = ndi.binary_opening(cand, iterations=1)
+    cand = ndi.binary_closing(cand, structure=np.ones((9, 3)), iterations=1) & m
+    lab, n = ndi.label(cand)
+    if not n:
+        return m, 0.0
+    outside = ndi.binary_dilation(~m, iterations=3)
+    reach = max(6, int(0.04 * w))
+    garment = m & ~cand
+    drop = np.zeros(n + 1, bool)
+    for k, sl in enumerate(ndi.find_objects(lab), 1):
+        ys, xs = sl
+        hh, ww = ys.stop - ys.start, xs.stop - xs.start
+        if hh < 0.04 * h or hh < 1.5 * ww:
+            continue
+        reg = lab[ys, :] == k
+        if not (reg & outside[ys, :]).any():
+            continue
+        both = 0; rows = 0
+        for r in range(reg.shape[0]):
+            cols = np.flatnonzero(reg[r])
+            if not len(cols):
+                continue
+            rows += 1
+            y = ys.start + r
+            l0, r0 = cols.min(), cols.max()
+            left = garment[y, max(0, l0 - reach):l0].any()
+            right = garment[y, r0 + 1:min(w, r0 + 1 + reach)].any()
+            both += left and right
+        if rows and both / rows > 0.7:
+            drop[k] = True
+    if not drop.any():
+        return m, 0.0
+    rem = ndi.binary_dilation(drop[lab], iterations=2) & m
+    return _tidy(m & ~rem), float(rem.sum() / m.sum())
+
+
+def remove_seeded(a, m, lines, band=0.025):
+    """Manual fix for surface the automatic steps missed (from fixes.json).
+    Each entry is a line of (x, y) points, as fractions of the photo's width
+    and height, drawn along the leftover surface (e.g. down the strip
+    between a long sleeve and the body). The line is marked as definite
+    background, garment more than `band` away from it as definite object,
+    and GrabCut finds the real edges in between. It cannot reach beyond the
+    band, so it cannot eat into the rest of the garment."""
+    h, w = m.shape
+    r = max(6, int(band * w))
+    for pts in lines:
+        rr = r
+        if isinstance(pts, dict):  # {"line": [...], "band": 0.008} for tight spots
+            rr = max(3, int(pts.get("band", band) * w))
+            pts = pts["line"]
+        if len(pts) and not isinstance(pts[0], (list, tuple)):
+            pts = [pts]
+        P = np.array([[int(x * w), int(y * h)] for x, y in pts], np.int32)
+        line = np.zeros((h, w), np.uint8)
+        if len(P) == 1:
+            cv2.circle(line, tuple(P[0]), 3, 1, -1)
+        else:
+            cv2.polylines(line, [P], False, 1, 3)
+        line = line.astype(bool)
+        near = ndi.binary_dilation(line, iterations=rr)
+        gm = np.full((h, w), cv2.GC_BGD, np.uint8)
+        gm[m] = cv2.GC_FGD
+        gm[m & near] = cv2.GC_PR_FGD
+        gm[line] = cv2.GC_BGD
+        ys, xs = np.nonzero(near)
+        y0, y1 = max(0, ys.min() - rr), min(h, ys.max() + rr)
+        x0, x1 = max(0, xs.min() - rr), min(w, xs.max() + rr)
+        sub = gm[y0:y1, x0:x1].copy()
+        bgd = np.zeros((1, 65)); fgd = np.zeros((1, 65))
+        try:
+            cv2.grabCut(cv2.cvtColor(np.ascontiguousarray(a[y0:y1, x0:x1]), cv2.COLOR_RGB2BGR),
+                        sub, None, bgd, fgd, 5, cv2.GC_INIT_WITH_MASK)
+        except cv2.error:
+            continue
+        keep = (sub == cv2.GC_FGD) | (sub == cv2.GC_PR_FGD)
+        m[y0:y1, x0:x1] &= keep
+    return _tidy(m)
+
+
+def build_mask(work: Image.Image, seeds=None):
     a = np.array(work)
     isnet, u2 = [np.array(remove(work, session=s, only_mask=True)) for s in sessions()]
     # Outline = union of both models' confident masks. (The old pipeline
@@ -201,6 +310,9 @@ def build_mask(work: Image.Image):
             drop[1:] = (means > 2.0) & (sizes > 30)
             if drop.any():
                 m = _tidy(m & ~drop[lab])
+    m, gap_removed = remove_sleeve_gaps(a, m)
+    if seeds:
+        m = remove_seeded(a, m, seeds)
     # Clipped-edge check: snap the outline to the real colour edge in a
     # narrow band. If that would add a sizeable strip (a hem, a cuff, the
     # end of a sleeve), the cutout has probably clipped the garment, so a
@@ -241,18 +353,18 @@ def build_mask(work: Image.Image):
     qa = {"separability": round(sep, 3), "modelAgreement": round(agree, 3),
           "touchesFrame": touches, "objectShare": round(float(m.mean()), 3),
           "clippedEdge": round(clip, 4), "contrast": round(contrast, 1),
-          "symmetry": round(sym, 3)}
+          "symmetry": round(sym, 3), "sleeveGapRemoved": round(gap_removed, 4)}
     review = (agree < 0.95 or touches or qa["objectShare"] < 0.12 or sep < 0.95
               or clip > 0.004 or contrast < 20
               or sym < 0.8)
     return m, qa, bool(review)
 
 
-def cutout(src: str, dst: str, max_px: int = 1600, debug: str = None):
+def cutout(src: str, dst: str, max_px: int = 1600, debug: str = None, seeds=None):
     big = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
     big.thumbnail((2400, 2400))
     work = big.copy(); work.thumbnail((1200, 1200))
-    m, qa, review = build_mask(work)
+    m, qa, review = build_mask(work, seeds)
     sm = Image.fromarray((m * 255).astype("uint8")).filter(ImageFilter.GaussianBlur(1.5)).resize(big.size, Image.BICUBIC)
     # Choke the edge ~2px at full size so the surface colour does not show
     # as a dark/light halo around the garment.
