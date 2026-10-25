@@ -235,11 +235,14 @@ def remove_sleeve_gaps(a, m):
     return _tidy(m & ~rem), float(rem.sum() / m.sum())
 
 
+
 def remove_seeded(a, m, lines, band=0.025):
     """Manual fix for surface the automatic steps missed (from fixes.json).
     Each entry is a line of (x, y) points, as fractions of the photo's width
     and height, drawn along the leftover surface (e.g. down the strip
-    between a long sleeve and the body). The line is marked as definite
+    between a long sleeve and the body). An entry {"poly": [...]} is a
+    traced outline of leftover surface, removed exactly as drawn. An entry
+    {"outline": [...]} replaces the whole mask with a traced garment outline. The line is marked as definite
     background, garment more than `band` away from it as definite object,
     and GrabCut finds the real edges in between. It cannot reach beyond the
     band, so it cannot eat into the rest of the garment."""
@@ -247,6 +250,24 @@ def remove_seeded(a, m, lines, band=0.025):
     r = max(6, int(band * w))
     for pts in lines:
         rr = r
+        if isinstance(pts, dict) and "outline" in pts:
+            # Whole-garment outline traced by hand. For photos the models
+            # cannot read at all (a white shirt on a white sheet): the mask
+            # becomes exactly this polygon, and later "poly" entries can
+            # still cut holes such as a sleeve gap.
+            P = np.array([[int(round(x * w)), int(round(y * h))] for x, y in pts["outline"]], np.int32)
+            cut = np.zeros((h, w), np.uint8)
+            cv2.fillPoly(cut, [P], 1)
+            m = cut.astype(bool)
+            continue
+        if isinstance(pts, dict) and "poly" in pts:
+            # Exact cut: a traced polygon of leftover surface is removed as
+            # drawn. Cleanest edges; use it where GrabCut leaves ragged bites.
+            P = np.array([[int(round(x * w)), int(round(y * h))] for x, y in pts["poly"]], np.int32)
+            cut = np.zeros((h, w), np.uint8)
+            cv2.fillPoly(cut, [P], 1)
+            m &= ~cut.astype(bool)
+            continue
         if isinstance(pts, dict):  # {"line": [...], "band": 0.008} for tight spots
             rr = max(3, int(pts.get("band", band) * w))
             pts = pts["line"]

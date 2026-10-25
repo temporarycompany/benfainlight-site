@@ -70,7 +70,9 @@ QA flags a plate (`"review": true`) when:
 2. Show `review.jpg` to the user. List the flagged plates and anything else you saw.
 3. Stop until the user approves. They'll either accept a plate as-is, ask you to reshoot it, or ask you to drop that plate.
 
-Never fix a cutout by uploading the original photo instead. If a photo can't be cut out cleanly (most often a white or pale garment on a white sheet), the fix is a reshoot on the dark mat. Until then, leave the plate on the site as it is and tell the user.
+Never fix a cutout by uploading the original photo instead. If a photo can't be cut out cleanly (most often a white or pale garment on a white sheet), the best fix is a reshoot on the dark mat.
+
+If a reshoot isn't possible, trace the whole garment by hand with an `outline` fix (see below). The 2026-10-25b batch (Twin Peaks BOB and A Clockwork Orange) was done this way. Otherwise, leave the plate on the site as it is and tell the user.
 
 
 ### Leftover surface the automatic steps miss: `fixes.json`
@@ -86,6 +88,10 @@ When the review sheet still shows surface:
    - `x` and `y` are fractions of the original photo's width and height.
    - GrabCut snaps to the real edges within about 2.5% of the line, so it can't eat into the rest of the garment.
    - **For a clean, exact cut, trace the leftover area instead:** `{"poly": [[x, y], ...]}` removes that polygon exactly as drawn. Use it where a line fix leaves ragged bites or slivers, e.g. the sleeve gaps and under the cuffs on 2026.060. Trace from a zoomed crop of the original photo with a coordinate grid, keep the edge a hair inside the surface, and check the result zoomed in.
+   - **White garment on a white sheet:** `{"outline": [[x, y], ...]}` replaces the whole mask with a traced outline of the garment, because the models can't see the edge at all.
+     - Trace on gridded crops of the original photo.
+     - Then check every edge on an overlay, zoomed in: collar back, shoulders, sleeve ends and the bottom of the hem. On a white shirt the back layer of the hem often hangs lower than the front.
+     - Expect QA to flag these plates (low model agreement and contrast); that's normal for an outline cut.
    - **Near cuffs, hems and collars use a tight band:** `{"line": [[x, y], ...], "band": 0.006}`. The default band once cut the bottom off a cuff (2026.060 front).
 2. Re-run `prep_batch.py`.
 3. Check the review sheet again.
