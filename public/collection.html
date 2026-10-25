@@ -327,7 +327,7 @@ function facts(x){
     f.push(k>1?`is one of ${k} objects on a ${key} label.`:`is the only object on a ${x.label.replace(/ label$/i,'')} label.`)
   }
   if(x.label==='Tagless')f.push('has no label at all.');
-  if(sleeve(x)==='Long sleeve')f.push(`is one of ${A.filter(y=>sleeve(y)==='Long sleeve').length} long-sleeve shirts.`);
+  if(sleeve(x)==='Long sleeve')f.push(`is one of ${A.filter(y=>sleeve(y)==='Long sleeve').length} long-sleeve objects.`);
   if(darkRank[x.accession])f.push(`ranks ${ord(darkRank[x.accession])} of ${A.length}, darkest to lightest.`);
   return f;
 }
@@ -339,13 +339,14 @@ const save=()=>{try{localStorage.setItem('tc-collection9',JSON.stringify(st))}ca
 
 // Departments and types from actual data
 const DEPTS=['All',...[...new Set(A.map(x=>x.department))].sort()];
-const TYPE_VALS=[...new Set(A.map(x=>x.type))].sort();
+const TYPE_MERGE={Hoodie:'Sweatshirt'}; // Hoodie objects appear under the Sweatshirt nav entry
+const TYPE_VALS=[...new Set(A.map(x=>TYPE_MERGE[x.type]||x.type))].sort();
 const TYPES=['All',...TYPE_VALS,'Book','Ephemera']; // always show Books/Ephemera even if empty
-const TYPES_DISPLAY={All:'All objects',Shirt:'Shirts',Book:'Books',Ephemera:'Ephemera'};
+const TYPES_DISPLAY={All:'All objects',Shirt:'Shirts',Sweatshirt:'Hoodies & Sweatshirts',Hoodie:'Hoodies & Sweatshirts',Book:'Books',Ephemera:'Ephemera'};
 const SORTS=[['seq','Accession'],['az','Maker, A–Z'],['date','Date'],['colour','Colour']];
 
 function list(){
-  let L=A.filter(x=>(st.dept==='All'||x.department===st.dept)&&(st.ty==='All'||x.type===st.ty));
+  let L=A.filter(x=>(st.dept==='All'||x.department===st.dept)&&(st.ty==='All'||x.type===st.ty||(TYPE_MERGE[x.type]||x.type)===st.ty));
   if(st.sort==='az')L=[...L].sort((a,b)=>a.maker.localeCompare(b.maker));
   else if(st.sort==='date')L=[...L].sort((a,b)=>(parseInt(a.date)||9999)-(parseInt(b.date)||9999)||a.seq-b.seq);
   else if(st.sort==='colour')L=[...L].sort((a,b)=>{
@@ -361,7 +362,7 @@ function list(){
 function drawRail(){
   $('#g-sort').innerHTML=SORTS.map(([v,l],i)=>`<li><button class="tc-nav" data-sort="${v}" aria-pressed="${st.sort===v}"><span>${l}</span>${st.sort===v?`<span class="n">${st.dir===1?'↑':'↓'}</span>`:''}</button></li>`).join('');
   $('#g-dept').innerHTML=DEPTS.map((d,i)=>{const n=d==='All'?A.length:A.filter(x=>x.department===d).length;return `<li><button class="tc-nav" data-dept="${esc(d)}" aria-pressed="${st.dept===d}"><span>${d==='All'?'All':esc(d)}</span><span class="n">${n}</span></button></li>`}).join('');
-  $('#g-ty').innerHTML=TYPES.map((v,i)=>{const n=v==='All'?A.length:A.filter(x=>x.type===v).length;return `<li><button class="tc-nav" data-ty="${v}" aria-pressed="${st.ty===v}" ${n?'':'disabled'}><span>${TYPES_DISPLAY[v]||v}</span><span class="n">${n}</span></button></li>`}).join('');
+  $('#g-ty').innerHTML=TYPES.map((v,i)=>{const n=v==='All'?A.length:A.filter(x=>x.type===v||(TYPE_MERGE[x.type]||x.type)===v).length;return `<li><button class="tc-nav" data-ty="${v}" aria-pressed="${st.ty===v}" ${n?'':'disabled'}><span>${TYPES_DISPLAY[v]||v}</span><span class="n">${n}</span></button></li>`}).join('');
   document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===st.view));
 }
 
