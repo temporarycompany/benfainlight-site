@@ -65,7 +65,7 @@ QA flags a plate (`"review": true`) when:
    - **The whole garment:** the full hem along the bottom, both cuffs, both sleeve ends and the collar. Compare each cutout with its source photo. Any trimmed edge is a fail.
    - **Leftover surface** (quilt, mat, sheet) along the edges, under the arms, or below the hem.
    - **Bites or holes** in the garment, especially sun-lit sleeves.
-   - **Long sleeves:** the strip between each sleeve and the body, and the area just below each cuff, must be fully clear.
+   - **Long sleeves:** the strip between each sleeve and the body, and the area just below each cuff, must be fully clear. Check these zoomed in, not just on the contact sheet.
    - **Size and placement** that match the reference row.
 2. Show `review.jpg` to the user. List the flagged plates and anything else you saw.
 3. Stop until the user approves. They'll either accept a plate as-is, ask you to reshoot it, or ask you to drop that plate.
@@ -85,6 +85,7 @@ When the review sheet still shows surface:
    - Each inner list is a line drawn along the leftover strip, for example top to bottom down the gap between sleeve and body.
    - `x` and `y` are fractions of the original photo's width and height.
    - GrabCut snaps to the real edges within about 2.5% of the line, so it can't eat into the rest of the garment.
+   - **For a clean, exact cut, trace the leftover area instead:** `{"poly": [[x, y], ...]}` removes that polygon exactly as drawn. Use it where a line fix leaves ragged bites or slivers, e.g. the sleeve gaps and under the cuffs on 2026.060. Trace from a zoomed crop of the original photo with a coordinate grid, keep the edge a hair inside the surface, and check the result zoomed in.
    - **Near cuffs, hems and collars use a tight band:** `{"line": [[x, y], ...], "band": 0.006}`. The default band once cut the bottom off a cuff (2026.060 front).
 2. Re-run `prep_batch.py`.
 3. Check the review sheet again.
@@ -92,6 +93,8 @@ When the review sheet still shows surface:
 Keep `fixes.json` with the batch so the result can be reproduced.
 
 **Also check under the cuffs.** Quilt below a long sleeve's cuff is easy to miss on the review sheet.
+
+**And check the top of each sleeve gap.** On white garments shot on the dark mat, the mask's smoothing fills the narrow tip where the sleeve meets the body, leaving a small dark wedge in the armpit (every white long sleeve in batch 2026-10-25). It's only a few pixels at 1600px but shows on the stone plate. To find it: composite each cutout on magenta and zoom into both armpits. To fix it: one small `poly` per armpit, traced around the dark tip (batch 2026-10-25's `fixes.json` has 22 examples).
 
 ## Step 3: Get an auth token
 
