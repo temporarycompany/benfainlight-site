@@ -92,6 +92,7 @@ When the review sheet still shows surface:
      - Trace on gridded crops of the original photo.
      - Then check every edge on an overlay, zoomed in: collar back, shoulders, sleeve ends and the bottom of the hem. On a white shirt the back layer of the hem often hangs lower than the front.
      - Expect QA to flag these plates (low model agreement and contrast); that's normal for an outline cut.
+   - **Part of the garment is missing** (a dark sleeve on the dark quilt): `{"add": [[x, y], ...]}` adds a traced polygon to the mask. Trace it a hair inside the real edge, then cut away any surface it brings in with `poly`. 2026.083 (MC5) front is an example.
    - **Near cuffs, hems and collars use a tight band:** `{"line": [[x, y], ...], "band": 0.006}`. The default band once cut the bottom off a cuff (2026.060 front).
 2. Re-run `prep_batch.py`.
 3. Check the review sheet again.

@@ -242,7 +242,8 @@ def remove_seeded(a, m, lines, band=0.025):
     and height, drawn along the leftover surface (e.g. down the strip
     between a long sleeve and the body). An entry {"poly": [...]} is a
     traced outline of leftover surface, removed exactly as drawn. An entry
-    {"outline": [...]} replaces the whole mask with a traced garment outline. The line is marked as definite
+    {"outline": [...]} replaces the whole mask with a traced garment outline,
+    and {"add": [...]} adds a traced polygon the models missed. The line is marked as definite
     background, garment more than `band` away from it as definite object,
     and GrabCut finds the real edges in between. It cannot reach beyond the
     band, so it cannot eat into the rest of the garment."""
@@ -259,6 +260,14 @@ def remove_seeded(a, m, lines, band=0.025):
             cut = np.zeros((h, w), np.uint8)
             cv2.fillPoly(cut, [P], 1)
             m = cut.astype(bool)
+            continue
+        if isinstance(pts, dict) and "add" in pts:
+            # Part of the garment the models dropped (e.g. a dark sleeve on
+            # the dark quilt): this traced polygon is added to the mask.
+            P = np.array([[int(round(x * w)), int(round(y * h))] for x, y in pts["add"]], np.int32)
+            cut = np.zeros((h, w), np.uint8)
+            cv2.fillPoly(cut, [P], 1)
+            m = m | cut.astype(bool)
             continue
         if isinstance(pts, dict) and "poly" in pts:
             # Exact cut: a traced polygon of leftover surface is removed as
