@@ -50,6 +50,25 @@ The site adds the space around each image:
 
 So a tight crop is correct. A file with its own margin would end up smaller than the first-batch images and look inconsistent.
 
+## Book plates
+
+**Roles:** `front` = cover, `back` = back cover, `detail` = spine, spreads and the copyright page (several allowed, each with a `caption`). `label` is optional for books (use it for a colophon plate if present, with `caption: "Colophon"`).
+
+**File names:** `<key>_<plate>.jpg` with plate one of `front, back, spine, spread-1…n, colophon`. `prep_batch.py` only handles front/back/label today — other plates are cut out with `cutout.cutout()` directly, until `prep_batch.py` is extended.
+
+**Covers:** find the four corners and correct the perspective to a flat rectangle. The result is fully opaque except for a 1px soft edge; it still needs an alpha channel.
+
+**Spreads, including the copyright page:** show the whole open book, even when one page is blank.
+- Simplify the outline to straight edges with true corners, rendered antialiased.
+- Choke the edge about 11px at full resolution so no quilt shows along the page block.
+- Check the top of each page block zoomed in on magenta for dark slivers.
+
+**Spine:** level it and cut it out as a strip (e.g. 1600 × 110).
+
+**Captions:** set `caption` on every detail image. Default captions: Spine, Spread (repeatable), Colophon. The front and back also take `caption: "Cover"` and `caption: "Back cover"` respectively — the site will use them automatically, but setting them explicitly is clearer.
+
+**All book plates use `cutout: true`.** The site renders cutout plates on the stone plate with 48px padding (contained, not photo).
+
 ## Step 1: Prepare the images (local, Mac only)
 
 The cutout pipeline needs 2–4GB of RAM, so it does not run on Railway.
