@@ -712,5 +712,38 @@
     "email": "benjamin.fainlight@gmail.com",
     "instagram": "https://www.instagram.com/fainlight/",
     "linkedin": "https://www.linkedin.com/in/benjaminfainlight"
+  },
+  "factSettings": {
+    "garment": [
+      { "key": "maker",      "enabled": true },
+      { "key": "label",      "enabled": true },
+      { "key": "tagless",    "enabled": true },
+      { "key": "note",       "enabled": true },
+      { "key": "sleeve",     "enabled": true },
+      { "key": "colour",     "enabled": true },
+      { "key": "department", "enabled": true },
+      { "key": "decade",     "enabled": true }
+    ],
+    "book": [
+      { "key": "maker",      "enabled": true },
+      { "key": "publisher",  "enabled": true },
+      { "key": "age",        "enabled": true },
+      { "key": "signed",     "enabled": true },
+      { "key": "edition",    "enabled": true },
+      { "key": "cover",      "enabled": true },
+      { "key": "pages",      "enabled": true },
+      { "key": "colour",     "enabled": true },
+      { "key": "department", "enabled": true },
+      { "key": "decade",     "enabled": true }
+    ],
+    "ephemera": [
+      { "key": "maker",      "enabled": true },
+      { "key": "kind",       "enabled": true },
+      { "key": "city",       "enabled": true },
+      { "key": "age",        "enabled": true },
+      { "key": "colour",     "enabled": true },
+      { "key": "department", "enabled": true },
+      { "key": "decade",     "enabled": true }
+    ]
   }
 }

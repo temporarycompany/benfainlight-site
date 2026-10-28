@@ -401,6 +401,29 @@ function runNextCutout() {
   });
 }
 
+// ── Fact-settings routes ──────────────────────────────────────────────────────
+// Public read — collection.html fetches this on load
+app.get('/api/fact-settings', (req, res) => {
+  try {
+    const content = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
+    res.json(content.factSettings || {});
+  } catch (e) {
+    res.status(500).json({ error: 'Could not read fact settings' });
+  }
+});
+
+// Protected write — admin panel saves fact settings
+app.put('/api/fact-settings', requireAuth, (req, res) => {
+  try {
+    const content = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
+    content.factSettings = req.body || {};
+    fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2), 'utf8');
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Could not save fact settings' });
+  }
+});
+
 // ── Collection API routes ─────────────────────────────────────────────────────
 
 // Public: list (hides pending/retired by default unless ?all=1)
@@ -433,13 +456,28 @@ app.post('/api/collection', requireAuth, (req, res) => {
     title:      body.title      || '',
     date:       body.date       || null,
     description: body.description || null,
+    // garment fields
     sleeve:     body.sleeve     || null,
     label:      body.label      || null,
+    size:       body.size       || null,
     detail:     body.detail     || null,
+    note:       body.note       || null,
+    // book fields
+    publisher:  body.publisher  || null,
+    cover:      body.cover      || null,
+    pages:      body.pages      || null,
+    edition:    body.edition    || null,
+    signed:     body.signed     || null,
+    // ephemera fields
+    kind:       body.kind       || null,
+    venue:      body.venue      || null,
+    city:       body.city       || null,
+    // shared
+    dimensions: body.dimensions || null,
     bodyColour: body.bodyColour || null,
     provenance: body.provenance || null,
     condition:  body.condition  || null,
-    note:       body.note       || null,
+    leadFact:   body.leadFact   || null,
     seenIn:     body.seenIn     || null,
     seenInUrl:  body.seenInUrl  || null,
     media:      body.media      || null,
@@ -612,10 +650,12 @@ app.post('/api/collection/suggest', requireAuth, async (req, res) => {
   if (!Anthropic || !process.env.ANTHROPIC_API_KEY) {
     return res.status(503).json({ error: 'ANTHROPIC_API_KEY not configured' });
   }
-  const { imageUrls } = req.body || {};
+  const { imageUrls, type } = req.body || {};
   if (!Array.isArray(imageUrls) || !imageUrls.length) {
     return res.status(400).json({ error: 'imageUrls[] required' });
   }
+  const GARMENT_TYPES = ['Shirt', 'Sweatshirt', 'Hoodie'];
+  const family = GARMENT_TYPES.includes(type) ? 'garment' : type === 'Book' ? 'book' : type === 'Ephemera' ? 'ephemera' : 'garment';
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -644,7 +684,11 @@ app.post('/api/collection/suggest', requireAuth, async (req, res) => {
           ...imageContent,
           {
             type: 'text',
-            text: `This is a vintage collectible item. From the photos, identify:\n1. maker (artist/band/brand name)\n2. title (e.g. "Self-Titled Tour", "1997 Tour")\n3. date (year or range, e.g. "1997" or "1997–98")\n4. label (the tag brand inside, e.g. "Anvil", "Giant", "Screen Stars", "Delta")\n5. description (one brief sentence, e.g. "Black cotton T-shirt with screen-printed logo")\n6. department (one of: Music, Art, Film & TV, Sport, Other)\n\nReply ONLY with JSON, no explanation:\n{"maker":"","title":"","date":"","label":"","description":"","department":""}\nLeave fields as empty string "" when genuinely uncertain.`
+            text: family === 'book'
+              ? `This is a book. From the cover, spine and colophon if photographed, identify:\n1. maker (author or artist name)\n2. title\n3. date (publication year, e.g. "1994")\n4. publisher\n5. cover (reply "hard" for hardcover, "soft" for softcover)\n6. edition (e.g. "First edition", "Second printing", or "")\n7. signed (reply true if visibly signed, else false)\n\nReply ONLY with JSON, no explanation:\n{"maker":"","title":"","date":"","publisher":"","cover":"","edition":"","signed":false}\nLeave string fields as empty string "" when genuinely uncertain.`
+              : family === 'ephemera'
+              ? `This is a piece of printed ephemera (flyer, ticket, poster, zine, etc.). From the photos, identify:\n1. maker (artist, band, promoter or venue name)\n2. title (event or publication name)\n3. date (year or range, e.g. "1997" or "1997–98")\n4. kind (one of: flyer, ticket, poster, zine, other)\n5. venue (venue name, if shown)\n6. city (city name, if shown)\n\nReply ONLY with JSON, no explanation:\n{"maker":"","title":"","date":"","kind":"","venue":"","city":""}\nLeave fields as empty string "" when genuinely uncertain.`
+              : `This is a vintage collectible item. From the photos, identify:\n1. maker (artist/band/brand name)\n2. title (e.g. "Self-Titled Tour", "1997 Tour")\n3. date (year or range, e.g. "1997" or "1997–98")\n4. label (the tag brand inside, e.g. "Anvil", "Giant", "Screen Stars", "Delta")\n5. description (one brief sentence, e.g. "Black cotton T-shirt with screen-printed logo")\n6. department (one of: Music, Art, Film & TV, Sport, Other)\n\nReply ONLY with JSON, no explanation:\n{"maker":"","title":"","date":"","label":"","description":"","department":""}\nLeave fields as empty string "" when genuinely uncertain.`
           }
         ]
       }]

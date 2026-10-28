@@ -270,6 +270,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 <div class="peek" id="peek" hidden><img alt="" id="peekImg"></div>
 <div class="op" id="op" role="dialog" aria-modal="true" aria-labelledby="op-title" hidden></div>
 
+<script src="/facts.js"></script>
 <script>
 (function(){
 'use strict';
@@ -278,12 +279,14 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const pad=(n,k=3)=>String(n).padStart(k,'0');
 
 // ── Load data ────────────────────────────────────────────────────────────────
-fetch('/api/collection')
-  .then(r=>r.json())
-  .then(init)
+Promise.all([
+  fetch('/api/collection').then(r=>r.json()),
+  fetch('/api/fact-settings').then(r=>r.json()).catch(()=>null)
+])
+  .then(([A,factSettings])=>init(A,factSettings||{}))
   .catch(e=>{ $('#loading').textContent='Failed to load collection.'; console.error(e); });
 
-function init(A){
+function init(A, factSettings){
   $('#loading').hidden=true;
   $('#strip-wrap').hidden=false;
 
@@ -307,29 +310,32 @@ function hsl(hex){
   const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;let h=0,s=0;
   if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return{h,s,l}
 }
-const darkRank={};
-[...A].sort((a,b)=>hsl(a.bodyColour||'#888').l-hsl(b.bodyColour||'#888').l)
-  .forEach((x,i)=>darkRank[x.accession]=i+1);
 
-const ord=n=>{const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
-
-// ── Facts ─────────────────────────────────────────────────────────────────────
-function facts(x){
-  const f=[];
-  const same=A.filter(y=>y.maker===x.maker);
-  if(same.length>1)f.push(`is one of ${same.length} ${x.maker} objects in the collection.`);
-  if(x.note==='Ringer')f.push('is a ringer, with a contrast collar and cuffs.');
-  if(x.note==='Crew shirt')f.push('is a crew shirt.');
-  if(x.note&&/Named collar/.test(x.note))f.push(`has "${x.note.split(': ')[1]}" written inside the collar.`);
-  if(x.label&&!/Unknown|Faded|Tagless|Custom/.test(x.label)){
-    const key=x.label.split(' ').slice(0,2).join(' ');
-    const k=A.filter(y=>y.label&&y.label.startsWith(key)).length;
-    f.push(k>1?`is one of ${k} objects on a ${key} label.`:`is the only object on a ${x.label.replace(/ label$/i,'')} label.`)
+// ── Family helpers ────────────────────────────────────────────────────────────
+const getFamily=x=>factsModule.getFamily(x);
+function familyCaption(x){
+  const fam=getFamily(x);
+  if(fam==='garment'){const s=x.sleeve==='long'?'Long sleeve':'Short sleeve';return `${s}, ${dated(x)}`;}
+  if(fam==='book'){
+    if(!x.cover)return dated(x);
+    return `${x.cover==='hard'?'Hardcover':'Softcover'}, ${dated(x)}`;
   }
-  if(x.label==='Tagless')f.push('has no label at all.');
-  if(sleeve(x)==='Long sleeve')f.push(`is one of ${A.filter(y=>sleeve(y)==='Long sleeve').length} long-sleeve objects.`);
-  if(darkRank[x.accession])f.push(`ranks ${ord(darkRank[x.accession])} of ${A.length}, darkest to lightest.`);
-  return f;
+  if(fam==='ephemera'){
+    if(!x.kind)return dated(x);
+    return `${esc(x.kind)}, ${dated(x)}`;
+  }
+  return dated(x);
+}
+function familyLabelHeader(){
+  if(st.ty==='Book')return 'Publisher';
+  if(st.ty==='Ephemera')return 'Kind';
+  return 'Label';
+}
+function familyLabelValue(x){
+  const fam=getFamily(x);
+  if(fam==='book')return esc(x.publisher||'—');
+  if(fam==='ephemera')return esc(x.kind||'—');
+  return esc(x.label||'—');
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -406,15 +412,16 @@ function catalogue(L){
     if(!f)return '';
     return `<a class="card" href="/collection/${x.accession}" data-open="${x.accession}" aria-label="${esc(acc(x))}, ${esc(named(x))}">
      <span class="pl"><img class="f${b?' hb':''}" src="${f.src}" alt="" loading="lazy"${dims(f)}>${b?('<img class="b" src="'+b.src+'" alt="" loading="lazy"'+dims(b)+'>'):''}</span>
-     <span class="cap">${esc(x.maker)}<i>${esc(x.title)}</i><small>${sleeve(x)}, ${dated(x)}</small></span>
+     <span class="cap">${esc(x.maker)}<i>${esc(x.title)}</i><small>${familyCaption(x)}</small></span>
      <span><span class="tc-tag tc-tag--s${tagClass(x)}">${esc(pendingLabel(x))}</span></span></a>`;
   }).join('')+'</div>';
 }
 
 function index(L){
   const th=(k,l,c='')=>`<th class="${c}" ${k&&st.sort===k?`aria-sort="${st.dir===1?'ascending':'descending'}"`:''}>${k?`<button data-sort="${k}" aria-pressed="${st.sort===k}">${l}${st.sort===k?(st.dir===1?' ↑':' ↓'):''}</button>`:l}</th>`;
-  $('#view').innerHTML=`<div class="tablewrap"><table class="idx"><thead><tr>${th('seq','Acc. no.','first')}${th('az','Object')}${th('','Department','hide-s')}${th('date','Date','hide-s')}${th('','Label','hide-s')}${th('colour','Colour')}</tr></thead><tbody>`+
-   L.map(x=>{const f=viewImgs(x)[0];return `<tr class="row" data-open="${x.accession}" ${f?'data-peek="'+f.src+'"':''}tabindex="0"><td><span class="tc-tag tc-tag--s${tagClass(x)}">${esc(pendingLabel(x))}</span></td><td>${esc(x.maker)} <i>${esc(x.title)}</i></td><td class="hide-s">${esc(x.department)}</td><td class="hide-s">${dated(x)}</td><td class="hide-s">${esc(x.label||'—')}</td><td><span class="dot" style="background:${x.bodyColour||'#888'}"></span></td></tr>`;}).join('')+'</tbody></table></div>';
+  const labelHdr=familyLabelHeader();
+  $('#view').innerHTML=`<div class="tablewrap"><table class="idx"><thead><tr>${th('seq','Acc. no.','first')}${th('az','Object')}${th('','Department','hide-s')}${th('date','Date','hide-s')}${th('',labelHdr,'hide-s')}${th('colour','Colour')}</tr></thead><tbody>`+
+   L.map(x=>{const f=viewImgs(x)[0];return `<tr class="row" data-open="${x.accession}" ${f?'data-peek="'+f.src+'"':''}tabindex="0"><td><span class="tc-tag tc-tag--s${tagClass(x)}">${esc(pendingLabel(x))}</span></td><td>${esc(x.maker)} <i>${esc(x.title)}</i></td><td class="hide-s">${esc(x.department)}</td><td class="hide-s">${dated(x)}</td><td class="hide-s">${familyLabelValue(x)}</td><td><span class="dot" style="background:${x.bodyColour||'#888'}"></span></td></tr>`;}).join('')+'</tbody></table></div>';
 }
 
 function conveyor(L){
@@ -423,7 +430,7 @@ function conveyor(L){
   const items=[];for(let r=0;r<reps;r++)L.forEach(x=>items.push(x));
   $('#view').innerHTML=`<div class="case" id="case" tabindex="0" style="--h:${h}px;--sw:${sw}px" aria-label="Conveyor. Drag, scroll or use arrow keys.">
    <div class="counter" id="cnum">001<small id="cname"></small></div>
-   <div class="track">${items.map((x,i)=>{const f=viewImgs(x)[0];if(!f)return '';const dup=i>=L.length?'tabindex="-1" aria-hidden="true"':'';return `<button class="slot" data-open="${x.accession}" data-i="${i%L.length}" ${dup} aria-label="${esc(acc(x))}, ${esc(named(x))}"><span class="lead"></span><span class="pop tc-fact"><b>${esc(named(x))}</b> ${esc((facts(x)[0])||'')}</span><img src="${f.src}" alt="" ${dims(f)}${i<10?'':' loading="lazy"'}><span class="tc-tag tc-tag--m${tagClass(x)}">${esc(pendingLabel(x))}</span></button>`;}).join('')}</div>
+   <div class="track">${items.map((x,i)=>{const f=viewImgs(x)[0];if(!f)return '';const dup=i>=L.length?'tabindex="-1" aria-hidden="true"':'';return `<button class="slot" data-open="${x.accession}" data-i="${i%L.length}" ${dup} aria-label="${esc(acc(x))}, ${esc(named(x))}"><span class="lead"></span><span class="pop tc-fact"><b>${esc(named(x))}</b> ${esc(factsModule.resolveLead(x,A,factSettings))}</span><img src="${f.src}" alt="" ${dims(f)}${i<10?'':' loading="lazy"'}><span class="tc-tag tc-tag--m${tagClass(x)}">${esc(pendingLabel(x))}</span></button>`;}).join('')}</div>
    <div class="beltline"></div></div>
    <div class="cctl"><div class="l"><button id="c-play">Pause</button><button id="c-back">← Back</button><button id="c-fwd">Forward →</button></div><span>Drag or scroll to move the belt. Hover an object to stop it.</span></div>`;
   const c=$('#case'),slots=[...c.querySelectorAll('.slot')];
@@ -532,14 +539,40 @@ function drawObj(){
      ${spec('Date',dated(x))}
      ${spec('Type',esc(x.type))}
      ${x.description?spec('Description',esc(x.description)):''}
-     ${x.label?spec('Label',esc(x.label)):''}
+     ${(()=>{const fam=getFamily(x);if(fam==='garment'){return [
+       x.label?spec('Label',esc(x.label)):'',
+       x.size?spec('Size',esc(x.size)):'',
+       x.sleeve?spec('Sleeve',x.sleeve==='long'?'Long sleeve':'Short sleeve'):'',
+       x.note?spec('Detail',esc(x.note)):'',
+     ].join('');}if(fam==='book'){return [
+       x.publisher?spec('Publisher',esc(x.publisher)):'',
+       x.cover?spec('Cover',x.cover==='hard'?'Hardcover':'Softcover'):'',
+       x.edition?spec('Edition',esc(x.edition)):'',
+       x.pages?spec('Pages',esc(x.pages)):'',
+       x.signed?spec('Signed','Yes'):'',
+       x.dimensions?spec('Dimensions',esc(x.dimensions)):'',
+     ].join('');}if(fam==='ephemera'){return [
+       x.kind?spec('Kind',esc(x.kind)):'',
+       x.venue?spec('Venue',esc(x.venue)):'',
+       x.city?spec('City',esc(x.city)):'',
+       x.dimensions?spec('Dimensions',esc(x.dimensions)):'',
+     ].join('');}return '';})()}
      ${spec('Department',esc(x.department))}
-     ${x.note?spec('Detail',esc(x.note)):''}
      ${x.provenance?spec('Provenance',esc(x.provenance)):''}
      ${x.condition?spec('Condition',esc(x.condition)):''}
-     ${x.bodyColour?spec('Body colour',`<span class="dot" style="background:${x.bodyColour}"></span>&nbsp; ${x.bodyColour}`):''}
+     ${x.bodyColour?spec((getFamily(x)==='book'?'Cover colour':getFamily(x)==='ephemera'?'Colour':'Body colour'),`<span class="dot" style="background:${x.bodyColour}"></span>&nbsp; ${x.bodyColour}`):''}
     </dl>
-    <div class="facts">${(x.customFacts&&x.customFacts.length?x.customFacts:facts(x)).map(t=>`<div class="tc-fact"><b>${esc(named(x))}</b> ${esc(t)}</div>`).join('')}</div>
+    <div class="facts">${(()=>{
+      const lead=factsModule.resolveLead(x,A,factSettings);
+      const allF=x.customFacts&&x.customFacts.length
+        ? x.customFacts.map(t=>({key:'custom',text:t}))
+        : factsModule.computeFacts(x,A,factSettings);
+      if(!allF.length)return '';
+      // lead first, then rest
+      const texts=allF.map(f=>f.text||f);
+      const dedupe=lead?[lead,...texts.filter(t=>t!==lead)]:texts;
+      return dedupe.map(t=>`<div class="tc-fact"><b>${esc(named(x))}</b> ${esc(t)}</div>`).join('');
+    })()}</div>
     <div class="sec"><h4>${esc(mediaKind)}</h4>${mediaHtml}</div>
     ${x.seenIn?`<div class="sec"><h4>Seen in</h4><p>${x.seenInUrl?`<a href="${esc(x.seenInUrl)}" target="_blank" rel="noopener">${esc(x.seenIn)}</a>`:esc(x.seenIn)}</p></div>`:''}
     <div class="cite">Cite as: temporary collection, archive department of temporary.company, acc. ${esc(acc(x))}</div>

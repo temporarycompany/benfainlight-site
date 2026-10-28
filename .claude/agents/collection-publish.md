@@ -10,7 +10,25 @@ You publish objects to temporary collection (temporary.company/collection). Cowo
 ## Inputs
 
 - A folder of photos named `<key>_<plate>.jpg`, where plate is `front`, `back` or `label`.
-- `records.csv` with columns `key, maker, title, date, type, description, label, department, provenance, condition, body_colour`. It may also have reference-only columns (`size`, `source_files`, `plates`, `notes`); don't import those unless the batch prompt says to.
+- `records.csv` with columns `key, maker, title, date, type` and family-specific columns below. It may also have reference-only columns (`source_files`, `plates`, `notes`); don't import those unless the batch prompt says to.
+
+### CSV columns per family
+
+**All families:** `key, maker, title, date, type, department, provenance, condition, body_colour`
+
+**Garments** (type = Shirt, Sweatshirt, or Hoodie): `description, label, sleeve, size, note`
+- `label` is for garments only. Never put a publisher in the `label` column.
+
+**Books** (type = Book): `publisher, cover, pages, edition, signed`
+- `publisher` is the book's publisher. Never store it in `label`.
+- `cover` is `hard` or `soft`.
+- `pages` is a number.
+- `signed` is `true` or `false`.
+
+**Ephemera** (type = Ephemera): `kind, venue, city, dimensions`
+- `kind` is one of: flyer, ticket, poster, zine, other.
+
+**Shared optional:** `dimensions` (free text, e.g. "11 × 17 in")
 
 ## The rules that matter most
 
@@ -136,7 +154,27 @@ Content-Type: application/json
 
 {
   "status": "pending",
-  "type", "department", "maker", "title", "date", "description", "label": <from CSV>,
+  "type", "department", "maker", "title", "date", "description": <from CSV>,
+
+  // Garments only (type = Shirt, Sweatshirt, Hoodie):
+  "label": "<from CSV — garments only; omit or null for books and ephemera>",
+  "sleeve": "<from CSV>",
+  "size": "<from CSV>",
+  "note": "<from CSV>",
+
+  // Books only (type = Book):
+  "publisher": "<from CSV>",
+  "cover": "<from CSV — hard or soft>",
+  "pages": <number>,
+  "edition": "<from CSV>",
+  "signed": <boolean>,
+
+  // Ephemera only (type = Ephemera):
+  "kind": "<from CSV — flyer, ticket, poster, zine, or other>",
+  "venue": "<from CSV>",
+  "city": "<from CSV>",
+  "dimensions": "<from CSV>",
+
   "provenance": "", "condition": "",
   "bodyColour": "<bodyColour from the FRONT cutout upload; CSV body_colour only as fallback>",
   "images": [

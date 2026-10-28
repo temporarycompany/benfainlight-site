@@ -622,6 +622,7 @@ select { cursor: pointer; appearance: none; }
         <button class="nav-item" :class="{active:section==='col-list'}" @click="section='col-list';fetchCol()">Objects <span v-if="colObjects.length" style="color:var(--muted);font-size:.65rem">({{colObjects.length}})</span></button>
         <button class="nav-item" :class="{active:section==='col-add'}"  @click="startAddObj">+ Add object</button>
         <button class="nav-item" :class="{active:section==='col-bulk'}" @click="startBulkUpload">Bulk upload</button>
+        <button class="nav-item" :class="{active:section==='col-facts'}" @click="section='col-facts';fetchFactSettings()">Facts settings</button>
       </nav>
 
       <div class="sidebar-footer">
@@ -959,7 +960,7 @@ select { cursor: pointer; appearance: none; }
             <div class="form-group">
               <label>Type</label>
               <select v-model="colForm.type">
-                <option>Shirt</option><option>Book</option><option>Ephemera</option>
+                <option>Shirt</option><option>Sweatshirt</option><option>Hoodie</option><option>Book</option><option>Ephemera</option>
               </select>
             </div>
           </div>
@@ -975,7 +976,7 @@ select { cursor: pointer; appearance: none; }
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="form-group">
               <label>Date</label>
               <input type="text" v-model="colForm.date" placeholder="1997–98" />
@@ -984,36 +985,112 @@ select { cursor: pointer; appearance: none; }
               <label>Department</label>
               <input type="text" v-model="colForm.department" placeholder="e.g. Music, Art, Film & TV">
             </div>
-            <div class="form-group">
-              <label>Sleeve</label>
-              <select v-model="colForm.sleeve">
-                <option value="">—</option><option value="short">Short</option><option value="long">Long</option>
-              </select>
-            </div>
           </div>
 
           <div class="form-group">
             <label>Description</label>
-            <input type="text" v-model="colForm.description" placeholder="Printed cotton T-shirt, short sleeve" />
+            <input type="text" v-model="colForm.description" placeholder="e.g. Printed cotton T-shirt, short sleeve" />
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="form-group">
-              <label>Label</label>
-              <input type="text" v-model="colForm.label" placeholder="Anvil" />
+          <!-- Garment-only fields -->
+          <template v-show="colFormFamily === 'garment'">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label>Sleeve</label>
+                <select v-model="colForm.sleeve">
+                  <option value="">—</option><option value="short">Short</option><option value="long">Long</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Size</label>
+                <input type="text" v-model="colForm.size" placeholder="XL" />
+              </div>
+              <div class="form-group">
+                <label>Label</label>
+                <input type="text" v-model="colForm.label" placeholder="Anvil" />
+              </div>
             </div>
             <div class="form-group">
-              <label>Body colour</label>
+              <label>Detail / note <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(ringer, crew shirt, named collar, etc.)</span></label>
+              <input type="text" v-model="colForm.note" placeholder="" />
+            </div>
+          </template>
+
+          <!-- Book-only fields -->
+          <template v-show="colFormFamily === 'book'">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label>Publisher</label>
+                <input type="text" v-model="colForm.publisher" placeholder="MIT Press" />
+              </div>
+              <div class="form-group">
+                <label>Cover</label>
+                <select v-model="colForm.cover">
+                  <option value="">—</option><option value="hard">Hardcover</option><option value="soft">Softcover</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label>Pages</label>
+                <input type="number" v-model.number="colForm.pages" placeholder="256" />
+              </div>
+              <div class="form-group">
+                <label>Edition</label>
+                <input type="text" v-model="colForm.edition" placeholder="First edition" />
+              </div>
+              <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;padding-bottom:4px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;font-size:.75rem;letter-spacing:0">
+                  <input type="checkbox" v-model="colForm.signed" /> Signed
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Dimensions</label>
+              <input type="text" v-model="colForm.dimensions" placeholder="11 × 17 in" />
+            </div>
+          </template>
+
+          <!-- Ephemera-only fields -->
+          <template v-show="colFormFamily === 'ephemera'">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label>Kind</label>
+                <select v-model="colForm.kind">
+                  <option value="">—</option><option>flyer</option><option>ticket</option><option>poster</option><option>zine</option><option>other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Venue</label>
+                <input type="text" v-model="colForm.venue" placeholder="" />
+              </div>
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" v-model="colForm.city" placeholder="" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Dimensions</label>
+              <input type="text" v-model="colForm.dimensions" placeholder="11 × 17 in" />
+            </div>
+          </template>
+
+          <!-- Shared: body colour -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>{{ colFormFamily === 'book' ? 'Cover colour' : colFormFamily === 'ephemera' ? 'Colour' : 'Body colour' }}</label>
               <div style="display:flex;gap:6px;align-items:center">
                 <input type="color" v-model="colForm.bodyColour" style="width:36px;height:36px;padding:2px;border:1px solid var(--dim);background:none;cursor:pointer;flex-shrink:0" />
                 <input type="text" v-model="colForm.bodyColour" placeholder="#414e53" style="flex:1" />
               </div>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label>Detail / note <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(ringer, crew shirt, named collar, etc.)</span></label>
-            <input type="text" v-model="colForm.note" placeholder="" />
+            <div class="form-group">
+              <label>Lead fact <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">which fact leads on conveyor</span></label>
+              <select v-model="colForm.leadFact">
+                <option value="">Auto (family order)</option>
+                <option v-for="k in colFormFactKeys" :key="k" :value="k">{{ k }}</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group">
@@ -1280,7 +1357,7 @@ select { cursor: pointer; appearance: none; }
                     </td>
                     <td>
                       <select class="bulk-td-input" v-model="d.type" @change="bulkValidateRow(d)">
-                        <option>Shirt</option><option>Book</option><option>Ephemera</option>
+                        <option>Shirt</option><option>Sweatshirt</option><option>Hoodie</option><option>Book</option><option>Ephemera</option>
                       </select>
                     </td>
                     <td>
@@ -1404,6 +1481,33 @@ select { cursor: pointer; appearance: none; }
 
         </div><!-- /col-bulk -->
 
+        <!-- ── Facts settings ──────────────────────────────────────────────── -->
+        <div v-if="section==='col-facts'" style="max-width:600px">
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:20px">
+            Set the order and visibility of facts for each family. The first enabled fact is the lead shown in the conveyor. Changes take effect on the live site immediately after saving.
+          </p>
+          <div v-if="factSettings">
+            <div v-for="(fam, famKey) in factSettings" :key="famKey" style="margin-bottom:28px">
+              <div class="section-title" style="margin-bottom:10px">{{ famKey.charAt(0).toUpperCase() + famKey.slice(1) }}</div>
+              <div v-for="(item, idx) in fam" :key="item.key" style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--dim)">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:.78rem;flex:1;margin:0">
+                  <input type="checkbox" v-model="item.enabled" />
+                  <span :style="{opacity: item.enabled ? 1 : 0.4}">{{ item.key }}</span>
+                </label>
+                <button class="btn-icon" :disabled="idx===0" @click="factSettings[famKey].splice(idx-1,0,...factSettings[famKey].splice(idx,1))" title="Move up" style="font-size:.7rem">↑</button>
+                <button class="btn-icon" :disabled="idx===fam.length-1" @click="factSettings[famKey].splice(idx+1,0,...factSettings[famKey].splice(idx,1))" title="Move down" style="font-size:.7rem">↓</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:16px">
+              <button class="btn btn-primary" @click="saveFactSettings" :disabled="factSettingsSaving">
+                {{ factSettingsSaving ? 'Saving…' : 'Save fact settings' }}
+              </button>
+              <span v-if="factSettingsMsg" :style="{color: factSettingsMsgType==='ok'?'#78b88a':'#c07070',fontSize:'.75rem'}">{{ factSettingsMsg }}</span>
+            </div>
+          </div>
+          <div v-else style="color:var(--muted);font-size:.8rem">Loading…</div>
+        </div><!-- /col-facts -->
+
       </div><!-- /main-body -->
     </main>
   </div><!-- /shell -->
@@ -1501,6 +1605,7 @@ select { cursor: pointer; appearance: none; }
 
 </div><!-- /#app -->
 
+<script src="/facts.js"></script>
 <script>
 const { createApp } = Vue;
 
@@ -1571,6 +1676,12 @@ createApp({
       bulkCutoutJobs:  {}, // accession → { jobId, status, log }
       bulkCutoutRunning: false,
 
+      // Fact settings
+      factSettings:        null,
+      factSettingsSaving:  false,
+      factSettingsMsg:     '',
+      factSettingsMsgType: 'ok',
+
       // Collection
       colObjects:      [],
       colLoading:      false,
@@ -1601,11 +1712,31 @@ createApp({
       if (this.section === 'col-list') return 'Collection';
       if (this.section === 'col-add')  return 'Add Object';
       if (this.section === 'col-edit') return `Edit ${this.colForm?.accession || 'Object'}`;
-      if (this.section === 'col-bulk') return 'Bulk Upload';
+      if (this.section === 'col-bulk')  return 'Bulk Upload';
+      if (this.section === 'col-facts') return 'Facts Settings';
       if (this.section === 'project' && this.currentProject) {
         return `${this.currentProject.num} · ${this.currentProject.title}`;
       }
       return '';
+    },
+    colFormFamily() {
+      if (!this.colForm) return 'garment';
+      const t = this.colForm.type;
+      if (t === 'Book') return 'book';
+      if (t === 'Ephemera') return 'ephemera';
+      return 'garment';
+    },
+    colFormFactKeys() {
+      const family = this.colFormFamily;
+      const defaults = {
+        garment: ['maker','label','tagless','note','sleeve','colour','department','decade'],
+        book:    ['maker','publisher','age','signed','edition','cover','pages','colour','department','decade'],
+        ephemera:['maker','kind','city','age','colour','department','decade'],
+      };
+      if (this.factSettings && this.factSettings[family]) {
+        return this.factSettings[family].filter(f => f.enabled).map(f => f.key);
+      }
+      return defaults[family] || [];
     },
     colFiltered() {
       let L = this.colObjects;
@@ -1914,9 +2045,18 @@ createApp({
         accession: null, seq: null, status: 'pending',
         type: 'Shirt', department: 'Music',
         maker: '', title: '', date: null,
-        description: null, sleeve: null, label: null,
+        description: null,
+        // garment
+        sleeve: null, label: null, size: null, note: null,
+        // book
+        publisher: null, cover: null, pages: null, edition: null, signed: null,
+        // ephemera
+        kind: null, venue: null, city: null,
+        // shared
+        dimensions: null,
         bodyColour: '#888888', provenance: null, condition: null,
-        note: null, seenIn: null, seenInUrl: null,
+        leadFact: null,
+        seenIn: null, seenInUrl: null,
         customFacts: [],
         media: { kind: 'Watch', query: '', youtubeId: null },
         images: [],
@@ -1963,6 +2103,59 @@ createApp({
       } finally {
         this.colSaving = false;
         setTimeout(() => { this.colSaveMsg = ''; }, 3000);
+      }
+    },
+
+    async fetchFactSettings() {
+      try {
+        const r = await fetch('/api/fact-settings', {
+          headers: { Authorization: 'Bearer ' + this.token },
+        });
+        const data = await r.json();
+        // Merge with defaults for any missing family
+        const defaults = {
+          garment: [
+            {key:'maker',enabled:true},{key:'label',enabled:true},{key:'tagless',enabled:true},
+            {key:'note',enabled:true},{key:'sleeve',enabled:true},{key:'colour',enabled:true},
+            {key:'department',enabled:true},{key:'decade',enabled:true},
+          ],
+          book: [
+            {key:'maker',enabled:true},{key:'publisher',enabled:true},{key:'age',enabled:true},
+            {key:'signed',enabled:true},{key:'edition',enabled:true},{key:'cover',enabled:true},
+            {key:'pages',enabled:true},{key:'colour',enabled:true},{key:'department',enabled:true},{key:'decade',enabled:true},
+          ],
+          ephemera: [
+            {key:'maker',enabled:true},{key:'kind',enabled:true},{key:'city',enabled:true},
+            {key:'age',enabled:true},{key:'colour',enabled:true},{key:'department',enabled:true},{key:'decade',enabled:true},
+          ],
+        };
+        this.factSettings = { ...defaults, ...data };
+      } catch(e) { console.error('fetchFactSettings', e); }
+    },
+
+    async saveFactSettings() {
+      this.factSettingsSaving = true;
+      this.factSettingsMsg = '';
+      try {
+        const r = await fetch('/api/fact-settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
+          body: JSON.stringify(this.factSettings),
+        });
+        const d = await r.json();
+        if (d.ok) {
+          this.factSettingsMsg = 'Saved ✓';
+          this.factSettingsMsgType = 'ok';
+        } else {
+          this.factSettingsMsg = d.error || 'Error';
+          this.factSettingsMsgType = 'err';
+        }
+      } catch(e) {
+        this.factSettingsMsg = 'Network error';
+        this.factSettingsMsgType = 'err';
+      } finally {
+        this.factSettingsSaving = false;
+        setTimeout(() => { this.factSettingsMsg = ''; }, 3000);
       }
     },
 
@@ -2429,7 +2622,7 @@ createApp({
         const r = await fetch('/api/collection/suggest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token },
-          body: JSON.stringify({ imageUrls }),
+          body: JSON.stringify({ imageUrls, type: d.type }),
         });
         if (!r.ok) { d._suggesting = false; return; }
         const data = await r.json();
@@ -2471,9 +2664,14 @@ createApp({
             status: 'pending',
             type: d.type, department: d.department,
             maker: d.maker, title: d.title, date: d.date || null,
-            description: d.description || null, label: d.label || null,
+            description: d.description || null,
+            label: d.label || null, sleeve: d.sleeve || null, size: d.size || null, note: d.note || null,
+            publisher: d.publisher || null, cover: d.cover || null, pages: d.pages || null,
+            edition: d.edition || null, signed: d.signed || null,
+            kind: d.kind || null, venue: d.venue || null, city: d.city || null,
+            dimensions: d.dimensions || null,
             bodyColour: d.bodyColour || null, provenance: d.provenance || null,
-            condition: d.condition || null, note: d.note || null,
+            condition: d.condition || null,
             customFacts: d.customFacts || [],
             images: d.images,
           };
@@ -2651,7 +2849,10 @@ createApp({
   },
 
   mounted() {
-    if (this.token) this.fetchContent();
+    if (this.token) {
+      this.fetchContent();
+      this.fetchFactSettings();
+    }
   },
 }).mount('#app');
 </script>
