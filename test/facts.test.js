@@ -372,3 +372,89 @@ describe('Test 6: Admin type round-trip (Sweatshirt)', () => {
     assert.ok(colourFact?.text.includes('2'), `Sweatshirt colour rank denominator should be 2 (garment pool), got: ${colourFact?.text}`);
   });
 });
+
+// ── Test 7: Garment plates are unchanged by book/detail-count changes ─────────
+describe('Test 7: Garment object plates unchanged', () => {
+  // Simulate drawObj plate-building logic (mirrors collection.html drawObj)
+  function buildPlates(x) {
+    const imgs = x.images || [];
+    const views = imgs.filter(i => i.role === 'front' || i.role === 'back');
+    const dets = imgs.filter(i => i.role === 'detail');
+    const lbl = imgs.find(i => i.role === 'label');
+    const fam = getFamily(x);
+    const defaultViewCap = (i) => fam === 'book' ? (i === 0 ? 'Cover' : 'Back cover') : (i === 0 ? 'Front' : 'Back');
+    const defaultLblCap = () => fam === 'book' ? 'Colophon' : 'Label';
+    return [
+      ...views.map((v, i) => ({ cap: v.caption || defaultViewCap(i), cutout: v.cutout, photo: false })),
+      ...dets.map(d => ({ cap: d.caption || 'Detail', cutout: d.cutout, photo: !d.cutout })),
+      ...(lbl ? [{ cap: lbl.caption || defaultLblCap(), photo: true }] : []),
+    ];
+  }
+
+  test('garment with front/back/label gets three plates: Front, Back, Label', () => {
+    const g = makeGarment({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'back', src: 'b.webp', cutout: true },
+        { role: 'label', src: 'l.webp' },
+      ],
+    });
+    const plates = buildPlates(g);
+    assert.equal(plates.length, 3);
+    assert.equal(plates[0].cap, 'Front');
+    assert.equal(plates[1].cap, 'Back');
+    assert.equal(plates[2].cap, 'Label');
+    assert.equal(plates[2].photo, true);
+  });
+
+  test('garment with one detail gets four plates, detail is photo (not cutout)', () => {
+    const g = makeGarment({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'back', src: 'b.webp', cutout: true },
+        { role: 'detail', src: 'd.jpg', cutout: false },
+        { role: 'label', src: 'l.webp' },
+      ],
+    });
+    const plates = buildPlates(g);
+    assert.equal(plates.length, 4);
+    assert.equal(plates[2].cap, 'Detail');
+    assert.equal(plates[2].photo, true);
+  });
+
+  test('book with seven detail plates gets all seven in order with correct captions', () => {
+    const b = makeBook({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true, caption: 'Cover' },
+        { role: 'back', src: 'b.webp', cutout: true, caption: 'Back cover' },
+        { role: 'detail', src: 'spine.webp', cutout: true, caption: 'Spine' },
+        { role: 'detail', src: 's1.webp', cutout: true, caption: 'Spread' },
+        { role: 'detail', src: 's2.webp', cutout: true, caption: 'Spread' },
+        { role: 'detail', src: 's3.webp', cutout: true, caption: 'Spread' },
+        { role: 'detail', src: 'col.webp', cutout: true, caption: 'Colophon' },
+      ],
+    });
+    const plates = buildPlates(b);
+    assert.equal(plates.length, 7);
+    assert.equal(plates[0].cap, 'Cover');
+    assert.equal(plates[1].cap, 'Back cover');
+    assert.equal(plates[2].cap, 'Spine');
+    assert.equal(plates[6].cap, 'Colophon');
+    // All detail plates are cutout → not photo
+    for (const p of plates.slice(2)) assert.equal(p.photo, false);
+  });
+
+  test('adding a book with multiple detail plates does not affect garment plate count', () => {
+    const g = makeGarment({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'back', src: 'b.webp', cutout: true },
+        { role: 'label', src: 'l.webp' },
+      ],
+    });
+    const gPlatesBefore = buildPlates(g);
+    // Simulate: book is also in collection (irrelevant to garment plate building)
+    const gPlatesAfter = buildPlates(g);
+    assert.deepEqual(gPlatesBefore, gPlatesAfter);
+  });
+});

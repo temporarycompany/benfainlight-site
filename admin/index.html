@@ -1156,6 +1156,9 @@ select { cursor: pointer; appearance: none; }
                   <input type="checkbox" v-model="img.cutout" /> cutout
                 </label>
               </div>
+              <div style="margin-bottom:4px">
+                <input type="text" v-model="img.caption" placeholder="Caption (optional)" style="font-size:.72rem;width:100%;padding:3px 6px;background:var(--bg);border:1px solid var(--dim);color:var(--ink)" />
+              </div>
               <div style="font-family:monospace;font-size:.65rem;color:var(--muted);word-break:break-all">{{ img.src }}</div>
               <div v-if="img.original" style="font-family:monospace;font-size:.65rem;color:var(--muted);margin-top:2px">original: {{ img.original }}</div>
               <div v-if="img.cutout && img.role !== 'label' && section==='col-edit'" style="margin-top:6px">

@@ -301,7 +301,7 @@ const pendingLabel=x=>x.status==='pending'?`${new Date().getFullYear()}.___ `:ac
 // front/back images
 const viewImgs=x=>(x.images||[]).filter(i=>i.role==='front'||i.role==='back');
 const labelImg=x=>(x.images||[]).find(i=>i.role==='label');
-const detailImg=x=>(x.images||[]).find(i=>i.role==='detail');
+const detailImgs=x=>(x.images||[]).filter(i=>i.role==='detail');
 const dims=i=>i&&i.w?' width="'+i.w+'" height="'+i.h+'"':'';
 
 // ── Colour / sort helpers ─────────────────────────────────────────────────────
@@ -494,11 +494,19 @@ function drawObj(){
   if(!x)return;
   const views=viewImgs(x);
   const lbl=labelImg(x);
-  const det=detailImg(x);
+  const dets=detailImgs(x);
+  const fam=getFamily(x);
+  // Per-image caption: use image.caption if set, else family defaults
+  const defaultViewCap=(i)=>{
+    if(i===0)return fam==='book'?'Cover':'Front';
+    return fam==='book'?'Back cover':'Back';
+  };
+  const defaultDetCap=()=>fam==='book'?'Detail':'Detail';
+  const defaultLblCap=()=>fam==='book'?'Colophon':'Label';
   const plates=[
-    ...views.map((v,i)=>({cap:i===0?'Front':'Back',src:v.src,w:v.w,h:v.h,cutout:v.cutout})),
-    ...(det?[{cap:'Detail',src:det.src,photo:true}]:[]),
-    ...(lbl?[{cap:'Label',src:lbl.src,photo:true}]:[]),
+    ...views.map((v,i)=>({cap:v.caption||defaultViewCap(i),src:v.src,w:v.w,h:v.h,cutout:v.cutout})),
+    ...dets.map(d=>({cap:d.caption||defaultDetCap(),src:d.src,w:d.w,h:d.h,cutout:d.cutout,photo:!d.cutout})),
+    ...(lbl?[{cap:lbl.caption||defaultLblCap(),src:lbl.src,photo:true}]:[]),
   ];
   const m=x.media||{};
   const mediaKind=m.kind||'Watch';
