@@ -553,7 +553,7 @@ function drawObj(){
        x.sleeve?spec('Sleeve',x.sleeve==='long'?'Long sleeve':'Short sleeve'):'',
        x.note?spec('Detail',esc(x.note)):'',
      ].join('');}if(fam==='book'){return [
-       x.publisher?spec('Publisher',esc(x.publisher)):'',
+       x.publisher?spec('Publisher',x.selfPublished?`${esc(x.publisher)} (self-published)`:esc(x.publisher)):'',
        x.cover?spec('Cover',x.cover==='hard'?'Hardcover':'Softcover'):'',
        x.edition?spec('Edition',esc(x.edition)):'',
        x.pages?spec('Pages',esc(x.pages)):'',

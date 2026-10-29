@@ -129,9 +129,10 @@
       { key: 'decade',     enabled: true  },
     ],
     book: [
-      { key: 'maker',      enabled: true  },
-      { key: 'publisher',  enabled: true  },
-      { key: 'age',        enabled: true  },
+      { key: 'maker',         enabled: true  },
+      { key: 'publisher',     enabled: true  },
+      { key: 'selfPublished', enabled: true  },
+      { key: 'age',           enabled: true  },
       { key: 'signed',     enabled: true  },
       { key: 'edition',    enabled: true  },
       { key: 'cover',      enabled: true  },
@@ -180,9 +181,21 @@
     const allFacts = {};
 
     // ── SHARED (pool = whole published collection) ────────────────────────────
-    const sameMaker = published.filter(y => y.maker === x.maker);
-    if (sameMaker.length > 1) {
-      allFacts.maker = `is one of ${sameMaker.length} ${x.maker} objects in the collection.`;
+    // Split co-credited makers ("A / B") so each name counts separately
+    const makerNames = x.maker.split(' / ').map(s => s.trim()).filter(Boolean);
+    const makerFacts = makerNames
+      .map(name => {
+        const n = published.filter(y =>
+          y.maker.split(' / ').map(s => s.trim()).some(m => m.toLowerCase() === name.toLowerCase())
+        ).length;
+        return n > 1 ? { name, n } : null;
+      })
+      .filter(Boolean);
+    if (makerFacts.length > 0) {
+      // Use first matching name fact (for single-maker objects this is the same as before)
+      allFacts.maker = makerFacts.map(mf =>
+        `is one of ${mf.n} ${mf.name} objects in the collection.`
+      ).join(' ');
     }
 
     const sameDept = published.filter(y => y.department === x.department);
@@ -237,6 +250,12 @@
         allFacts.publisher = n > 1
           ? `is one of ${n} books published by ${x.publisher}.`
           : `is the only book from ${x.publisher}.`;
+      }
+      if (x.selfPublished) {
+        const n = pool.filter(y => y.selfPublished).length;
+        allFacts.selfPublished = n > 1
+          ? `is one of ${n} self-published books.`
+          : `is the only self-published book.`;
       }
       if (x.cover) {
         const label = x.cover === 'hard' ? 'hardcover' : 'softcover';

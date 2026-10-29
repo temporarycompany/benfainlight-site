@@ -444,6 +444,19 @@ describe('Test 7: Garment object plates unchanged', () => {
     for (const p of plates.slice(2)) assert.equal(p.photo, false);
   });
 
+  test('book with no label and seven detail plates has no label plate', () => {
+    const b = makeBook({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'back', src: 'b.webp', cutout: true },
+        { role: 'detail', src: 'd1.webp', cutout: true, caption: 'Spine' },
+      ],
+    });
+    const plates = buildPlates(b);
+    assert.equal(plates.length, 3);
+    assert.ok(!plates.some(p => p.cap === 'Label'), 'no label plate for book without label image');
+  });
+
   test('adding a book with multiple detail plates does not affect garment plate count', () => {
     const g = makeGarment({
       images: [
@@ -456,5 +469,66 @@ describe('Test 7: Garment object plates unchanged', () => {
     // Simulate: book is also in collection (irrelevant to garment plate building)
     const gPlatesAfter = buildPlates(g);
     assert.deepEqual(gPlatesBefore, gPlatesAfter);
+  });
+});
+
+// ── Test 8: Co-credited makers ────────────────────────────────────────────────
+describe('Test 8: Co-credited makers', () => {
+  test('"NIGO / Sotheby\'s" counts toward both NIGO and Sotheby\'s', () => {
+    const nigo1 = makeGarment({ accession: 'G1', maker: 'NIGO' });
+    const nigo2 = makeBook({ accession: 'B1', maker: 'NIGO' });
+    const coCredit = makeBook({ accession: 'B2', maker: "NIGO / Sotheby's" });
+    const sothebyOther = makeBook({ accession: 'B3', maker: "Sotheby's" });
+    const all = [nigo1, nigo2, coCredit, sothebyOther];
+
+    const coFacts = computeFacts(coCredit, all, DEFAULT_FACT_SETTINGS);
+    const makerFact = coFacts.find(f => f.key === 'maker');
+    assert.ok(makerFact, 'co-credited object should have a maker fact');
+    // NIGO: 3 objects (nigo1, nigo2, coCredit)
+    assert.ok(makerFact.text.includes('3') && makerFact.text.includes('NIGO'), `NIGO count should be 3, got: ${makerFact.text}`);
+    // Sotheby's: 2 objects (coCredit, sothebyOther)
+    assert.ok(makerFact.text.includes("Sotheby's"), `fact should mention Sotheby's, got: ${makerFact.text}`);
+  });
+
+  test('single-maker objects are unchanged by co-credited additions', () => {
+    const nigo1 = makeGarment({ accession: 'G1', maker: 'NIGO' });
+    const nigo2 = makeBook({ accession: 'B1', maker: 'NIGO' });
+    const all = [nigo1, nigo2];
+    const factsNigo = computeFacts(nigo1, all, DEFAULT_FACT_SETTINGS);
+    const makerFact = factsNigo.find(f => f.key === 'maker');
+    assert.ok(makerFact?.text.includes('2') && makerFact.text.includes('NIGO'),
+      `NIGO single-maker fact wrong: ${makerFact?.text}`);
+  });
+
+  test('co-credited object with only-once names has no maker fact', () => {
+    const obj = makeBook({ accession: 'B1', maker: 'Alice / Bob' });
+    const facts = computeFacts(obj, [obj], DEFAULT_FACT_SETTINGS);
+    const makerFact = facts.find(f => f.key === 'maker');
+    assert.ok(!makerFact, 'no maker fact when both names appear only once');
+  });
+});
+
+// ── Test 9: selfPublished book fact ───────────────────────────────────────────
+describe('Test 9: selfPublished book fact', () => {
+  test('self-published book gets "is the only self-published book" when alone', () => {
+    const b = makeBook({ accession: 'B1', selfPublished: true, publisher: 'Amyl and the Sniffers' });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'selfPublished');
+    assert.ok(f, 'selfPublished fact should exist');
+    assert.ok(f.text.includes('only'), `expected "only" in: ${f.text}`);
+  });
+
+  test('two self-published books each get "is one of 2 self-published books"', () => {
+    const b1 = makeBook({ accession: 'B1', selfPublished: true });
+    const b2 = makeBook({ accession: 'B2', selfPublished: true });
+    const facts = computeFacts(b1, [b1, b2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'selfPublished');
+    assert.ok(f?.text.includes('2'), `expected 2 in: ${f?.text}`);
+  });
+
+  test('non-self-published book has no selfPublished fact', () => {
+    const b = makeBook({ accession: 'B1', selfPublished: false });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    assert.ok(!facts.find(f => f.key === 'selfPublished'), 'no selfPublished fact for false');
   });
 });

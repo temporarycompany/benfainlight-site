@@ -1023,6 +1023,11 @@ select { cursor: pointer; appearance: none; }
                 <label>Publisher</label>
                 <input type="text" v-model="colForm.publisher" placeholder="MIT Press" />
               </div>
+              <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;padding-bottom:4px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;font-size:.75rem;letter-spacing:0">
+                  <input type="checkbox" v-model="colForm.selfPublished" /> Self-published
+                </label>
+              </div>
               <div class="form-group">
                 <label>Cover</label>
                 <select v-model="colForm.cover">
@@ -2123,7 +2128,7 @@ createApp({
             {key:'department',enabled:true},{key:'decade',enabled:true},
           ],
           book: [
-            {key:'maker',enabled:true},{key:'publisher',enabled:true},{key:'age',enabled:true},
+            {key:'maker',enabled:true},{key:'publisher',enabled:true},{key:'selfPublished',enabled:true},{key:'age',enabled:true},
             {key:'signed',enabled:true},{key:'edition',enabled:true},{key:'cover',enabled:true},
             {key:'pages',enabled:true},{key:'colour',enabled:true},{key:'department',enabled:true},{key:'decade',enabled:true},
           ],

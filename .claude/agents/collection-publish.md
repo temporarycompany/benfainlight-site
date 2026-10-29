@@ -19,8 +19,9 @@ You publish objects to temporary collection (temporary.company/collection). Cowo
 **Garments** (type = Shirt, Sweatshirt, or Hoodie): `description, label, sleeve, size, note`
 - `label` is for garments only. Never put a publisher in the `label` column.
 
-**Books** (type = Book): `publisher, cover, pages, edition, signed`
+**Books** (type = Book): `publisher, self_published, cover, pages, edition, signed`
 - `publisher` is the book's publisher. Never store it in `label`.
+- `self_published` is `true` or `false`. When `true`, the Publisher spec reads "Name (self-published)".
 - `cover` is `hard` or `soft`.
 - `pages` is a number.
 - `signed` is `true` or `false`.

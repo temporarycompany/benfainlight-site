@@ -463,11 +463,12 @@ app.post('/api/collection', requireAuth, (req, res) => {
     detail:     body.detail     || null,
     note:       body.note       || null,
     // book fields
-    publisher:  body.publisher  || null,
-    cover:      body.cover      || null,
-    pages:      body.pages      || null,
-    edition:    body.edition    || null,
-    signed:     body.signed     || null,
+    publisher:     body.publisher     || null,
+    selfPublished: body.selfPublished || false,
+    cover:         body.cover         || null,
+    pages:         body.pages         || null,
+    edition:       body.edition       || null,
+    signed:        body.signed        || null,
     // ephemera fields
     kind:       body.kind       || null,
     venue:      body.venue      || null,
