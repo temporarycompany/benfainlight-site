@@ -346,8 +346,11 @@ const save=()=>{try{localStorage.setItem('tc-collection9',JSON.stringify(st))}ca
 // Departments and types from actual data
 const DEPTS=['All',...[...new Set(A.map(x=>x.department))].sort()];
 const TYPE_MERGE={Hoodie:'Sweatshirt'}; // Hoodie objects appear under the Sweatshirt nav entry
-const TYPE_VALS=[...new Set(A.map(x=>TYPE_MERGE[x.type]||x.type))].sort();
-const TYPES=['All',...TYPE_VALS,'Book','Ephemera']; // always show Books/Ephemera even if empty
+// Fixed nav order: Shirt, Sweatshirt, Book, Ephemera; always show Book/Ephemera even if empty
+const NAV_ORDER=['Shirt','Sweatshirt','Book','Ephemera'];
+const TYPE_VALS=[...new Set(A.map(x=>TYPE_MERGE[x.type]||x.type))];
+const ALL_TYPES=[...new Set([...NAV_ORDER,...TYPE_VALS])];
+const TYPES=['All',...ALL_TYPES.sort((a,b)=>NAV_ORDER.indexOf(a)-NAV_ORDER.indexOf(b))];
 const TYPES_DISPLAY={All:'All objects',Shirt:'Shirts',Sweatshirt:'Hoodies & Sweatshirts',Hoodie:'Hoodies & Sweatshirts',Book:'Books',Ephemera:'Ephemera'};
 const SORTS=[['seq','Accession'],['az','Maker, A–Z'],['date','Date'],['colour','Colour']];
 
