@@ -53,22 +53,38 @@ So a tight crop is correct. A file with its own margin would end up smaller than
 
 ## Book plates
 
-**Roles:** `front` = cover, `back` = back cover, `detail` = spine, spreads and the copyright page (several allowed, each with a `caption`). `label` is optional for books (use it for a colophon plate if present, with `caption: "Colophon"`).
+**Roles:** `front` = cover, `back` = back cover, `detail` = spine, spreads, title page (`title`), colophon and any other interior shot (several allowed, each with a `caption`). `label` is optional for books.
 
-**File names:** `<key>_<plate>.jpg` with plate one of `front, back, spine, spread-1…n, colophon`. `prep_batch.py` only handles front/back/label today — other plates are cut out with `cutout.cutout()` directly, until `prep_batch.py` is extended.
+**File names:** `<key>_<plate>.jpg` with plate one of `front, back, spine, spread-1…n, title, colophon`. `prep_batch.py` only handles front/back/label today — covers and spines are cut out with `cutout.cutout()` directly, and interior plates use `tightcrop.py` (see below).
 
-**Covers:** find the four corners and correct the perspective to a flat rectangle. The result is fully opaque except for a 1px soft edge; it still needs an alpha channel.
+**Covers and spine: cut out.**
+- Covers: correct the perspective to a flat rectangle. The result is fully opaque except for a 1px soft edge; it still needs an alpha channel.
+- Spine: level it and cut it out as a strip. Trace the spine by hand when a hand covers part of it.
 
-**Spreads, including the copyright page:** show the whole open book, even when one page is blank.
-- Simplify the outline to straight edges with true corners, rendered antialiased.
-- Choke the edge about 11px at full resolution so no quilt shows along the page block.
-- Check the top of each page block zoomed in on magenta for dark slivers.
+**Interior plates (spreads, title page, colophon, anything inside the book): centred crop, never cut out.**
+- Run `pipeline/tightcrop.py`. It levels the photo and centres the book.
+  ```
+  python3 pipeline/tightcrop.py <photo> <out.webp>
+  OPEN_R=0.07 python3 pipeline/tightcrop.py <photo> <out.webp>   # if an arm or hand pulls the crop off centre
+  ```
+- It leaves an even border of background around the book: 7% of the book's longer side (`MARGIN`).
+- If the photo runs out on one side, the border shrinks equally on both sides of that axis, so the book stays centred.
+- It never cuts off the book. If the book itself touches the edge of the photo, the script reports `bookTouchesEdge`: list that plate for Ben as a reshoot candidate.
+- A border under 3% is reported as `lowBorder`. That's acceptable, but mention it.
+- Hands holding the book stay in, and nothing is silhouetted or hidden.
+- Everything beyond the border must be cropped away: legs, furniture, the edge of the quilt.
+- If an arm or hand pulls the crop off centre, re-run with `OPEN_R=0.07`. 2026.100's first spread needed this.
+- Upload as opaque WebP with `cutout: false`.
+- Never drop a spread or crop into its content to hide a hand.
 
-**Spine:** level it and cut it out as a strip (e.g. 1600 × 110).
+**Review:** on the review sheet, check each interior plate for:
+- the book is centred;
+- the border looks even;
+- nothing is in the frame except the book, the quilt and the hand holding it.
 
-**Captions:** set `caption` on every detail image. Default captions: Spine, Spread (repeatable), Colophon. The front and back also take `caption: "Cover"` and `caption: "Back cover"` respectively — the site will use them automatically, but setting them explicitly is clearer.
+**Captions:** set `caption` on every detail image. Default captions: Spine, Spread (repeatable), Title page, Colophon. The front and back take `caption: "Cover"` and `caption: "Back cover"` respectively.
 
-**All book plates use `cutout: true`.** The site renders cutout plates on the stone plate with 48px padding (contained, not photo).
+**cutout values:** covers and spine use `cutout: true`; interior plates use `cutout: false`. The site renders both at plate size (stone plate, 48px padding, contained).
 
 ## Step 1: Prepare the images (local, Mac only)
 
