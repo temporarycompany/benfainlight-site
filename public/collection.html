@@ -508,7 +508,7 @@ function drawObj(){
   const defaultLblCap=()=>fam==='book'?'Colophon':'Label';
   const plates=[
     ...views.map((v,i)=>({cap:v.caption||defaultViewCap(i),src:v.src,w:v.w,h:v.h,cutout:v.cutout})),
-    ...dets.map(d=>({cap:d.caption||defaultDetCap(),src:d.src,w:d.w,h:d.h,cutout:d.cutout,photo:!d.cutout})),
+    ...dets.map(d=>({cap:d.caption||defaultDetCap(),src:d.src,w:d.w,h:d.h,cutout:d.cutout,photo:!d.cutout&&fam!=='book'})),
     ...(lbl?[{cap:lbl.caption||defaultLblCap(),src:lbl.src,photo:true}]:[]),
   ];
   const m=x.media||{};

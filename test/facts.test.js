@@ -386,7 +386,7 @@ describe('Test 7: Garment object plates unchanged', () => {
     const defaultLblCap = () => fam === 'book' ? 'Colophon' : 'Label';
     return [
       ...views.map((v, i) => ({ cap: v.caption || defaultViewCap(i), cutout: v.cutout, photo: false })),
-      ...dets.map(d => ({ cap: d.caption || 'Detail', cutout: d.cutout, photo: !d.cutout })),
+      ...dets.map(d => ({ cap: d.caption || 'Detail', cutout: d.cutout, photo: !d.cutout && fam !== 'book' })),
       ...(lbl ? [{ cap: lbl.caption || defaultLblCap(), photo: true }] : []),
     ];
   }
@@ -442,6 +442,28 @@ describe('Test 7: Garment object plates unchanged', () => {
     assert.equal(plates[6].cap, 'Colophon');
     // All detail plates are cutout → not photo
     for (const p of plates.slice(2)) assert.equal(p.photo, false);
+  });
+
+  test('book detail with cutout:false renders at plate size (not photo)', () => {
+    const b = makeBook({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'detail', src: 'spread.webp', cutout: false, caption: 'Spread' },
+      ],
+    });
+    const plates = buildPlates(b);
+    assert.equal(plates[1].photo, false, 'book non-cutout detail should not be photo');
+  });
+
+  test('garment detail with cutout:false stays photo', () => {
+    const g = makeGarment({
+      images: [
+        { role: 'front', src: 'f.webp', cutout: true },
+        { role: 'detail', src: 'd.jpg', cutout: false },
+      ],
+    });
+    const plates = buildPlates(g);
+    assert.equal(plates[1].photo, true, 'garment non-cutout detail should remain photo');
   });
 
   test('book with no label and seven detail plates has no label plate', () => {
