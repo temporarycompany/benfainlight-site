@@ -17,7 +17,7 @@ You publish objects to temporary collection (temporary.company/collection). Cowo
 **All families:** `key, maker, title, date, type, department, provenance, condition, body_colour`
 
 **Garments** (type = Shirt, Sweatshirt, Hoodie, or Apparel): `description, label, sleeve, size, note, garment`
-- `label` is for garments only. Never put a publisher in the `label` column.
+- `label` is the brand on the label, written as the brand writes it (Cactus Plant Flea Market, Raf Simons, Gildan Ultra Cotton). Never tag text, URLs, size tags or legal names. If there's no brand, use Unbranded, Tagless, Cut tag or Faded.
 - `garment` is for Apparel only (free text: coveralls, button-down shirt, fleece pullover, jacket, trousers, other).
 
 **Books** (type = Book): `publisher, self_published, cover, format, pages, edition, signed, dimensions`
@@ -28,8 +28,9 @@ You publish objects to temporary collection (temporary.company/collection). Cowo
 - `pages` is a number.
 - `signed` is `true` or `false`.
 
-**Ephemera** (type = Ephemera): `kind, edition, materials, venue, city, dimensions`
+**Ephemera** (type = Ephemera): `kind, publisher, self_published, edition, materials, venue, city, dimensions`
 - `kind` is one of: flyer, ticket, poster, zine, object, miniature, trading cards, print edition, other.
+- `publisher` is the publisher for printed matter (zines, flyers, posters, print editions), or the maker of the object for objects, miniatures, cards and gifts. `self_published` is `true` when the maker produced it themselves. Never leave it empty: this is what the catalogue's label column shows.
 - `edition` is free text (e.g. "Friends and family", "Unreleased sample", "Set piece").
 - `materials` is free text (e.g. "Plaster", "3D-printed plastic").
 
@@ -224,6 +225,8 @@ Content-Type: application/json
 
   // Ephemera only (type = Ephemera):
   "kind": "<from CSV — flyer, ticket, poster, zine, object, miniature, trading cards, print edition, other>",
+  "publisher": "<from CSV>",
+  "selfPublished": <boolean from CSV self_published>,
   "edition": "<from CSV — e.g. Friends and family>",
   "materials": "<from CSV — e.g. Plaster>",
   "venue": "<from CSV>",
@@ -232,6 +235,11 @@ Content-Type: application/json
 
   "provenance": "", "condition": "",
   "bodyColour": "<bodyColour from the FRONT cutout upload; CSV body_colour only as fallback>",
+
+  // Media (optional — only include when the batch CSV provides it):
+  // Kind Listen → "media": { "kind": "Listen", "query": "...", "spotifyUrl": "<Spotify track, album or playlist URL>" }
+  // Kind Watch or Look → "media": { "kind": "Watch", "query": "...", "youtubeId": "<YouTube video ID>" }
+
   "images": [
     { "role": "front", "src": "<cutout url>", "original": "<original url>", "w": <w>, "h": <h>, "cutout": true },
     { "role": "back",  "src": "<cutout url>", "original": "<original url>", "w": <w>, "h": <h>, "cutout": true },
@@ -273,6 +281,8 @@ For each label plate, the file is square.
 Report anything you find, so older objects get fixed too. As of October 2026, the only first-batch problem was the back of 2026.008 (Frank Ocean, white shirt on a white sheet). It needs a reshoot.
 
 Then open one object page and confirm the front shows on a clean background. Report any failures. Don't call the batch done until every check passes.
+
+**The label column shows a brand (garments) or a publisher/maker (books, ephemera) for every new object — never a kind, tag text or '—'.**
 
 ## Re-processing existing objects
 

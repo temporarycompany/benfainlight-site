@@ -164,6 +164,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .media-block:hover .play{transform:scale(1.06)}
 .media-block .mt{position:absolute;left:16px;right:16px;bottom:14px;display:flex;justify-content:space-between;gap:12px;font-family:var(--tc-mono);font-size:12px}
 .yt-embed{aspect-ratio:16/9;width:100%}
+.sp-embed{width:100%;border:none;border-radius:12px;display:block}
 .cite{font-family:var(--tc-mono);font-size:12px;line-height:1.6;color:var(--tc-grey-text);border-top:1px solid var(--tc-rule);padding-top:14px}
 
 .loading{display:flex;align-items:center;justify-content:center;height:60vh;font-family:var(--tc-mono);font-size:13px;color:var(--tc-grey-text)}
@@ -334,13 +335,13 @@ function familyCaption(x){
 }
 function familyLabelHeader(){
   if(st.ty==='Book')return 'Publisher';
-  if(st.ty==='Ephemera')return 'Kind';
+  if(st.ty==='Ephemera')return 'Publisher / maker';
   return 'Label';
 }
 function familyLabelValue(x){
   const fam=getFamily(x);
   if(fam==='book')return esc(x.publisher||'—');
-  if(fam==='ephemera')return esc(x.kind||'—');
+  if(fam==='ephemera'){const v=x.publisher||x.maker;return esc(v||'—');}
   return esc(x.label||'—');
 }
 
@@ -520,13 +521,23 @@ function drawObj(){
   const m=x.media||{};
   const mediaKind=m.kind||'Watch';
   const ytId=m.youtubeId||null;
+  const spId=m.spotifyId||null;
+  const spType=m.spotifyType||'track';
   const ytQ=m.query||`${x.maker} ${x.title}`;
   const ytSearchUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent(ytQ)}`;
+  const spSearchUrl=`https://open.spotify.com/search/${encodeURIComponent(ytQ)}`;
   const spec=(k,v)=>`<div class="tc-spec"><dt>${k}</dt><dd>${v}</dd></div>`;
   document.title=`${acc(x)} ${named(x)} — temporary collection`;
-  const mediaHtml=ytId
-    ? `<iframe class="yt-embed" src="https://www.youtube.com/embed/${esc(ytId)}" allow="autoplay;encrypted-media" allowfullscreen title="${esc(ytQ)}"></iframe>`
-    : `<a class="media-block" href="${ytSearchUrl}" target="_blank" rel="noopener" aria-label="${mediaKind}: ${esc(ytQ)} on YouTube"><span class="play" aria-hidden="true"></span><span class="mt"><span>${esc(ytQ)}</span><span>YouTube ↗</span></span></a>`;
+  const spHeight=(spType==='track'||spType==='episode')?152:352;
+  const mediaHtml=mediaKind==='Listen'
+    ? (spId
+        ? `<iframe class="sp-embed" src="https://open.spotify.com/embed/${esc(spType)}/${esc(spId)}?utm_source=generator" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="${esc(ytQ)}" style="height:${spHeight}px"></iframe>`
+        : ytId
+          ? `<iframe class="yt-embed" src="https://www.youtube.com/embed/${esc(ytId)}" allow="autoplay;encrypted-media" allowfullscreen title="${esc(ytQ)}"></iframe>`
+          : `<a class="media-block" href="${spSearchUrl}" target="_blank" rel="noopener" aria-label="Listen: ${esc(ytQ)} on Spotify"><span class="play" aria-hidden="true"></span><span class="mt"><span>${esc(ytQ)}</span><span>Spotify ↗</span></span></a>`)
+    : ytId
+      ? `<iframe class="yt-embed" src="https://www.youtube.com/embed/${esc(ytId)}" allow="autoplay;encrypted-media" allowfullscreen title="${esc(ytQ)}"></iframe>`
+      : `<a class="media-block" href="${ytSearchUrl}" target="_blank" rel="noopener" aria-label="${mediaKind}: ${esc(ytQ)} on YouTube"><span class="play" aria-hidden="true"></span><span class="mt"><span>${esc(ytQ)}</span><span>YouTube ↗</span></span></a>`;
 
   $('#op').innerHTML=`<header class="opbar">
    <button class="home" data-closeo aria-label="Back to the ${st.view}">
@@ -570,8 +581,13 @@ function drawObj(){
        x.pages?spec('Pages',esc(x.pages)):'',
        x.signed?spec('Signed','Yes'):'',
        x.dimensions?spec('Dimensions',esc(x.dimensions)):'',
-     ].join('');}if(fam==='ephemera'){return [
+     ].join('');}if(fam==='ephemera'){
+       const printedKinds=new Set(['zine','flyer','poster','ticket','print edition']);
+       const pubLabel=x.kind&&printedKinds.has(x.kind)?'Publisher':'Made by';
+       const pubVal=x.publisher?(x.selfPublished?`${esc(x.publisher)} (self-published)`:esc(x.publisher)):'';
+       return [
        x.kind?spec('Kind',esc(x.kind)):'',
+       pubVal?spec(pubLabel,pubVal):'',
        x.edition?spec('Edition',esc(x.edition)):'',
        x.materials?spec('Materials',esc(x.materials)):'',
        x.venue?spec('Venue',esc(x.venue)):'',

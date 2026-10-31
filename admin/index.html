@@ -993,7 +993,7 @@ select { cursor: pointer; appearance: none; }
           </div>
 
           <!-- Garment-only fields -->
-          <template v-show="colFormFamily === 'garment'">
+          <div v-show="colFormFamily === 'garment'">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
               <div class="form-group">
                 <label>Sleeve</label>
@@ -1005,10 +1005,11 @@ select { cursor: pointer; appearance: none; }
                 <label>Size</label>
                 <input type="text" v-model="colForm.size" placeholder="XL" />
               </div>
-              <div class="form-group">
-                <label>Label</label>
-                <input type="text" v-model="colForm.label" placeholder="Anvil" />
-              </div>
+            </div>
+            <div class="form-group">
+              <label>Label (brand)</label>
+              <input type="text" v-model="colForm.label" placeholder="Cactus Plant Flea Market" />
+              <span style="font-size:.65rem;color:var(--muted);display:block;margin-top:3px">Brand as written by the brand, e.g. Cactus Plant Flea Market, Fruit of the Loom. Not tag text, URLs or size tags. If there's no brand: Unbranded, Tagless, Cut tag or Faded.</span>
             </div>
             <div class="form-group" v-show="colForm.type === 'Apparel'">
               <label>Garment <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">coveralls, button-down shirt, fleece pullover, jacket, trousers, other</span></label>
@@ -1018,10 +1019,10 @@ select { cursor: pointer; appearance: none; }
               <label>Detail / note <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(ringer, crew shirt, named collar, etc.)</span></label>
               <input type="text" v-model="colForm.note" placeholder="" />
             </div>
-          </template>
+          </div>
 
           <!-- Book-only fields -->
-          <template v-show="colFormFamily === 'book'">
+          <div v-show="colFormFamily === 'book'">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div class="form-group">
                 <label>Publisher</label>
@@ -1064,10 +1065,10 @@ select { cursor: pointer; appearance: none; }
               <label>Dimensions</label>
               <input type="text" v-model="colForm.dimensions" placeholder="11 × 17 in" />
             </div>
-          </template>
+          </div>
 
           <!-- Ephemera-only fields -->
-          <template v-show="colFormFamily === 'ephemera'">
+          <div v-show="colFormFamily === 'ephemera'">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
               <div class="form-group">
                 <label>Kind</label>
@@ -1086,6 +1087,18 @@ select { cursor: pointer; appearance: none; }
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div class="form-group">
+                <label>Publisher / made by</label>
+                <input type="text" v-model="colForm.publisher" placeholder="Ivorypress" />
+                <span style="font-size:.65rem;color:var(--muted);display:block;margin-top:3px">Publisher for printed matter; the maker for objects and gifts.</span>
+              </div>
+              <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;padding-bottom:4px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;font-size:.75rem;letter-spacing:0">
+                  <input type="checkbox" v-model="colForm.selfPublished" /> Self-published
+                </label>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="form-group">
                 <label>Edition</label>
                 <input type="text" v-model="colForm.edition" placeholder="Friends and family" />
               </div>
@@ -1098,7 +1111,7 @@ select { cursor: pointer; appearance: none; }
               <label>Dimensions</label>
               <input type="text" v-model="colForm.dimensions" placeholder="11 × 17 in" />
             </div>
-          </template>
+          </div>
 
           <!-- Shared: body colour -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -1161,7 +1174,13 @@ select { cursor: pointer; appearance: none; }
               <input type="text" v-model="colForm.media.query" placeholder="Third Eye Blind live 1998" />
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" v-show="colForm.media.kind === 'Listen'">
+            <label>Spotify link <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(optional — embeds Spotify player)</span></label>
+            <input type="text" v-model="colForm.media.spotifyUrl" placeholder="https://open.spotify.com/track/…" @input="onSpotifyInput" />
+            <span v-if="spotifyError" style="font-size:.65rem;color:#c07070;display:block;margin-top:3px">{{ spotifyError }}</span>
+            <span v-if="spotifyTitle" style="font-size:.65rem;color:var(--muted);display:block;margin-top:3px">{{ spotifyTitle }}</span>
+          </div>
+          <div class="form-group" v-show="colForm.media.kind !== 'Listen'">
             <label>YouTube ID <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(optional — embeds player instead of search link)</span></label>
             <input type="text" v-model="colForm.media.youtubeId" placeholder="dQw4w9WgXcQ" />
           </div>
@@ -1716,6 +1735,8 @@ createApp({
       colSearch:       '',
       colStatusFilter: 'all',
       colSaving:       false,
+      spotifyError:    '',
+      spotifyTitle:    '',
       colSaveMsg:      '',
       colSaveMsgType:  'ok',
       colUploading:    false,
@@ -2086,7 +2107,7 @@ createApp({
         leadFact: null,
         seenIn: null, seenInUrl: null,
         customFacts: [],
-        media: { kind: 'Watch', query: '', youtubeId: null },
+        media: { kind: 'Watch', query: '', youtubeId: null, spotifyUrl: null, spotifyType: null, spotifyId: null },
         images: [],
       };
     },
@@ -2098,7 +2119,8 @@ createApp({
 
     editObj(o) {
       this.colForm = JSON.parse(JSON.stringify(o));
-      if (!this.colForm.media) this.colForm.media = { kind: 'Watch', query: '', youtubeId: null };
+      if (!this.colForm.media) this.colForm.media = { kind: 'Watch', query: '', youtubeId: null, spotifyUrl: null, spotifyType: null, spotifyId: null };
+      else { if (!('spotifyUrl' in this.colForm.media)) this.colForm.media.spotifyUrl = null; if (!('spotifyId' in this.colForm.media)) { this.colForm.media.spotifyType = null; this.colForm.media.spotifyId = null; } }
       if (!this.colForm.customFacts) this.colForm.customFacts = [];
       this.section = 'col-edit';
     },
@@ -2229,6 +2251,19 @@ createApp({
       event.target.value = '';
     },
 
+    onSpotifyInput() {
+      const url = (this.colForm.media.spotifyUrl || '').trim();
+      if (!url) { this.spotifyError = ''; this.spotifyTitle = ''; return; }
+      const re = /(?:open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(?:embed\/)?|spotify:)(track|album|playlist|episode|show|artist)[\/:]([A-Za-z0-9]{22})/;
+      const m = url.match(re);
+      if (!m) { this.spotifyError = 'Could not parse Spotify link'; this.spotifyTitle = ''; this.colForm.media.spotifyType = null; this.colForm.media.spotifyId = null; return; }
+      this.spotifyError = '';
+      this.colForm.media.spotifyType = m[1];
+      this.colForm.media.spotifyId = m[2];
+      this.spotifyTitle = '';
+      fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`)
+        .then(r => r.json()).then(d => { if (d.title) this.spotifyTitle = d.title; }).catch(() => {});
+    },
     async runCutout(img) {
       const r = await fetch('/api/collection/cutout', {
         method: 'POST',

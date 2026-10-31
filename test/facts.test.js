@@ -743,3 +743,101 @@ describe('Test 14: Snapshot — existing 102 objects facts unchanged by new sett
     assert.equal(getFamily({ type: 'Apparel' }), 'garment');
   });
 });
+
+// ── Test 15: Ephemera publisher in catalogue column ───────────────────────────
+describe('Test 15: Ephemera publisher in catalogue column', () => {
+  // familyLabelValue lives in collection.html (browser code), so we test the logic inline.
+  function familyLabelValue(x) {
+    const fam = getFamily(x);
+    if (fam === 'book') return x.publisher || '—';
+    if (fam === 'ephemera') { const v = x.publisher || x.maker; return v || '—'; }
+    return x.label || '—';
+  }
+
+  test('ephemera with publisher shows publisher in label column', () => {
+    const e = makeEphemera({ publisher: 'Ivorypress' });
+    assert.equal(familyLabelValue(e), 'Ivorypress');
+  });
+
+  test('ephemera without publisher falls back to maker', () => {
+    const e = makeEphemera({ maker: 'Fugazi' });
+    assert.equal(familyLabelValue(e), 'Fugazi');
+  });
+
+  test('ephemera with neither publisher nor maker shows —', () => {
+    const e = makeEphemera({ maker: '', publisher: null });
+    assert.equal(familyLabelValue(e), '—');
+  });
+});
+
+// ── Test 16: Book publisher fact ignores ephemera ─────────────────────────────
+describe('Test 16: Book publisher fact ignores ephemera', () => {
+  test('ephemera publisher does not count in book publisher pool', () => {
+    const book = makeBook({ accession: 'B1', publisher: 'Ivorypress' });
+    const ephemera = makeEphemera({ accession: 'E1', publisher: 'Ivorypress' });
+    const all = [book, ephemera];
+    const facts = computeFacts(book, all, DEFAULT_FACT_SETTINGS);
+    const pubFact = facts.find(f => f.key === 'publisher');
+    assert.ok(pubFact, 'book should have publisher fact');
+    assert.ok(pubFact.text.includes('only'), `book with ephemera sharing publisher should still be "only", got: ${pubFact.text}`);
+  });
+});
+
+// ── Test 17: Spotify link parser ─────────────────────────────────────────────
+describe('Test 17: Spotify link parser', () => {
+  const re = /(?:open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(?:embed\/)?|spotify:)(track|album|playlist|episode|show|artist)[\/:]([A-Za-z0-9]{22})/;
+
+  function parse(url) {
+    const m = url.match(re);
+    return m ? { type: m[1], id: m[2] } : null;
+  }
+
+  test('standard track URL', () => {
+    const r = parse('https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('intl-xx track URL', () => {
+    const r = parse('https://open.spotify.com/intl-fr/track/4uLU6hMCjMI75M1A2tKUQC');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('intl-xx-xx track URL', () => {
+    const r = parse('https://open.spotify.com/intl-zh-tw/track/4uLU6hMCjMI75M1A2tKUQC');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('album URL', () => {
+    const r = parse('https://open.spotify.com/album/1DFixLWuPkv3KT3TnV35m3');
+    assert.deepEqual(r, { type: 'album', id: '1DFixLWuPkv3KT3TnV35m3' });
+  });
+
+  test('playlist URL', () => {
+    const r = parse('https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M');
+    assert.deepEqual(r, { type: 'playlist', id: '37i9dQZF1DXcBWIGoYBM5M' });
+  });
+
+  test('episode URL', () => {
+    const r = parse('https://open.spotify.com/episode/6RKxCgdGDKLt5bYMnCJzSm');
+    assert.deepEqual(r, { type: 'episode', id: '6RKxCgdGDKLt5bYMnCJzSm' });
+  });
+
+  test('track URL with query string', () => {
+    const r = parse('https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC?si=abc123');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('spotify: URI', () => {
+    const r = parse('spotify:track:4uLU6hMCjMI75M1A2tKUQC');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('embed URL', () => {
+    const r = parse('https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC');
+    assert.deepEqual(r, { type: 'track', id: '4uLU6hMCjMI75M1A2tKUQC' });
+  });
+
+  test('bad link returns null', () => {
+    assert.equal(parse('https://youtu.be/dQw4w9WgXcQ'), null);
+  });
+});
