@@ -462,9 +462,11 @@ app.post('/api/collection', requireAuth, (req, res) => {
     size:       body.size       || null,
     detail:     body.detail     || null,
     note:       body.note       || null,
+    garment:    body.garment    || null,
     // book fields
     publisher:     body.publisher     || null,
     selfPublished: body.selfPublished || false,
+    format:        body.format        || null,
     cover:         body.cover         || null,
     pages:         body.pages         || null,
     edition:       body.edition       || null,
@@ -473,6 +475,7 @@ app.post('/api/collection', requireAuth, (req, res) => {
     kind:       body.kind       || null,
     venue:      body.venue      || null,
     city:       body.city       || null,
+    materials:  body.materials  || null,
     // shared
     dimensions: body.dimensions || null,
     bodyColour: body.bodyColour || null,

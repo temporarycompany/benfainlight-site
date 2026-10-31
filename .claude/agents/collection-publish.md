@@ -10,26 +10,32 @@ You publish objects to temporary collection (temporary.company/collection). Cowo
 ## Inputs
 
 - A folder of photos named `<key>_<plate>.jpg`, where plate is `front`, `back` or `label`.
-- `records.csv` with columns `key, maker, title, date, type` and family-specific columns below. It may also have reference-only columns (`source_files`, `plates`, `notes`); don't import those unless the batch prompt says to.
+- `records.csv` with columns `key, maker, title, date, type` and family-specific columns below. It may also have reference-only columns (`source_files`, `notes`); don't import those unless the batch prompt says to.
 
 ### CSV columns per family
 
 **All families:** `key, maker, title, date, type, department, provenance, condition, body_colour`
 
-**Garments** (type = Shirt, Sweatshirt, or Hoodie): `description, label, sleeve, size, note`
+**Garments** (type = Shirt, Sweatshirt, Hoodie, or Apparel): `description, label, sleeve, size, note, garment`
 - `label` is for garments only. Never put a publisher in the `label` column.
+- `garment` is for Apparel only (free text: coveralls, button-down shirt, fleece pullover, jacket, trousers, other).
 
-**Books** (type = Book): `publisher, self_published, cover, pages, edition, signed`
+**Books** (type = Book): `publisher, self_published, cover, format, pages, edition, signed, dimensions`
 - `publisher` is the book's publisher. Never store it in `label`.
 - `self_published` is `true` or `false`. When `true`, the Publisher spec reads "Name (self-published)".
 - `cover` is `hard` or `soft`.
+- `format` is one of: book (default, omit if so), magazine, catalogue, boxed edition.
 - `pages` is a number.
 - `signed` is `true` or `false`.
 
-**Ephemera** (type = Ephemera): `kind, venue, city, dimensions`
-- `kind` is one of: flyer, ticket, poster, zine, other.
+**Ephemera** (type = Ephemera): `kind, edition, materials, venue, city, dimensions`
+- `kind` is one of: flyer, ticket, poster, zine, object, miniature, trading cards, print edition, other.
+- `edition` is free text (e.g. "Friends and family", "Unreleased sample", "Set piece").
+- `materials` is free text (e.g. "Plaster", "3D-printed plastic").
 
 **Shared optional:** `dimensions` (free text, e.g. "11 × 17 in")
+
+**Plate columns (all families):** `plates` (space-separated filenames), `roles` (space-separated: front/back/label/detail), `captions` (`|`-separated captions in plate order).
 
 ## The rules that matter most
 
@@ -57,9 +63,10 @@ So a tight crop is correct. A file with its own margin would end up smaller than
 
 **File names:** `<key>_<plate>.jpg` with plate one of `front, back, spine, spread-1…n, title, colophon`. `prep_batch.py` only handles front/back/label today — covers and spines are cut out with `cutout.cutout()` directly, and interior plates use `tightcrop.py` (see below).
 
-**Covers and spine: cut out.**
+**Covers: cut out.**
 - Covers: correct the perspective to a flat rectangle. The result is fully opaque except for a 1px soft edge; it still needs an alpha channel.
-- Spine: level it and cut it out as a strip. Trace the spine by hand when a hand covers part of it.
+
+**Spines (centred crop, not cut out):** treated like interior plates — centred crop with an even border of background (7% of the spine's length). Level the spine; hands holding the book stay in; never crop into the spine text. Rotate spines to read left to right (box spines with horizontal type stay vertical). Upload as opaque WebP with `cutout: false`.
 
 **Interior plates (spreads, title page, colophon, anything inside the book): centred crop, never cut out.**
 - Run `pipeline/tightcrop.py`. It levels the photo and centres the book.
@@ -82,9 +89,17 @@ So a tight crop is correct. A file with its own margin would end up smaller than
 - the border looks even;
 - nothing is in the frame except the book, the quilt and the hand holding it.
 
-**Captions:** set `caption` on every detail image. Default captions: Spine, Spread (repeatable), Title page, Colophon. The front and back take `caption: "Cover"` and `caption: "Back cover"` respectively.
+**Captions:** set `caption` on every detail image. Default captions: Spine, Spread (repeatable), Title page, Colophon. The front and back take `caption: "Cover"` and `caption: "Back cover"` respectively. Additional captions: Side, Inscription, Card, Deck, Packaging, Slipcase, Slipcase back, Box, Box back, Box spine, Box side, Open box, Case, Case spine, Contents.
 
-**cutout values:** covers and spine use `cutout: true`; interior plates use `cutout: false`. The site renders both at plate size (stone plate, 48px padding, contained).
+**cutout values:** covers use `cutout: true`; spines and interior plates use `cutout: false`. The site renders all at plate size (stone plate, 48px padding, contained).
+
+## 3D objects (balls, chairs, models, decks)
+
+Front, back and side views are cut out like garments with `pipeline/cutout.py`. Check that see-through gaps inside the object (under a seat, between chair legs and slats) are cut away, not left as background. Objects with a colour well apart from the quilt (e.g. a Jeanneret miniature) are cut by colour, with model masks only closing ragged edges. A round object held from below is cut as a fitted ellipse so no finger is left on the outline. Close-up detail shots held in the hand (a detail, an inscription) are centred crops with background, like spreads.
+
+## Boxes, slipcases and packaging
+
+Flat faces (cover, back, box faces, slipcase faces) are perspective-corrected rectangles, turned so their type reads right side up, and cut out. Something sealed in a bag is cut out with the bag and shown after the cover. Open-box and contents shots are centred crops with background (`cutout: false`).
 
 ## Step 1: Prepare the images (local, Mac only)
 
@@ -192,21 +207,25 @@ Content-Type: application/json
   "status": "pending",
   "type", "department", "maker", "title", "date", "description": <from CSV>,
 
-  // Garments only (type = Shirt, Sweatshirt, Hoodie):
+  // Garments only (type = Shirt, Sweatshirt, Hoodie, Apparel):
   "label": "<from CSV — garments only; omit or null for books and ephemera>",
   "sleeve": "<from CSV>",
   "size": "<from CSV>",
   "note": "<from CSV>",
+  "garment": "<from CSV — Apparel only>",
 
   // Books only (type = Book):
   "publisher": "<from CSV>",
+  "format": "<from CSV — book/magazine/catalogue/boxed edition; omit or null for plain book>",
   "cover": "<from CSV — hard or soft>",
   "pages": <number>,
   "edition": "<from CSV>",
   "signed": <boolean>,
 
   // Ephemera only (type = Ephemera):
-  "kind": "<from CSV — flyer, ticket, poster, zine, or other>",
+  "kind": "<from CSV — flyer, ticket, poster, zine, object, miniature, trading cards, print edition, other>",
+  "edition": "<from CSV — e.g. Friends and family>",
+  "materials": "<from CSV — e.g. Plaster>",
   "venue": "<from CSV>",
   "city": "<from CSV>",
   "dimensions": "<from CSV>",

@@ -8,6 +8,7 @@
     Shirt:     'garment',
     Sweatshirt:'garment',
     Hoodie:    'garment',
+    Apparel:   'garment',
     Book:      'book',
     Ephemera:  'ephemera',
   };
@@ -124,6 +125,7 @@
       { key: 'tagless',    enabled: true  },
       { key: 'note',       enabled: true  },
       { key: 'sleeve',     enabled: true  },
+      { key: 'garment',    enabled: true  },
       { key: 'colour',     enabled: true  },
       { key: 'department', enabled: true  },
       { key: 'decade',     enabled: true  },
@@ -131,6 +133,7 @@
     book: [
       { key: 'maker',         enabled: true  },
       { key: 'publisher',     enabled: true  },
+      { key: 'format',        enabled: true  },
       { key: 'selfPublished', enabled: true  },
       { key: 'age',           enabled: true  },
       { key: 'signed',     enabled: true  },
@@ -231,6 +234,13 @@
         const n = pool.filter(y => y.sleeve === 'long').length;
         allFacts.sleeve = `is one of ${n} long-sleeve objects.`;
       }
+      if (x.garment) {
+        const n = pool.filter(y => y.garment && y.garment.toLowerCase() === x.garment.toLowerCase()).length;
+        const plural = x.garment.endsWith('s') ? x.garment : x.garment + 's';
+        allFacts.garment = n > 1
+          ? `is one of ${n} ${plural}.`
+          : `is the only ${x.garment}.`;
+      }
       if (darkRanks[x.accession]) {
         allFacts.colour = `ranks ${ord(darkRanks[x.accession])} of ${pool.length}, darkest to lightest.`;
       }
@@ -250,6 +260,14 @@
         allFacts.publisher = n > 1
           ? `is one of ${n} books published by ${x.publisher}.`
           : `is the only book from ${x.publisher}.`;
+      }
+      if (x.format && x.format !== 'book') {
+        const n = pool.filter(y => y.format === x.format).length;
+        const plurals = { magazine: 'magazines', catalogue: 'catalogues', 'boxed edition': 'boxed editions' };
+        const plural = plurals[x.format] || x.format + 's';
+        allFacts.format = n > 1
+          ? `is one of ${n} ${plural}.`
+          : `is the only ${x.format}.`;
       }
       if (x.selfPublished) {
         const n = pool.filter(y => y.selfPublished).length;
@@ -288,8 +306,8 @@
     if (family === 'ephemera') {
       if (x.kind) {
         const n = pool.filter(y => y.kind === x.kind).length;
-        // simple plural
-        const plural = x.kind.endsWith('s') ? x.kind : x.kind + 's';
+        const kindPlurals = { 'trading cards': 'sets of trading cards', 'print edition': 'print editions' };
+        const plural = kindPlurals[x.kind] || (x.kind.endsWith('s') ? x.kind : x.kind + 's');
         allFacts.kind = n > 1
           ? `is one of ${n} ${plural}.`
           : `is the only ${x.kind}.`;

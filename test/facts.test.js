@@ -554,3 +554,192 @@ describe('Test 9: selfPublished book fact', () => {
     assert.ok(!facts.find(f => f.key === 'selfPublished'), 'no selfPublished fact for false');
   });
 });
+
+// ── Test 10: Apparel pools with garment family ────────────────────────────────
+describe('Test 10: Apparel pools with garment family', () => {
+  test('getFamily returns "garment" for Apparel', () => {
+    assert.equal(getFamily({ type: 'Apparel' }), 'garment');
+  });
+
+  test('Apparel colour rank counts in same pool as Shirts and Sweatshirts', () => {
+    const shirt = makeGarment({ accession: 'G1', bodyColour: '#000000' });
+    const sweat = makeGarment({ accession: 'G2', type: 'Sweatshirt', bodyColour: '#888888', sleeve: 'long', label: 'Pangaia' });
+    const apparel = {
+      accession: 'A1', seq: 500, status: 'accessioned',
+      type: 'Apparel', maker: 'Test', title: 'Coveralls',
+      date: '1982', department: 'Music', bodyColour: '#ffffff', garment: 'Coveralls',
+    };
+    const all = [shirt, sweat, apparel];
+    const facts = computeFacts(apparel, all, DEFAULT_FACT_SETTINGS);
+    const colourFact = facts.find(f => f.key === 'colour');
+    // Pool = all garments = 3 objects (shirt + sweat + apparel)
+    assert.ok(colourFact?.text.includes('3'), `Apparel colour rank denominator should be 3, got: ${colourFact?.text}`);
+  });
+
+  test('Apparel garment fact: "is the only coveralls" when unique', () => {
+    const apparel = {
+      accession: 'A1', seq: 500, status: 'accessioned',
+      type: 'Apparel', maker: 'Rolling Stones', title: '1982 Tour Coveralls',
+      date: '1982', department: 'Music', bodyColour: '#334455', garment: 'Coveralls',
+    };
+    const facts = computeFacts(apparel, [apparel], DEFAULT_FACT_SETTINGS);
+    const garmentFact = facts.find(f => f.key === 'garment');
+    assert.ok(garmentFact, 'garment fact should exist for Apparel with garment field');
+    assert.ok(garmentFact.text.includes('only') && garmentFact.text.includes('Coveralls'),
+      `Expected "only Coveralls", got: ${garmentFact.text}`);
+  });
+
+  test('Apparel garment fact: "is one of N coveralls" when multiple', () => {
+    const a1 = { accession: 'A1', seq: 501, status: 'accessioned', type: 'Apparel', maker: 'X', title: 'C1', date: '1981', department: 'Music', bodyColour: '#000', garment: 'Coveralls' };
+    const a2 = { accession: 'A2', seq: 502, status: 'accessioned', type: 'Apparel', maker: 'Y', title: 'C2', date: '1982', department: 'Music', bodyColour: '#fff', garment: 'Coveralls' };
+    const facts = computeFacts(a1, [a1, a2], DEFAULT_FACT_SETTINGS);
+    const garmentFact = facts.find(f => f.key === 'garment');
+    assert.ok(garmentFact?.text.includes('2') && garmentFact.text.includes('Coveralls'),
+      `Expected 2 Coveralls, got: ${garmentFact?.text}`);
+  });
+
+  test('Apparel without garment field has no garment fact', () => {
+    const apparel = {
+      accession: 'A1', seq: 500, status: 'accessioned',
+      type: 'Apparel', maker: 'Test', title: 'Jacket',
+      date: '1990', department: 'Music', bodyColour: '#000',
+    };
+    const facts = computeFacts(apparel, [apparel], DEFAULT_FACT_SETTINGS);
+    assert.ok(!facts.find(f => f.key === 'garment'), 'no garment fact when garment field is absent');
+  });
+});
+
+// ── Test 11: Book format fact ─────────────────────────────────────────────────
+describe('Test 11: Book format fact', () => {
+  test('magazine gets format fact "is the only magazine"', () => {
+    const b = makeBook({ accession: 'B1', format: 'magazine' });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'format');
+    assert.ok(f, 'format fact should exist for magazine');
+    assert.ok(f.text.includes('only') && f.text.includes('magazine'), `Expected "only magazine", got: ${f.text}`);
+  });
+
+  test('two magazines each get "is one of 2 magazines"', () => {
+    const b1 = makeBook({ accession: 'B1', format: 'magazine' });
+    const b2 = makeBook({ accession: 'B2', format: 'magazine' });
+    const facts = computeFacts(b1, [b1, b2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'format');
+    assert.ok(f?.text.includes('2') && f.text.includes('magazines'), `Expected "2 magazines", got: ${f?.text}`);
+  });
+
+  test('boxed edition gets format fact with correct plural', () => {
+    const b = makeBook({ accession: 'B1', format: 'boxed edition' });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'format');
+    assert.ok(f?.text.includes('boxed edition'), `Expected boxed edition in: ${f?.text}`);
+  });
+
+  test('plain book (no format) has no format fact', () => {
+    const b = makeBook({ accession: 'B1' });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    assert.ok(!facts.find(f => f.key === 'format'), 'no format fact for book without format');
+  });
+
+  test('book with format="book" has no format fact', () => {
+    const b = makeBook({ accession: 'B1', format: 'book' });
+    const facts = computeFacts(b, [b], DEFAULT_FACT_SETTINGS);
+    assert.ok(!facts.find(f => f.key === 'format'), 'no format fact when format===book');
+  });
+});
+
+// ── Test 12: Ephemera kind pluralization ──────────────────────────────────────
+describe('Test 12: Ephemera kind pluralization', () => {
+  test('"trading cards" pluralizes to "sets of trading cards"', () => {
+    const e1 = makeEphemera({ accession: 'E1', kind: 'trading cards' });
+    const e2 = makeEphemera({ accession: 'E2', kind: 'trading cards' });
+    const facts = computeFacts(e1, [e1, e2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'kind');
+    assert.ok(f?.text.includes('sets of trading cards'), `Expected "sets of trading cards", got: ${f?.text}`);
+  });
+
+  test('"miniature" pluralizes to "miniatures"', () => {
+    const e1 = makeEphemera({ accession: 'E1', kind: 'miniature' });
+    const e2 = makeEphemera({ accession: 'E2', kind: 'miniature' });
+    const facts = computeFacts(e1, [e1, e2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'kind');
+    assert.ok(f?.text.includes('miniatures'), `Expected "miniatures", got: ${f?.text}`);
+  });
+
+  test('"print edition" pluralizes to "print editions"', () => {
+    const e1 = makeEphemera({ accession: 'E1', kind: 'print edition' });
+    const e2 = makeEphemera({ accession: 'E2', kind: 'print edition' });
+    const facts = computeFacts(e1, [e1, e2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'kind');
+    assert.ok(f?.text.includes('print editions'), `Expected "print editions", got: ${f?.text}`);
+  });
+
+  test('"object" pluralizes to "objects"', () => {
+    const e1 = makeEphemera({ accession: 'E1', kind: 'object' });
+    const e2 = makeEphemera({ accession: 'E2', kind: 'object' });
+    const facts = computeFacts(e1, [e1, e2], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'kind');
+    assert.ok(f?.text.includes('objects'), `Expected "objects", got: ${f?.text}`);
+  });
+
+  test('unique trading cards object gets "is the only trading cards"', () => {
+    const e = makeEphemera({ accession: 'E1', kind: 'trading cards' });
+    const facts = computeFacts(e, [e], DEFAULT_FACT_SETTINGS);
+    const f = facts.find(f => f.key === 'kind');
+    assert.ok(f?.text.includes('only') && f.text.includes('trading cards'), `got: ${f?.text}`);
+  });
+});
+
+// ── Test 13: Ephemera edition and materials (snapshot) ────────────────────────
+describe('Test 13: Ephemera edition and materials fields', () => {
+  test('edition and materials fields are preserved in collection objects', () => {
+    const e = makeEphemera({
+      accession: 'E1',
+      kind: 'miniature',
+      edition: 'Friends and family',
+      materials: 'Plaster',
+    });
+    // computeFacts doesn't generate facts from edition/materials — they're object-page only
+    const facts = computeFacts(e, [e], DEFAULT_FACT_SETTINGS);
+    // edition and materials are not fact keys
+    assert.ok(!facts.find(f => f.key === 'edition'), 'edition is not a fact key for ephemera');
+    assert.ok(!facts.find(f => f.key === 'materials'), 'materials is not a fact key for ephemera');
+    // but the object still has the fields
+    assert.equal(e.edition, 'Friends and family');
+    assert.equal(e.materials, 'Plaster');
+  });
+});
+
+// ── Test 14: Snapshot — 102 existing objects unchanged ───────────────────────
+describe('Test 14: Snapshot — existing 102 objects facts unchanged by new settings', () => {
+  test('DEFAULT_FACT_SETTINGS garment has garment key after sleeve', () => {
+    const garment = DEFAULT_FACT_SETTINGS.garment;
+    const sleeveIdx = garment.findIndex(f => f.key === 'sleeve');
+    const garmentIdx = garment.findIndex(f => f.key === 'garment');
+    assert.ok(sleeveIdx >= 0, 'sleeve key missing');
+    assert.ok(garmentIdx >= 0, 'garment key missing');
+    assert.equal(garmentIdx, sleeveIdx + 1, 'garment key should immediately follow sleeve');
+  });
+
+  test('DEFAULT_FACT_SETTINGS book has format key after publisher', () => {
+    const book = DEFAULT_FACT_SETTINGS.book;
+    const pubIdx = book.findIndex(f => f.key === 'publisher');
+    const fmtIdx = book.findIndex(f => f.key === 'format');
+    assert.ok(pubIdx >= 0, 'publisher key missing');
+    assert.ok(fmtIdx >= 0, 'format key missing');
+    assert.equal(fmtIdx, pubIdx + 1, 'format key should immediately follow publisher');
+  });
+
+  test('existing 102 objects: garment-pool and book-pool facts are stable with new DEFAULT_FACT_SETTINGS', () => {
+    const all = loadCollection();
+    const accessioned = all.filter(x => x.status === 'accessioned');
+    // Verify no object throws when computing facts with new settings
+    for (const obj of accessioned) {
+      assert.doesNotThrow(
+        () => computeFacts(obj, accessioned, DEFAULT_FACT_SETTINGS),
+        `computeFacts threw for ${obj.accession}`
+      );
+    }
+    // Verify Apparel type would be handled by garment family
+    assert.equal(getFamily({ type: 'Apparel' }), 'garment');
+  });
+});

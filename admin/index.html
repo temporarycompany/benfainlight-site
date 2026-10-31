@@ -960,7 +960,7 @@ select { cursor: pointer; appearance: none; }
             <div class="form-group">
               <label>Type</label>
               <select v-model="colForm.type">
-                <option>Shirt</option><option>Sweatshirt</option><option>Hoodie</option><option>Book</option><option>Ephemera</option>
+                <option>Shirt</option><option>Sweatshirt</option><option>Hoodie</option><option>Apparel</option><option>Book</option><option>Ephemera</option>
               </select>
             </div>
           </div>
@@ -1010,6 +1010,10 @@ select { cursor: pointer; appearance: none; }
                 <input type="text" v-model="colForm.label" placeholder="Anvil" />
               </div>
             </div>
+            <div class="form-group" v-show="colForm.type === 'Apparel'">
+              <label>Garment <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">coveralls, button-down shirt, fleece pullover, jacket, trousers, other</span></label>
+              <input type="text" v-model="colForm.garment" placeholder="Coveralls" />
+            </div>
             <div class="form-group">
               <label>Detail / note <span style="text-transform:none;font-size:.65rem;color:var(--muted);letter-spacing:0">(ringer, crew shirt, named collar, etc.)</span></label>
               <input type="text" v-model="colForm.note" placeholder="" />
@@ -1027,6 +1031,12 @@ select { cursor: pointer; appearance: none; }
                 <label style="display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;font-size:.75rem;letter-spacing:0">
                   <input type="checkbox" v-model="colForm.selfPublished" /> Self-published
                 </label>
+              </div>
+              <div class="form-group">
+                <label>Format</label>
+                <select v-model="colForm.format">
+                  <option value="">book</option><option value="magazine">magazine</option><option value="catalogue">catalogue</option><option value="boxed edition">boxed edition</option>
+                </select>
               </div>
               <div class="form-group">
                 <label>Cover</label>
@@ -1062,7 +1072,7 @@ select { cursor: pointer; appearance: none; }
               <div class="form-group">
                 <label>Kind</label>
                 <select v-model="colForm.kind">
-                  <option value="">—</option><option>flyer</option><option>ticket</option><option>poster</option><option>zine</option><option>other</option>
+                  <option value="">—</option><option>flyer</option><option>ticket</option><option>poster</option><option>zine</option><option>object</option><option>miniature</option><option>trading cards</option><option>print edition</option><option>other</option>
                 </select>
               </div>
               <div class="form-group">
@@ -1072,6 +1082,16 @@ select { cursor: pointer; appearance: none; }
               <div class="form-group">
                 <label>City</label>
                 <input type="text" v-model="colForm.city" placeholder="" />
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label>Edition</label>
+                <input type="text" v-model="colForm.edition" placeholder="Friends and family" />
+              </div>
+              <div class="form-group">
+                <label>Materials</label>
+                <input type="text" v-model="colForm.materials" placeholder="Plaster" />
               </div>
             </div>
             <div class="form-group">
@@ -1737,8 +1757,8 @@ createApp({
     colFormFactKeys() {
       const family = this.colFormFamily;
       const defaults = {
-        garment: ['maker','label','tagless','note','sleeve','colour','department','decade'],
-        book:    ['maker','publisher','age','signed','edition','cover','pages','colour','department','decade'],
+        garment: ['maker','label','tagless','note','sleeve','garment','colour','department','decade'],
+        book:    ['maker','publisher','format','selfPublished','age','signed','edition','cover','pages','colour','department','decade'],
         ephemera:['maker','kind','city','age','colour','department','decade'],
       };
       if (this.factSettings && this.factSettings[family]) {

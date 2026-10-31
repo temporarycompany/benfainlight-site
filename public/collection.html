@@ -315,14 +315,20 @@ function hsl(hex){
 const getFamily=x=>factsModule.getFamily(x);
 function familyCaption(x){
   const fam=getFamily(x);
-  if(fam==='garment'){const s=x.sleeve==='long'?'Long sleeve':'Short sleeve';return `${s}, ${dated(x)}`;}
+  if(fam==='garment'){
+    if(x.type==='Apparel')return x.garment?`${esc(x.garment.charAt(0).toUpperCase()+x.garment.slice(1))}, ${dated(x)}`:dated(x);
+    const s=x.sleeve==='long'?'Long sleeve':'Short sleeve';return `${s}, ${dated(x)}`;
+  }
   if(fam==='book'){
-    if(!x.cover)return dated(x);
-    return `${x.cover==='hard'?'Hardcover':'Softcover'}, ${dated(x)}`;
+    const cover=x.cover?(x.cover==='hard'?'Hardcover':'Softcover'):null;
+    if(!x.format||x.format==='book')return cover?`${cover}, ${dated(x)}`:dated(x);
+    const fmt=x.format.charAt(0).toUpperCase()+x.format.slice(1);
+    return cover?`${fmt}, ${cover.toLowerCase()}, ${dated(x)}`:`${fmt}, ${dated(x)}`;
   }
   if(fam==='ephemera'){
     if(!x.kind)return dated(x);
-    return `${esc(x.kind)}, ${dated(x)}`;
+    const k=x.kind.charAt(0).toUpperCase()+x.kind.slice(1);
+    return `${esc(k)}, ${dated(x)}`;
   }
   return dated(x);
 }
@@ -346,12 +352,12 @@ const save=()=>{try{localStorage.setItem('tc-collection9',JSON.stringify(st))}ca
 // Departments and types from actual data
 const DEPTS=['All',...[...new Set(A.map(x=>x.department))].sort()];
 const TYPE_MERGE={Hoodie:'Sweatshirt'}; // Hoodie objects appear under the Sweatshirt nav entry
-// Fixed nav order: Shirt, Sweatshirt, Book, Ephemera; always show Book/Ephemera even if empty
-const NAV_ORDER=['Shirt','Sweatshirt','Book','Ephemera'];
+// Fixed nav order: Shirt, Sweatshirt, Apparel, Book, Ephemera; always show Book/Ephemera even if empty
+const NAV_ORDER=['Shirt','Sweatshirt','Apparel','Book','Ephemera'];
 const TYPE_VALS=[...new Set(A.map(x=>TYPE_MERGE[x.type]||x.type))];
 const ALL_TYPES=[...new Set([...NAV_ORDER,...TYPE_VALS])];
 const TYPES=['All',...ALL_TYPES.sort((a,b)=>NAV_ORDER.indexOf(a)-NAV_ORDER.indexOf(b))];
-const TYPES_DISPLAY={All:'All objects',Shirt:'Shirts',Sweatshirt:'Hoodies & Sweatshirts',Hoodie:'Hoodies & Sweatshirts',Book:'Books',Ephemera:'Ephemera'};
+const TYPES_DISPLAY={All:'All objects',Shirt:'Shirts',Sweatshirt:'Hoodies & Sweatshirts',Hoodie:'Hoodies & Sweatshirts',Apparel:'Apparel',Book:'Books',Ephemera:'Ephemera'};
 const SORTS=[['seq','Accession'],['az','Maker, A–Z'],['date','Date'],['colour','Colour']];
 
 function list(){
@@ -554,9 +560,11 @@ function drawObj(){
        x.label?spec('Label',esc(x.label)):'',
        x.size?spec('Size',esc(x.size)):'',
        x.sleeve?spec('Sleeve',x.sleeve==='long'?'Long sleeve':'Short sleeve'):'',
+       x.type==='Apparel'&&x.garment?spec('Garment',esc(x.garment)):'',
        x.note?spec('Detail',esc(x.note)):'',
      ].join('');}if(fam==='book'){return [
        x.publisher?spec('Publisher',x.selfPublished?`${esc(x.publisher)} (self-published)`:esc(x.publisher)):'',
+       x.format&&x.format!=='book'?spec('Format',esc(x.format.charAt(0).toUpperCase()+x.format.slice(1))):'',
        x.cover?spec('Cover',x.cover==='hard'?'Hardcover':'Softcover'):'',
        x.edition?spec('Edition',esc(x.edition)):'',
        x.pages?spec('Pages',esc(x.pages)):'',
@@ -564,6 +572,8 @@ function drawObj(){
        x.dimensions?spec('Dimensions',esc(x.dimensions)):'',
      ].join('');}if(fam==='ephemera'){return [
        x.kind?spec('Kind',esc(x.kind)):'',
+       x.edition?spec('Edition',esc(x.edition)):'',
+       x.materials?spec('Materials',esc(x.materials)):'',
        x.venue?spec('Venue',esc(x.venue)):'',
        x.city?spec('City',esc(x.city)):'',
        x.dimensions?spec('Dimensions',esc(x.dimensions)):'',
