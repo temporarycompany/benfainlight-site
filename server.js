@@ -429,7 +429,7 @@ app.put('/api/fact-settings', requireAuth, (req, res) => {
 // Public: list (hides pending/retired by default unless ?all=1)
 app.get('/api/collection', (req, res) => {
   let objects = readCollection();
-  if (!req.query.all) objects = objects.filter(o => o.status === 'accessioned');
+  if (!req.query.all) objects = objects.filter(o => o.status === 'accessioned' || o.status === 'deaccessioned');
   res.json(objects);
 });
 

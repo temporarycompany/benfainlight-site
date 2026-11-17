@@ -909,6 +909,7 @@ select { cursor: pointer; appearance: none; }
               <option value="accessioned">Accessioned</option>
               <option value="pending">Pending</option>
               <option value="retired">Retired</option>
+              <option value="deaccessioned">Deaccessioned</option>
             </select>
             <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">{{ colFiltered.length }} of {{ colObjects.length }} objects</span>
           </div>
@@ -926,13 +927,13 @@ select { cursor: pointer; appearance: none; }
             <tbody>
               <tr v-for="o in colFiltered" :key="o.accession||o.seq" style="border-bottom:1px solid var(--dim)">
                 <td style="padding:8px 10px 8px 0;font-family:monospace;white-space:nowrap">
-                  <span :style="{opacity: o.status==='retired'?0.5:1, textDecoration: o.status==='retired'?'line-through':'none'}">{{ o.accession || `${new Date().getFullYear()}.___` }}</span>
+                  <span :style="{opacity: (o.status==='retired'||o.status==='deaccessioned')?0.5:1, textDecoration: (o.status==='retired'||o.status==='deaccessioned')?'line-through':'none'}">{{ o.accession || `${new Date().getFullYear()}.___` }}</span>
                 </td>
                 <td style="padding:8px 10px 8px 0">{{ o.maker }}<em style="color:var(--muted);">, {{ o.title }}</em></td>
                 <td style="padding:8px 10px 8px 0;color:var(--muted)">{{ o.department }}</td>
                 <td style="padding:8px 10px 8px 0">
                   <select :value="o.status" @change="quickStatus(o, $event.target.value)" style="background:var(--bg);border:1px solid var(--dim);color:var(--ink);font-size:.72rem;padding:2px 4px">
-                    <option>accessioned</option><option>pending</option><option>retired</option>
+                    <option>accessioned</option><option>pending</option><option>retired</option><option>deaccessioned</option>
                   </select>
                 </td>
                 <td style="padding:8px 0;text-align:right;white-space:nowrap">
@@ -954,7 +955,7 @@ select { cursor: pointer; appearance: none; }
             <div class="form-group">
               <label>Status</label>
               <select v-model="colForm.status">
-                <option>accessioned</option><option>pending</option><option>retired</option>
+                <option>accessioned</option><option>pending</option><option>retired</option><option>deaccessioned</option>
               </select>
             </div>
             <div class="form-group">

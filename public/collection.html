@@ -15,7 +15,7 @@
   --tc-paper:#FFFFFF; --tc-stone:#F2F2F0; --tc-ink:#111111;
   --tc-grey:#8D8D8D; --tc-grey-text:#6E6E6E; --tc-grey-faint:#C4C4C1;
   --tc-rule:#E4E4E2; --tc-rule-dash:#DADAD7;
-  --tc-pink:#E39CB6; --tc-maroon:#3A0F1E; --tc-retired:#D9D9D6;
+  --tc-pink:#E39CB6; --tc-maroon:#3A0F1E; --tc-retired:#D9D9D6; --tc-deaccessioned:#C8C4B0;
   --tc-sans:"Schibsted Grotesk",system-ui,sans-serif;
   --tc-mono:"IBM Plex Mono",ui-monospace,monospace;
   --rail:232px;
@@ -44,6 +44,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .tc-tag--l{--h:40px;font-size:20px}
 .tc-tag--pending{background:transparent;color:var(--tc-grey-text);clip-path:none;-webkit-mask:none;mask:none;outline:1.5px dashed var(--tc-pink);outline-offset:-1.5px}
 .tc-tag--retired{background:var(--tc-retired);color:var(--tc-grey-text);text-decoration:line-through}
+.tc-tag--deaccessioned{background:var(--tc-deaccessioned);color:var(--tc-grey-text);text-decoration:line-through}
 .tc-fact{background:var(--tc-pink);color:var(--tc-maroon);font-family:var(--tc-sans);font-size:17px;line-height:1.4;padding:16px 20px 16px 22px;clip-path:polygon(10px 0,100% 0,100% 100%,0 100%,0 10px)}
 .tc-fact b{font-weight:700}
 .tc-specs{border-top:1px dashed var(--tc-ink);margin:0}
@@ -296,7 +297,7 @@ const sleeve=x=>x.sleeve==='long'?'Long sleeve':'Short sleeve';
 const dated=x=>x.date?esc(x.date):'Undated';
 const named=x=>`${x.maker}${x.title&&x.title!==x.maker?', '+x.title:''}`;
 const acc=x=>x.accession||(x.seq?`${new Date().getFullYear()}.${pad(x.seq)}`:'pending');
-const tagClass=x=>x.status==='pending'?' tc-tag--pending':x.status==='retired'?' tc-tag--retired':'';
+const tagClass=x=>x.status==='pending'?' tc-tag--pending':x.status==='retired'?' tc-tag--retired':x.status==='deaccessioned'?' tc-tag--deaccessioned':'';
 const pendingLabel=x=>x.status==='pending'?`${new Date().getFullYear()}.___ `:acc(x);
 
 // front/back images
