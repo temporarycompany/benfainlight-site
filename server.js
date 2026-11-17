@@ -603,6 +603,30 @@ app.post('/api/collection/bulk/upload', requireAuth, collectionUpload.single('fi
   res.json(result);
 });
 
+// Temporary admin utility: delete unreferenced files from COLLECTION_DIR
+app.post('/api/admin/purge-orphaned-uploads', requireAuth, (req, res) => {
+  const objects = readCollection();
+  const referenced = new Set();
+  for (const obj of objects) {
+    for (const img of (obj.images || [])) {
+      if (img.src) referenced.add(path.basename(img.src));
+      if (img.original && img.original.startsWith('/uploads/')) referenced.add(path.basename(img.original));
+    }
+  }
+  let deleted = 0, bytes = 0, kept = 0;
+  const removed = [];
+  for (const f of fs.readdirSync(COLLECTION_DIR)) {
+    if (referenced.has(f)) { kept++; continue; }
+    try {
+      const size = fs.statSync(path.join(COLLECTION_DIR, f)).size;
+      fs.unlinkSync(path.join(COLLECTION_DIR, f));
+      deleted++; bytes += size;
+      removed.push(f);
+    } catch (e) { /* ignore */ }
+  }
+  res.json({ deleted, bytes, kept, removed });
+});
+
 // Protected: atomic publish of selected pending drafts (by seq[])
 app.post('/api/collection/bulk-publish', requireAuth, (req, res) => {
   const { seqs } = req.body || {};
